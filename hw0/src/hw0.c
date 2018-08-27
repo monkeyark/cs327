@@ -52,11 +52,12 @@ int main()
   return 0;
 }
 
-bool move(int row, int col)
+int move(int row, int col, int numTour)
 {
   if (recordBoard[i][j] == true)
-    return false;
+    return -1;
   else
+    int numMove = numTour++;
   /*
     move from top-left in clockwise direction
     move   1   2   3   4   5   6   7   8
@@ -65,8 +66,12 @@ bool move(int row, int col)
    */
   int rowMove[8] = {-2,  -2,  -1,  +1,  +2,  +2,  +1,  -1};
   int colMove[8] = {-1,  +1,  +2,  +2,  +1,  -1,  -2,  -2};
-  
-  return true;
+
+  row = row + rowMove[numMove];
+  col = col + colMove[numMove];
+
+  move(row, col, numMove);
+  return numMove;
 }
 
 

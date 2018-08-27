@@ -44,7 +44,7 @@ int main()
 
   /*
     move from top-left in clockwise direction
-    move   1   2   3   4   5   6   7   8
+    move   0   1   2   3   4   5   6   7
     row   -2  -2  -1  +1  +2  +2  +1  -1
     col   -1  +1  +2  +2  +1  -1  -2  -2
    */
@@ -54,13 +54,13 @@ int main()
 
 int move(int row, int col, int numTour)
 {
-  if (recordBoard[i][j] == true)
-    return -1;
-  else
+  if (recordBoard[i][j] == true && numTour < 7)
+    { 
+    recordBoard[i][j] == true;
     int numMove = numTour++;
   /*
     move from top-left in clockwise direction
-    move   1   2   3   4   5   6   7   8
+    move   0   1   2   3   4   5   6   7
     row   -2  -2  -1  +1  +2  +2  +1  -1
     col   -1  +1  +2  +2  +1  -1  -2  -2
    */
@@ -70,14 +70,29 @@ int move(int row, int col, int numTour)
   row = row + rowMove[numMove];
   col = col + colMove[numMove];
 
-  move(row, col, numMove);
+  if (isSafeMove(row, col))
+    {
+      move(row, col, numMove);
+      recordBoard[i][j] == false;
+      return numMove;
+    }
+  else
+    return ;// backtrack
+  
   return numMove;
+    }
+  return -1;
 }
 
+bool isSafeMove(int row, int col)
+{
+  return row >= 0 && row <= 5 && col >= 0 && col <=5;
+}
 
 bool recordBoard(bool record[N][N], int row, int col)
 {
   if (record[N][N])
+    
 	  return false;
   else
 

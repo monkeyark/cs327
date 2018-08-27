@@ -23,7 +23,9 @@ And you'll need to do a little bit of bookkeeping to record your move orders so 
 int main()
 {
   initialBoard();
-
+  for (int i=0; i<N; i++)
+    for (int j=0; j<N; j++)
+      move(i, j);
   /*
     move from top-left in clockwise direction
     move   1   2   3   4   5   6   7   8
@@ -34,7 +36,7 @@ int main()
   return 0;
 }
 
-int move(int n)
+int move(int row, int col)
 {
   /*
     move from top-left in clockwise direction

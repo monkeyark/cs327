@@ -54,6 +54,9 @@ int main()
 
 bool move(int row, int col)
 {
+  if (recordBoard[i][j] == true)
+    return false;
+  else
   /*
     move from top-left in clockwise direction
     move   1   2   3   4   5   6   7   8

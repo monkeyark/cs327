@@ -1,6 +1,25 @@
 #include <stdio.h>
 #define N 5
 
+/*
+main()
+{
+  For each square s
+    tour(s)
+}
+
+tour(start)
+{
+  mark start as visited
+  for each unmarked square s reachable by a knight's move from start
+    tour(s)
+  unmark start
+}
+
+And you'll need to do a little bit of bookkeeping to record your move orders so that you can print.
+ */
+
+
 int main()
 {
   initialBoard();
@@ -12,8 +31,6 @@ int main()
     col   -1  +1  +2  +2  +1  -1  -2  -2
    */
   
-
-
   return 0;
 }
 
@@ -28,13 +45,12 @@ int move(int n)
 
   int rowMove[8] = {-2,  -2,  -1,  +1,  +2,  +2,  +1,  -1};
   int colMove[8] = {-1,  +1,  +2,  +2,  +1,  -1,  -2,  -2};
-
   
   return 0;
 }
 
 
-void solveKT()
+void initialBoard()
 {
   int board[N][N];
 

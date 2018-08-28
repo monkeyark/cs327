@@ -80,8 +80,7 @@ bool knightTour(int row, int col, int move, int tour)
 		int nextRow = row + rowMove[move];
 		int nextCol = col + colMove[move];
 		
-		move = 0;
-		if (knightTour(nextRow, nextCol, move, ++tour))
+		if (knightTour(nextRow, nextCol, 0, ++tour))
 		{
 			//add to soluPath
 			return true;
@@ -89,8 +88,9 @@ bool knightTour(int row, int col, int move, int tour)
 	}
 	else //TODO backtrack happens when move is 7 and no knightTour is true
 	{
+		isVisit[row][col] = false;
 		solu[--tour] = 0;
-		knightTour(row, col, ++move);
+		knightTour(row, col, ++move, tour);
 	}
 	
 	return false;

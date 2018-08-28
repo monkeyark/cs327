@@ -18,84 +18,95 @@ tour(start)
 }
 
 And you'll need to do a little bit of bookkeeping to record your move orders so that you can print.
- */
+*/
 
+int board[N][N];
+bool isVisit[N][N];
+int solu[N*N];
+int path[];
 
 int main()
 {
-  /* initializing the board */
-  int board[N][N];
+	//initializing the board and the record
+	
+	int number = 1;
+	for (int i=0; row<N; row++)
+	{
+		for (int j=0; col<N; col++)
+		{
+			board[i][j] = number++;
+			isVisit[i][j] = false;
+		}
+	}
 
-  int number = 1;
-  for (int row=0; row<N; row++)
-    for (int col=0; col<N; col++)
-      board[row][col] = number++;
+	for (int i=0; i<N*N; i++)
+	{
+		solu[i] = 0;
+	}
 
-  /* initializing the board record */
-  bool record[N][N];
-  for (int i=0; i<N; i++)
-    for (int j=0; j<N; j++)
-    	record[i][j] = false;
+	//for each block on board start tour
+	
+	for (int row=0; row<N; row++)
+	{
+		for (int col=0; col<N; col++)
+		{
+			knightTour(row, col, 0, 0);
+		}
+	}
 
-  /* for each block on board start tour */
-  for (int i=0; i<N; i++)
-    for (int j=0; j<N; j++)
-      move(i, j);
+	/*
+	tour from top-left in clockwise direction
+	move       0   1   2   3   4   5   6   7
+	row       -2  -2  -1  +1  +2  +2  +1  -1
+	col       -1  +1  +2  +2  +1  -1  -2  -2
+	*/
+	
+	//print(soluPath)
+	
 
-  /*
-    move from top-left in clockwise direction
-    move   0   1   2   3   4   5   6   7
-    row   -2  -2  -1  +1  +2  +2  +1  -1
-    col   -1  +1  +2  +2  +1  -1  -2  -2
-   */
-
-  return 0;
+	return 0;
 }
 
-int move(int row, int col, int numTour)
+bool knightTour(int row, int col, int move, int tour)
 {
-  if (recordBoard[i][j] == true && numTour < 7)
-    { 
-    recordBoard[i][j] == true;
-    int numMove = numTour++;
-  /*
-    move from top-left in clockwise direction
-    move   0   1   2   3   4   5   6   7
-    row   -2  -2  -1  +1  +2  +2  +1  -1
-    col   -1  +1  +2  +2  +1  -1  -2  -2
-   */
-  int rowMove[8] = {-2,  -2,  -1,  +1,  +2,  +2,  +1,  -1};
-  int colMove[8] = {-1,  +1,  +2,  +2,  +1,  -1,  -2,  -2};
+	int rowMove[8] = {-2,  -2,  -1,  +1,  +2,  +2,  +1,  -1};
+	int colMove[8] = {-1,  +1,  +2,  +2,  +1,  -1,  -2,  -2};
 
-  row = row + rowMove[numMove];
-  col = col + colMove[numMove];
-
-  if (isSafeMove(row, col))
-    {
-      move(row, col, numMove);
-      recordBoard[i][j] == false;
-      return numMove;
-    }
-  else
-    return ;// backtrack
-  
-  return numMove;
-    }
-  return -1;
+	if (isSafe(row, col, move, tour))
+	{
+		isVisit[row][col] = true;
+		solu[tour] = board[row][col];
+		
+		int nextRow = row + rowMove[move];
+		int nextCol = col + colMove[move];
+		
+		move = 0;
+		if (knightTour(nextRow, nextCol, move, ++tour))
+		{
+			//add to soluPath
+			return true;
+		}
+	}
+	else //TODO backtrack happens when move is 7 and no knightTour is true
+	{
+		solu[--tour] = 0;
+		knightTour(row, col, ++move);
+	}
+	
+	return false;
 }
 
-bool isSafeMove(int row, int col)
+bool isSafe(int row, int col, int move)
 {
-  return row >= 0 && row <= 5 && col >= 0 && col <=5;
+	return row >= 0 && row <= 4
+		&& col >= 0 && col <= 4
+		&& !isVisit[row][col]
+		&& move >=0 && move <= 7
+		&& tour < 25;
 }
 
-bool recordBoard(bool record[N][N], int row, int col)
+int soluPath(int solu[])
 {
-  if (record[N][N])
-    
-	  return false;
-  else
-
-  return true;
+	return 0;
 }
 

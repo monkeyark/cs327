@@ -8,12 +8,11 @@ bool isVisit[N][N];
 int solu[N*N];
 int numSolu = 0;
 
-bool isMove(int row, int col, int step)
+bool isMove(int row, int col)
 {
 	return row >= 0 && row < N
 		&& col >= 0 && col < N
-		&& !isVisit[row][col]
-		&& step < N*N;
+		&& !isVisit[row][col];
 }
 
 void printSolu(int solu[])
@@ -22,7 +21,7 @@ void printSolu(int solu[])
 
 	for (int i=0; i<N*N; i++)
 	{
-		printf("%d ", solu[i]);
+		printf("%2d ", solu[i]);
 	}
 	printf("\n");
 	return;
@@ -43,25 +42,26 @@ bool knightTour(int row, int col, int step)
 
 	if (step == N*N-1) return true;
 
+	//try all 8 posslible knight move
 	for (int i=0; i<8; i++)
 	{
-		row += rowMove[i];
-		col += colMove[i];
+		int nextRow = row + rowMove[i];
+		int nextCol = col + colMove[i];
 
-		if (isMove(row, col, step))
+		//is valid move
+		if (isMove(nextRow, nextCol))
 		{
 			//add to soluPath
-			solu[step] = board[row][col];
-			numSolu++;
+			solu[step] = board[nextRow][nextCol];
 
-			if (knightTour(row, col, step))
+			if (knightTour(nextRow, nextCol, ++step))
 			{
-				//numSolu++;
+				numSolu++;
 				printSolu(solu);
 				return true;
 			}
 			//backtrack
-			solu[step--] = 0;
+			solu[step] = 0;
 		}
 	}
 

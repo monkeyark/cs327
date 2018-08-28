@@ -52,10 +52,11 @@ bool knightTour(int row, int col, int step)
 		{
 			//add to soluPath
 			solu[step] = board[row][col];
+			numSolu++;
 
 			if (knightTour(row, col, step))
 			{
-				numSolu++;
+				//numSolu++;
 				printSolu(solu);
 				return true;
 			}

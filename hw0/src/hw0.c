@@ -31,46 +31,46 @@ move       0   1   2   3   4   5   6   7
 row       -2  -2  -1  +1  +2  +2  +1  -1
 col       -1  +1  +2  +2  +1  -1  -2  -2
 */
-bool knightTour(int row, int col, int move, int tour)
+void knightTour(int row, int col, int move, int tour)
 {
 	int rowMove[8] = {-2,  -2,  -1,  +1,  +2,  +2,  +1,  -1};
 	int colMove[8] = {-1,  +1,  +2,  +2,  +1,  -1,  -2,  -2};
 
-	if (isMove(row, col, move, tour))
+	isVisit[row][col] = true;
+	for (int i=0; i<8; i++)
 	{
-		isVisit[row][col] = true;
-		solu[tour] = board[row][col];
-		
-		int nextRow = row + rowMove[move];
-		int nextCol = col + colMove[move];
-		
-		if (knightTour(nextRow, nextCol, 0, ++tour))
+		if (isMove(row, col, tour))//TODO
 		{
-			//add to soluPath
-			return true;
+			solu[tour] = board[row][col];
+
+			row += rowMove[i];
+			col += colMove[i];
+
+			knightTour(row, col, i, tour++);
+			//TODO add to soluPath
 		}
+		//TODO backtrack
+		row = row - rowMove[i];
+		col = col - colMove[i];
+
+		knightTour(row, col, move++, tour--);
+
 	}
-	else //TODO backtrack happens when move is 7 and no knightTour is true
-	{
-		isVisit[row][col] = false;
-		solu[--tour] = 0;
-		knightTour(row, col, ++move, tour);
-	}
-	
-	return false;
+
+	isVisit[row][col] = false;
 }
 
-bool isMove(int row, int col, int move, int tour)
+bool isMove(int row, int col, int tour)
 {
-	return row >= 0 && row <= 4
-		&& col >= 0 && col <= 4
+	return row >= 0 && row < 5
+		&& col >= 0 && col < 5
 		&& !isVisit[row][col]
-		&& move >=0 && move <= 7
 		&& tour < 25;
 }
 
 int soluPath(int solu[])
 {
+	//TODO
 	return 0;
 }
 
@@ -103,7 +103,7 @@ int main()
 		}
 	}
 
-	//print(soluPath)
+	//TODO print(soluPath)
 
 
 	return 0;

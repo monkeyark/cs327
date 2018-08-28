@@ -25,6 +25,20 @@ bool isVisit[N][N];
 int solu[N*N];
 int path[];
 
+bool isMove(int row, int col, int tour)
+{
+	return row >= 0 && row < 5
+		&& col >= 0 && col < 5
+		&& !isVisit[row][col]
+		&& tour < 25;
+}
+
+int soluPath(int solu[])
+{
+	//TODO
+	return 0;
+}
+
 /*
 tour from top-left in clockwise direction
 move       0   1   2   3   4   5   6   7
@@ -60,19 +74,6 @@ void knightTour(int row, int col, int move, int tour)
 	isVisit[row][col] = false;
 }
 
-bool isMove(int row, int col, int tour)
-{
-	return row >= 0 && row < 5
-		&& col >= 0 && col < 5
-		&& !isVisit[row][col]
-		&& tour < 25;
-}
-
-int soluPath(int solu[])
-{
-	//TODO
-	return 0;
-}
 
 int main()
 {

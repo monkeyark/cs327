@@ -2,6 +2,66 @@
 #include "stdbool.h"
 #define N 5
 
+
+int board[N][N];
+bool isVisit[N][N];
+int solu[N*N];
+
+bool isMove(int row, int col, int tour)
+{
+	return row >= 0 && row < N
+		&& col >= 0 && col < N
+		&& !isVisit[row][col]
+		&& tour < N*N;
+}
+
+int soluPath(int solu[])
+{
+	//TODO
+	return 0;
+}
+
+/*
+tour from top-left in clockwise direction
+move       0   1   2   3   4   5   6   7
+row       -2  -2  -1  +1  +2  +2  +1  -1
+col       -1  +1  +2  +2  +1  -1  -2  -2
+*/
+bool knightTour(int row, int col, int move, int tour)
+{
+	int rowMove[8] = {-2,  -2,  -1,  +1,  +2,  +2,  +1,  -1};
+	int colMove[8] = {-1,  +1,  +2,  +2,  +1,  -1,  -2,  -2};
+
+	isVisit[row][col] = true;
+
+	if (tour == N*N-1) return true;
+
+	for (int i=0; i<8; i++)
+	{
+		row += rowMove[i];
+		col += colMove[i];
+		tour++;
+
+		if (isMove(row, col, tour))
+		{
+			if (knightTour(row, col, i, tour))
+			{
+				solu[tour] = board[row][col];
+				//TODO add to soluPath
+				return true;
+			}
+			//TODO backtrack
+			row -= rowMove[i];
+			col -= colMove[i];
+
+//			knightTour(row, col, move++, tour--);
+		}
+	}
+
+	isVisit[row][col] = false;
+	return false;
+}
+
 /*
 main()
 {
@@ -19,61 +79,6 @@ tour(start)
 
 And you'll need to do a little bit of bookkeeping to record your move orders so that you can print.
 */
-
-int board[N][N];
-bool isVisit[N][N];
-int solu[N*N];
-int path[];
-
-bool isMove(int row, int col, int tour)
-{
-	return row >= 0 && row < 5
-		&& col >= 0 && col < 5
-		&& !isVisit[row][col]
-		&& tour < 25;
-}
-
-int soluPath(int solu[])
-{
-	//TODO
-	return 0;
-}
-
-/*
-tour from top-left in clockwise direction
-move       0   1   2   3   4   5   6   7
-row       -2  -2  -1  +1  +2  +2  +1  -1
-col       -1  +1  +2  +2  +1  -1  -2  -2
-*/
-void knightTour(int row, int col, int move, int tour)
-{
-	int rowMove[8] = {-2,  -2,  -1,  +1,  +2,  +2,  +1,  -1};
-	int colMove[8] = {-1,  +1,  +2,  +2,  +1,  -1,  -2,  -2};
-
-	isVisit[row][col] = true;
-	for (int i=0; i<8; i++)
-	{
-		if (isMove(row, col, tour))//TODO
-		{
-			solu[tour] = board[row][col];
-
-			row += rowMove[i];
-			col += colMove[i];
-
-			knightTour(row, col, i, tour++);
-			//TODO add to soluPath
-		}
-		//TODO backtrack
-		row = row - rowMove[i];
-		col = col - colMove[i];
-
-		knightTour(row, col, move++, tour--);
-
-	}
-
-	isVisit[row][col] = false;
-}
-
 
 int main()
 {

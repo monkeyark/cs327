@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "stdbool.h"
+#include <stdbool.h>
 #define N 5
 
 
@@ -38,11 +38,18 @@ bool knightTour(int row, int col, int step)
 	int rowMove[8] = {-2,  -2,  -1,  +1,  +2,  +2,  +1,  -1};
 	int colMove[8] = {-1,  +1,  +2,  +2,  +1,  -1,  -2,  -2};
 
-	isVisit[row][col] = true;
+	if (step == N*N)
+	{
+		printSolu(solu);
+		printf("%d\n", ++numSolu);
+		return true;
+	}
 
-	if (step == N*N-1) return true;
+	isVisit[row][col] = true;
+	solu[step] = board[row][col];
 
 	//try all 8 posslible knight move
+
 	for (int i=0; i<8; i++)
 	{
 		int nextRow = row + rowMove[i];
@@ -51,20 +58,15 @@ bool knightTour(int row, int col, int step)
 		//is valid move
 		if (isMove(nextRow, nextCol))
 		{
-			//add to soluPath
-			solu[step] = board[nextRow][nextCol];
-
-			if (knightTour(nextRow, nextCol, ++step))
+			if (knightTour(nextRow, nextCol, step+1))
 			{
-				numSolu++;
-				printSolu(solu);
 				return true;
-			}
-			//backtrack
-			solu[step] = 0;
+			}	
 		}
 	}
-
+	
+	//backtrack
+	solu[step--] = 0;
 	isVisit[row][col] = false;
 	return false;
 }
@@ -94,7 +96,7 @@ int main()
 	{
 		for (int col=0; col<N; col++)
 		{
-			knightTour(row, col, 0);
+			knightTour(row, col, 1);
 		}
 	}
 

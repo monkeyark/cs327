@@ -4,8 +4,8 @@
 
 
 int board[N][N];
-int solu[N*N];
-int numSolu = 0;
+bool isVisit[N][N];
+int total = 0;
 
 bool isMove(int row, int col)
 {
@@ -14,8 +14,6 @@ bool isMove(int row, int col)
 
 void printSolu(int solu[])
 {
-	//for (int i=0; i<(sizeof(solu)/sizeof(solu[0])); i++)
-
 	for (int i=0; i<N*N; i++)
 	{
 		printf("%2d ", solu[i]);
@@ -30,18 +28,21 @@ move       0   1   2   3   4   5   6   7
 row       -2  -2  -1  +1  +2  +2  +1  -1
 col       -1  +1  +2  +2  +1  -1  -2  -2
 */
-bool knightTour(int row, int col, int step)
+void knightTour(int row, int col, int step, int solu[])
 {
 	int rowMove[8] = {-2,  -2,  -1,  +1,  +2,  +2,  +1,  -1};
 	int colMove[8] = {-1,  +1,  +2,  +2,  +1,  -1,  -2,  -2};
 
+	isVisit[row][col] = true;
 	solu[step] = board[row][col];
 
-	if (step == N*N-1)
+	if (step >= N*N-1)
 	{
+		printf("line %d:  ", ++total);
 		printSolu(solu);
-		printf("%d\n", ++numSolu);
-		return true;
+
+		isVisit[row][col] = false;
+		return;
 	}
 
 	//try all 8 posslible knight move
@@ -52,29 +53,27 @@ bool knightTour(int row, int col, int step)
 		int nextCol = col + colMove[i];
 
 		//is valid move
-		if (isMove(nextRow, nextCol) && solu[step+1] == 0)
+		if (isMove(nextRow, nextCol) && !isVisit[nextRow][nextCol])
 		{
-//			knightTour(nextRow, nextCol, step+1);
-			if (knightTour(nextRow, nextCol, step+1))
-				return true;
+			knightTour(nextRow, nextCol, step+1, solu);
 		}
 	}
 
-	//backtrack
+	isVisit[row][col] = false;
 	solu[step] = 0;
-	return false;
 }
 
 int main()
 {
 	//initializing the board and the record
-
+	int solu[N*N];
 	int number = 1;
 	for (int row=0; row<N; row++)
 	{
 		for (int col=0; col<N; col++)
 		{
 			board[row][col] = number++;
+			isVisit[row][col] = false;
 		}
 	}
 
@@ -83,20 +82,17 @@ int main()
 		solu[i] = 0;
 	}
 
-//	knightTour(0, 0, 0);
 	//for each block on board start tour
 
-	
 	for (int row=0; row<N; row++)
 	{
 		for (int col=0; col<N; col++)
 		{
-			knightTour(row, col, 0);
+			knightTour(row, col, 0, solu);
 		}
 	}
-	
 
-	printf("\ntotal solution: %d\n", numSolu);
+	printf("\ntotal solution: %d\n", total);
 
 	return 0;
 }

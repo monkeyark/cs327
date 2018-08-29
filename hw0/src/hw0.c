@@ -4,7 +4,6 @@
 
 
 int board[N][N];
-bool isVisit[N][N];
 int solu[N*N];
 int numSolu = 0;
 
@@ -36,41 +35,33 @@ bool knightTour(int row, int col, int step)
 	int rowMove[8] = {-2,  -2,  -1,  +1,  +2,  +2,  +1,  -1};
 	int colMove[8] = {-1,  +1,  +2,  +2,  +1,  -1,  -2,  -2};
 
-	if (step == N*N)
+	solu[step] = board[row][col];
+
+	if (step == N*N-1)
 	{
 		printSolu(solu);
 		printf("%d\n", ++numSolu);
 		return true;
 	}
 
-	if (!isVisit[row][col])
+	//try all 8 posslible knight move
+
+	for (int i=0; i<8; i++)
 	{
-		isVisit[row][col] = true;
-		solu[step] = board[row][col];
+		int nextRow = row + rowMove[i];
+		int nextCol = col + colMove[i];
 
-		//try all 8 posslible knight move
-
-		for (int i=0; i<8; i++)
+		//is valid move
+		if (isMove(nextRow, nextCol) && solu[step+1] == 0)
 		{
-			int nextRow = row + rowMove[i];
-			int nextCol = col + colMove[i];
-
-			//is valid move
-			if (isMove(nextRow, nextCol))
-			{
-				if (knightTour(nextRow, nextCol, step+1))
-				{
-					return true;
-				}	
-			}
+//			knightTour(nextRow, nextCol, step+1);
+			if (knightTour(nextRow, nextCol, step+1))
+				return true;
 		}
 	}
 
-
 	//backtrack
 	solu[step] = 0;
-	step--;
-	isVisit[row][col] = false;
 	return false;
 }
 
@@ -84,7 +75,6 @@ int main()
 		for (int col=0; col<N; col++)
 		{
 			board[row][col] = number++;
-			isVisit[row][col] = false;
 		}
 	}
 
@@ -93,15 +83,18 @@ int main()
 		solu[i] = 0;
 	}
 
+//	knightTour(0, 0, 0);
 	//for each block on board start tour
 
+	
 	for (int row=0; row<N; row++)
 	{
 		for (int col=0; col<N; col++)
 		{
-			knightTour(row, col, 1);
+			knightTour(row, col, 0);
 		}
 	}
+	
 
 	printf("\ntotal solution: %d\n", numSolu);
 

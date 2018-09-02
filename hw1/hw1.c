@@ -27,13 +27,24 @@ int initDungeon (int row, int col)
 	}
 }
 
+int generateRoom(int min)
+{
+	int max = rand() % 10 + min;
+	for (int i=0; i<max; i++)
+	{
+
+	}
+
+	return 0;
+}
+
 int main(int argc, char *argv[])
 {
 	int seed = time(NULL);
 	srand(time(seed));
 
 	//initial dungeon
-	initDungeon(int ROW, int COL;
+	initDungeon(int ROW, int COL);
 
 
 	//generate random number of room

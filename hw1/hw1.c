@@ -8,6 +8,21 @@
 #define ROOM '.'
 #define CORRIDOR '#'
 
+/*
+- Dungeon measures 80 units in the x (horizontal) direction and 21 units in the y (vertical) direction. A
+standard terminal is 80 × 24, and limiting the dungeon to 21 rows leaves three rows for text, things
+like gameplay messages and player status, which come later.
+- Require at least 5 rooms per dungeon
+- Each room measures at least 3 units in the x direction and at least 2 units in the y direction.
+- Rooms need not be rectangular, but neither may they contact one another. There must be at least 1
+cell of non-room between any two different rooms.
+- The outermost cells of the dungeon are immutable, thus they must remain rock and cannot be part of
+any room or corridor.
+- Room cells should be drawn with periods, corridor cells with hashes, and rock with spaces.
+- The dungeon should be fully connected, meaning that from any position on the floor, your adventurer
+should be able to walk to any other position on the floor without passing through rock.
+- Corridors should not extend into rooms, e.g., no hashes should be rendered inside rooms.
+*/
 
 char dungeon[ROW][COL];
 
@@ -30,6 +45,7 @@ void initDungeon()
 
 bool roomCheck(int row, int col, int width, int height)
 {
+	//TODO need to check room touching
 	if (dungeon[row][col] == ROCK)
 	{
 		if (row+height <= ROW && col+width <= COL)
@@ -40,7 +56,7 @@ bool roomCheck(int row, int col, int width, int height)
 	return false;
 }
 
-void generateRoom(int seed)
+void newRoom(int seed)
 {
 	srand(seed);
 
@@ -48,11 +64,6 @@ void generateRoom(int seed)
 	int col = rand() % COL;
 	int width = rand() % 4 + 3;
 	int height = rand() % 5 + 2;
-
-//	int row = 20;
-//	int col = 79;
-//	int width = 3;
-//	int height = 2;
 
 	bool check = roomCheck(row, col, width, height);
 	printf("seed=%d   row=%d   col=%d   width=%d   height=%d",seed, row, col, width, height);
@@ -70,7 +81,7 @@ void generateRoom(int seed)
 	}
 	else
 	{
-		generateRoom(seed + 1);
+		newRoom(seed + 1);
 	}
 }
 
@@ -106,7 +117,15 @@ void printDungeon()
 	printf("\n");
 }
 
-
+void generateRoom(int min, int seed)
+{
+	//randomly generate rooms over min
+	int total = rand() % 3 + min;
+	for (int i=0; i<total; i++)
+	{
+		newRoom(seed);
+	}
+}
 
 int main(int argc, char *argv[])
 {
@@ -115,24 +134,10 @@ int main(int argc, char *argv[])
 
 	int seed = time(NULL);
 	//seed = 1535978302;
-	generateRoom(seed);
+	//newRoom(seed);
+	int min = 5;
 
-	/*
-	//randomly generate rooms over min
-	int R = 0;
-	while (R < 5)
-	{
-		R = rand() % 10;
-	}
-
-	//generate random room positon
-	struct object dungeon[ROW][COL];
-	for (int i=0; i<R; i++)
-	{
-		
-		room[i] = rand() % ROW;
-	}
-	*/
+	generateRoom(min, seed);
 
 	printDungeon();
 

@@ -1,5 +1,7 @@
 Sep 2
 	start algorithm design
 Sep 3
-	add and test generateRoom method
-	generateRoom unit test pass
+	add and test newRoom method with builds a new room in dungeon
+	newRoom unit test pass
+	using generate newRoom to build all rooms in dungeon
+	

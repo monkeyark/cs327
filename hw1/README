@@ -1,0 +1,8 @@
+- Create a dungeon in 21*80 (row*col) with at least 5 rooms.
+
+- In the dungeon, blank space is rock; period is room, hash is corridor
+
+- Rectangular rooms with minimum size of 3*2 (row*col) are not overlapping and contacting.
+
+- No corridors inside of rooms
+

@@ -30,10 +30,13 @@ int initDungeon (int row, int col)
 
 void generateRoom()
 {
-	int x = rand() % 80;
-	int y = rand() % 21;
-	int height = rand() % 3 + 2;
+	int seed = time(NULL);
+	srand(seed);
+
+	int x = rand() % COL-3;
+	int y = rand() % ROW-2;
 	int width = rand() % 4 + 3;
+	int height = rand() % 5 + 2;
 
 	//roomCheck();
 	for (int i=x; i<x+width; i++)
@@ -49,9 +52,9 @@ void generateRoom()
 
 void printDungeon()
 {
-	for (int i=0; i<ROW+2; i++)
+	for (int i=0; i<ROW; i++)
 	{
-		printf("-");
+		printf("----");
 	}
 	printf("\n");
 	for (int i=0; i<ROW; i++)
@@ -63,9 +66,9 @@ void printDungeon()
 		}
 		printf("|\n");
 	}
-	for (int i=0; i<ROW+2; i++)
+	for (int i=0; i<ROW; i++)
 	{
-		printf("-");
+		printf("----");
 	}
 	printf("\n");
 }
@@ -74,8 +77,8 @@ void printDungeon()
 
 int main(int argc, char *argv[])
 {
-	int seed = time(NULL);
-	srand(seed);
+//	int seed = time(NULL);
+//	srand(seed);
 
 	//initial dungeon
 	//initDungeon(int ROW, int COL);

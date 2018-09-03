@@ -4,4 +4,6 @@ Sep 3
 	add and test newRoom method with builds a new room in dungeon
 	newRoom unit test pass
 	using generate newRoom to build all rooms in dungeon
+	fix issue on not room are touching each other
+	
 	

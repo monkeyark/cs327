@@ -45,15 +45,23 @@ void initDungeon()
 
 bool roomCheck(int row, int col, int width, int height)
 {
-	//TODO need to check room touching
-	if (dungeon[row][col] == ROCK)
+	//is current space free
+	if (dungeon[row][col] != ROCK) return false;
+	//is size off limit
+	if (row+height > ROW && col+width > COL) return false;
+	//is touching on left and right
+	for (int i=row-1; i<row+height+2; i++)
 	{
-		if (row+height <= ROW && col+width <= COL)
-		{
-			return true;
-		}
+		if (dungeon[i][col-1] != ROCK) return false; //left
+		if (dungeon[i][col+width+1] != ROCK) return false;//right
 	}
-	return false;
+	//is touching on top and bottom
+	for (int j=col-1; j<col+width+2; j++)
+	{
+		if (dungeon[row-1][j] != ROCK) return false;//top
+		if (dungeon[row+width+1][j] != ROCK) return false;//bottom
+	}
+	return true;
 }
 
 void newRoom(int seed)
@@ -133,10 +141,11 @@ int main(int argc, char *argv[])
 	initDungeon();
 
 	int seed = time(NULL);
-	//seed = 1535978302;
+	//seed = 1535978302; //splitting
 	//newRoom(seed);
 	int min = 5;
 
+	seed = 1536003870; //touching
 	generateRoom(min, seed);
 
 	printDungeon();

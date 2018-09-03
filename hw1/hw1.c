@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <time.h>
 #define ROW 21
 #define COL 80
-#define ROCK ' '
+#define ROCK 'X'
 #define ROOM '.'
 #define CORRIDOR '#'
 
@@ -15,60 +16,92 @@ struct object
 {
 	char *type;
 }
-
-int initDungeon (int row, int col)
+*/
+void initDungeon()
 {
-	//struct object Dungeon[row][col];
-	for(int i=0; i<row; i++)
+	for(int i=0; i<ROW; i++)
 	{
-		for(int j=0; j<col; j++)
+		for(int j=0; j<COL; j++)
 		{
+			dungeon[i][j] = ROCK;
 		}
 	}
 }
-*/
 
-void generateRoom()
+bool roomCheck(int row, int col, int width, int height)
 {
-	int seed = time(NULL);
+	if (dungeon[row][col] == ROCK)
+	{
+		if (row+height <= ROW && col+width <= COL)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void generateRoom(int seed)
+{
 	srand(seed);
 
-	int x = rand() % COL-3;
-	int y = rand() % ROW-2;
+	int row = rand() % ROW;
+	int col = rand() % COL;
 	int width = rand() % 4 + 3;
 	int height = rand() % 5 + 2;
 
-	//roomCheck();
-	for (int i=x; i<x+width; i++)
+//	int row = 20;
+//	int col = 79;
+//	int width = 3;
+//	int height = 2;
+
+	bool check = roomCheck(row, col, width, height);
+	printf("seed=%d   row=%d   col=%d   width=%d   height=%d",seed, row, col, width, height);
+	printf("   %s\n", check?"true":"false");
+
+	if (check)
 	{
-		for (int j=y; j<y+height; j++)
+		for (int i=row; i<row+height; i++)
 		{
-			dungeon[i][j] = '.';
+			for (int j=col; j<col+width; j++)
+			{
+				dungeon[i][j] = ROOM;
+			}
 		}
 	}
-
-	return;
+	else
+	{
+		generateRoom(seed + 1);
+	}
 }
 
 void printDungeon()
 {
-	for (int i=0; i<ROW; i++)
+	for (int i=0; i<COL+2; i++)
 	{
-		printf("----");
+		printf("-");
 	}
 	printf("\n");
+
+	printf("   ");
+	for (int i=0; i<COL; i++)
+	{
+		printf("%d", i % 10);
+	}
+	printf("\n");
+
 	for (int i=0; i<ROW; i++)
 	{
-		printf("|");
+		printf("%2d|", i);
 		for (int j=0; j<COL; j++)
 		{
 			printf("%c", dungeon[i][j]);
 		}
 		printf("|\n");
 	}
-	for (int i=0; i<ROW; i++)
+
+	for (int i=0; i<COL+2; i++)
 	{
-		printf("----");
+		printf("-");
 	}
 	printf("\n");
 }
@@ -77,13 +110,13 @@ void printDungeon()
 
 int main(int argc, char *argv[])
 {
-//	int seed = time(NULL);
-//	srand(seed);
-
 	//initial dungeon
-	//initDungeon(int ROW, int COL);
+	initDungeon();
 
-	generateRoom();
+	int seed = time(NULL);
+	//seed = 1535978302;
+	generateRoom(seed);
+
 	/*
 	//randomly generate rooms over min
 	int R = 0;

@@ -5,4 +5,5 @@ Sep 3
 	newRoom unit test pass
 	using generate newRoom to build all rooms in dungeon
 	fix issue on rooms are touching each other
+	create a random room array, by returning Room struct pointer in generateRoom method
 	

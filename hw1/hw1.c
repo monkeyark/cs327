@@ -125,10 +125,10 @@ void printDungeon()
 	printf("\n");
 }
 
-Room * generateRoom(int min, int seed)
+Room * generateRoom(int seed)
 {
-	//randomly generate rooms over min
-	int total = rand() % 6 + min;
+	//randomly generate over 5 rooms
+	int total = rand() % 6 + 5;
 
 	total = 5;
 	Room * r;
@@ -137,12 +137,17 @@ Room * generateRoom(int min, int seed)
 	for (int i=0; i<total; i++)
 	{
 		*r = newRoom(seed);
-		printf("\nROOM: row=%2d   col=%2d   width=%2d   height=%2d\n", r->row, r->col, r->width, r->height);
+		printf("           ROOM:   row=%2d   col=%2d   width=%2d   height=%2d\n\n", r->row, r->col, r->width, r->height);
 		r++;
 	}
 	r = r - total;
 
 	return r;
+}
+
+void connect(Room r)
+{
+	return;
 }
 
 int main(int argc, char *argv[])
@@ -151,11 +156,13 @@ int main(int argc, char *argv[])
 	initDungeon();
 
 	int seed = time(NULL);
-	int min = 5;
 
 	//seed=1536023625; //touch?
 	//seed=1536023678; //touch?
-	generateRoom(min, seed);
+	Room *rooms;
+	rooms = generateRoom(seed);
+	printf("        IN MAIN:   row=%2d   col=%2d   width=%2d   height=%2d\n\n", rooms->row, rooms->col, rooms->width, rooms->height);
+	connect(*rooms);
 
 	printDungeon();
 

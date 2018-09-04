@@ -151,7 +151,6 @@ Room *generateRoom(int seed)
 Room newRoom(int seed, Room *r)
 {
 	srand(seed);
-	//Room r;
 	r->row = rand() % ROW;
 	r->col = rand() % COL;
 	r->width = rand() % 7 + 3;

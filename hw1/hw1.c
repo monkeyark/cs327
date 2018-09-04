@@ -8,30 +8,20 @@
 #define ROOM '.'
 #define CORRIDOR '#'
 
-/*
-- Dungeon measures 80 units in the x (horizontal) direction and 21 units in the y (vertical) direction. A
-standard terminal is 80 × 24, and limiting the dungeon to 21 rows leaves three rows for text, things
-like gameplay messages and player status, which come later.
-- Require at least 5 rooms per dungeon
-- Each room measures at least 3 units in the x direction and at least 2 units in the y direction.
-- Rooms need not be rectangular, but neither may they contact one another. There must be at least 1
-cell of non-room between any two different rooms.
-- The outermost cells of the dungeon are immutable, thus they must remain rock and cannot be part of
-any room or corridor.
-- Room cells should be drawn with periods, corridor cells with hashes, and rock with spaces.
-- The dungeon should be fully connected, meaning that from any position on the floor, your adventurer
-should be able to walk to any other position on the floor without passing through rock.
-- Corridors should not extend into rooms, e.g., no hashes should be rendered inside rooms.
-*/
 
 char dungeon[ROW][COL];
 
-/*
-struct object
+struct Room
 {
-	char *type;
-}
-*/
+	int row;
+	int col;
+	int width;
+	int height;
+};
+
+
+//struct Room rooms[];
+
 void initDungeon()
 {
 	for(int i=0; i<ROW; i++)
@@ -43,12 +33,12 @@ void initDungeon()
 	}
 }
 
-bool roomCheck(int row, int col, int width, int height)
+bool isValidRoom(int row, int col, int width, int height)
 {
 	//is current space free
 	if (dungeon[row][col] != ROCK) return false;
-	//is size off limit
-	if (row+height > ROW && col+width > COL) return false;
+	//is room on edge or oversize
+	if (row == 0 || col == 0 || row+height >= ROW || col+width >= COL) return false;
 	//is touching on left and right
 	for (int i=row-1; i<row+height+2; i++)
 	{
@@ -59,29 +49,34 @@ bool roomCheck(int row, int col, int width, int height)
 	for (int j=col-1; j<col+width+2; j++)
 	{
 		if (dungeon[row-1][j] != ROCK) return false;//top
-		if (dungeon[row+width+1][j] != ROCK) return false;//bottom
+		if (dungeon[row+height+1][j] != ROCK) return false;//bottom
 	}
 	return true;
 }
 
-void newRoom(int seed)
+struct Room newRoom(int seed)
 {
+	struct Room r;
 	srand(seed);
+	r.row = rand() % ROW;
+	r.col = rand() % COL;
+	r.width = rand() % 6 + 3;
+	r.height = rand() % 5 + 2;
+//	srand(seed);
+//	int row = rand() % ROW;
+//	int col = rand() % COL;
+//	int width = rand() % 4 + 3;
+//	int height = rand() % 5 + 2;
 
-	int row = rand() % ROW;
-	int col = rand() % COL;
-	int width = rand() % 4 + 3;
-	int height = rand() % 5 + 2;
+	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
+	printf("seed=%d;   row=%2d   col=%2d   width=%2d   height=%2d", seed, r.row, r.col, r.width, r.height);
+	printf("   %s\n", validRoom?"true":"false");
 
-	bool check = roomCheck(row, col, width, height);
-	printf("seed=%d   row=%d   col=%d   width=%d   height=%d",seed, row, col, width, height);
-	printf("   %s\n", check?"true":"false");
-
-	if (check)
+	if (validRoom)
 	{
-		for (int i=row; i<row+height; i++)
+		for (int i=r.row; i<r.row+r.height; i++)
 		{
-			for (int j=col; j<col+width; j++)
+			for (int j=r.col; j<r.col+r.width; j++)
 			{
 				dungeon[i][j] = ROOM;
 			}
@@ -91,20 +86,22 @@ void newRoom(int seed)
 	{
 		newRoom(seed + 1);
 	}
+
+	return r;
 }
 
 void printDungeon()
 {
-	for (int i=0; i<COL+2; i++)
-	{
-		printf("-");
-	}
-	printf("\n");
-
 	printf("   ");
 	for (int i=0; i<COL; i++)
 	{
 		printf("%d", i % 10);
+	}
+	printf("\n");
+
+	for (int i=0; i<COL+2; i++)
+	{
+		printf("-");
 	}
 	printf("\n");
 
@@ -125,14 +122,16 @@ void printDungeon()
 	printf("\n");
 }
 
-void generateRoom(int min, int seed)
+int generateRoom(int min, int seed)
 {
 	//randomly generate rooms over min
 	int total = rand() % 3 + min;
+	//rooms = rooms[total];
 	for (int i=0; i<total; i++)
 	{
 		newRoom(seed);
 	}
+	return total;
 }
 
 int main(int argc, char *argv[])
@@ -141,11 +140,10 @@ int main(int argc, char *argv[])
 	initDungeon();
 
 	int seed = time(NULL);
-	//seed = 1535978302; //splitting
-	//newRoom(seed);
 	int min = 5;
 
-	seed = 1536003870; //touching
+	//seed=1536023625; //touch?
+	//seed=1536023678; //touch
 	generateRoom(min, seed);
 
 	printDungeon();

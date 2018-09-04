@@ -1,9 +1,14 @@
 Sep 2
 	start algorithm design
+	
 Sep 3
 	add and test newRoom method with builds a new room in dungeon
 	newRoom unit test pass
 	using generate newRoom to build all rooms in dungeon
 	fix issue on rooms are touching each other
 	create a random room array, by returning Room struct pointer in generateRoom method
+	
+Sep 4
+	improve pointer usage in array of room
+
 	

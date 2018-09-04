@@ -11,16 +11,24 @@
 
 char dungeon[ROW][COL];
 
-struct Room
+//struct Room
+//{
+//	int row;
+//	int col;
+//	int width;
+//	int height;
+//};
+//
+//struct Room *rooms;
+
+typedef struct dungeonRoom
 {
 	int row;
 	int col;
 	int width;
 	int height;
-};
+} Room;
 
-
-//struct Room rooms[];
 
 void initDungeon()
 {
@@ -54,19 +62,14 @@ bool isValidRoom(int row, int col, int width, int height)
 	return true;
 }
 
-struct Room newRoom(int seed)
+Room newRoom(int seed)
 {
-	struct Room r;
 	srand(seed);
+	Room r;
 	r.row = rand() % ROW;
 	r.col = rand() % COL;
-	r.width = rand() % 6 + 3;
-	r.height = rand() % 5 + 2;
-//	srand(seed);
-//	int row = rand() % ROW;
-//	int col = rand() % COL;
-//	int width = rand() % 4 + 3;
-//	int height = rand() % 5 + 2;
+	r.width = rand() % 7 + 3;
+	r.height = rand() % 6 + 2;
 
 	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
 	printf("seed=%d;   row=%2d   col=%2d   width=%2d   height=%2d", seed, r.row, r.col, r.width, r.height);
@@ -84,7 +87,7 @@ struct Room newRoom(int seed)
 	}
 	else
 	{
-		newRoom(seed + 1);
+		return newRoom(seed + 1);
 	}
 
 	return r;
@@ -122,16 +125,24 @@ void printDungeon()
 	printf("\n");
 }
 
-int generateRoom(int min, int seed)
+Room * generateRoom(int min, int seed)
 {
 	//randomly generate rooms over min
-	int total = rand() % 3 + min;
-	//rooms = rooms[total];
+	int total = rand() % 6 + min;
+
+	total = 5;
+	Room * r;
+	r = malloc(total * sizeof(Room));
+
 	for (int i=0; i<total; i++)
 	{
-		newRoom(seed);
+		*r = newRoom(seed);
+		printf("\nROOM: row=%2d   col=%2d   width=%2d   height=%2d\n", r->row, r->col, r->width, r->height);
+		r++;
 	}
-	return total;
+	r = r - total;
+
+	return r;
 }
 
 int main(int argc, char *argv[])
@@ -143,7 +154,7 @@ int main(int argc, char *argv[])
 	int min = 5;
 
 	//seed=1536023625; //touch?
-	//seed=1536023678; //touch
+	//seed=1536023678; //touch?
 	generateRoom(min, seed);
 
 	printDungeon();

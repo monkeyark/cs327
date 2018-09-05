@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
 #define ROW 21
 #define COL 80
 #define ROCK 'X'
@@ -10,16 +11,6 @@
 
 
 char dungeon[ROW][COL];
-
-//struct Room
-//{
-//	int row;
-//	int col;
-//	int width;
-//	int height;
-//};
-//
-//struct Room *rooms;
 
 typedef struct dungeonRoom
 {
@@ -39,6 +30,12 @@ void initDungeon()
 			dungeon[i][j] = ROCK;
 		}
 	}
+}
+
+
+int getRandom(int modulus, int min)
+{
+	return rand() % modulus + min;
 }
 
 void printDungeon()
@@ -94,18 +91,17 @@ bool isValidRoom(int row, int col, int width, int height)
 	return true;
 }
 
-/*
-Room newRoom(int seed)
+
+Room newRoom()
 {
-	srand(seed);
 	Room r;
-	r.row = rand() % ROW;
-	r.col = rand() % COL;
-	r.width = rand() % 7 + 3;
-	r.height = rand() % 6 + 2;
+	r.row = getRandom(ROW, 0);
+	r.col = getRandom(COL, 0);
+	r.width = getRandom(7, 3);
+	r.height = getRandom(6, 2);
 
 	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
-	printf("seed=%d;   row=%2d   col=%2d   width=%2d   height=%2d", seed, r.row, r.col, r.width, r.height);
+	printf("      row=%2d   col=%2d   width=%2d   height=%2d", r.row, r.col, r.width, r.height);
 	printf("   %s\n", validRoom?"true":"false");
 
 	if (validRoom)
@@ -120,90 +116,22 @@ Room newRoom(int seed)
 	}
 	else
 	{
-		return newRoom(seed + 1);
+		return newRoom();
 	}
 
 	return r;
 }
 
-Room *generateRoom(int seed)
+float distance (int aRow, int aCol, int bRow, int bCol)
 {
-	//randomly generate over 5 rooms
-	int total = rand() % 6 + 5;
+	float row = abs(aRow - bRow);
+	float col = abs(bCol - bCol);
 
-	//total = 5;
-	Room *r;
-	r = malloc(total * sizeof(Room));
-
-	for (int i=0; i<total; i++)
-	{
-		*r = newRoom(seed);
-		printf("           ROOM:   row=%2d   col=%2d   width=%2d   height=%2d\n\n", r->row, r->col, r->width, r->height);
-		r++;
-	}
-	r = r - total;
-
-	return r;
-}
-*/
-
-
-Room newRoom(int seed, Room *r)
-{
-	srand(seed);
-	r->row = rand() % ROW;
-	r->col = rand() % COL;
-	r->width = rand() % 7 + 3;
-	r->height = rand() % 6 + 2;
-
-	bool validRoom = isValidRoom(r->row, r->col, r->width, r->height);
-	printf("seed=%d;   row=%2d   col=%2d   width=%2d   height=%2d", seed, r->row, r->col, r->width, r->height);
-	printf("   %s\n", validRoom?"true":"false");
-
-	if (validRoom)
-	{
-		for (int i=r->row; i<r->row+r->height; i++)
-		{
-			for (int j=r->col; j<r->col+r->width; j++)
-			{
-				dungeon[i][j] = ROOM;
-			}
-		}
-	}
-	else
-	{
-		return newRoom(seed + 1, r);
-	}
-
-	return *r;
+	return sqrt(row*row + col*col);
 }
 
-Room *generateRoom(int seed)
+void newCorridor(int aRow, int aCol, int bRow, int bCol)
 {
-	//randomly generate over 5 rooms
-	int total = rand() % 6 + 5;
-	Room *rooms;
-	rooms = malloc(total * sizeof(Room));
-
-	for (int i=0; i<total; i++)
-	{
-		rooms[total] = newRoom(seed, rooms);
-		printf("           ROOM:   row=%2d   col=%2d   width=%2d   height=%2d\n\n", rooms[i].row, rooms[i].col, rooms[i].width, rooms[i].height);
-	}
-
-	return rooms;
-}
-
-
-void connect(Room arr)
-{
-//	int size = *(&arr + 1) - arr;
-//	printf("The size of arr is =  %2d\n", size);
-//	for (int i=0; i<size; i++)
-//	{
-//
-//	}
-	return;
 }
 
 int main(int argc, char *argv[])
@@ -211,14 +139,31 @@ int main(int argc, char *argv[])
 	//initial dungeon
 	initDungeon();
 
+	//set up random
 	int seed = time(NULL);
+	srand(seed);
+	printf("seed = %d;\n", seed);
 
-	//seed=1536023625; //touch?
-	//seed=1536023678; //touch?
-	Room *rooms;
-	rooms = generateRoom(seed);
-	printf("        IN MAIN:   row=%2d   col=%2d   width=%2d   height=%2d\n\n", rooms->row, rooms->col, rooms->width, rooms->height);
-	connect(*rooms);
+	//generate random number of rooms
+	int n = getRandom(7, 5);
+	Room rooms[n];
+	for (int i=0; i<n; i++)
+	{
+		rooms[i] = newRoom();
+		//printf("ROOM  row=%2d   col=%2d   width=%2d   height=%2d\n\n", rooms[i].row, rooms[i].col, rooms[i].width, rooms[i].height);
+	}
+
+	for (int i=0; i<n-1; i++)//test loop
+	{
+		printf("ROOM%2d  row=%2d   col=%2d   width=%2d   height=%2d\n", i, rooms[i].row, rooms[i].col, rooms[i].width, rooms[i].height);
+	}
+
+	for (int i=0; i<n-1; i++)
+	{
+
+		newCorridor(rooms[i].row, rooms[i].col, rooms[i+1].row, rooms[i+1].col);
+		//printDungeon();
+	}
 
 	printDungeon();
 

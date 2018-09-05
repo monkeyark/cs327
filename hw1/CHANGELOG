@@ -10,5 +10,4 @@ Sep 3
 	
 Sep 4
 	improve pointer usage in array of room
-
-	
+	delete the use of pointer and redesign the algorithm to avoid potential memory array data corruption

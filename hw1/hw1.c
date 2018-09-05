@@ -73,7 +73,7 @@ void printDungeon()
 bool isInside (int row, int col)
 {
 	//is room not on edge or outside of dungeon
-	return row > 0 || col > 0 || row < ROW || col < COL;
+	return row > 0 && col > 0 && row < ROW && col < COL;
 }
 
 bool isValidRoom(int row, int col, int width, int height)
@@ -101,17 +101,14 @@ Room newRoom()
 	r.row = getRandom(ROW, 0);
 	r.col = getRandom(COL, 0);
 
-	//TODO test case
-//	r.width = 1;
-//	r.height = 1;
-
 	r.width = getRandom(7, 3);
 	r.height = getRandom(6, 2);
 
-	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
-	printf("        row=%2d   col=%2d   width=%2d   height=%2d", r.row, r.col, r.width, r.height);
-	printf("   %s\n", validRoom?"true":"false");
+	//TODO
+	r.width = 1;
+	r.height = 1;
 
+	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
 	if (validRoom)
 	{
 		for (int i=r.row; i<r.row+r.height; i++)
@@ -138,117 +135,141 @@ float distance(int aRow, int aCol, int bRow, int bCol)
 	return sqrt(row*row + col*col);
 }
 
+float minimum(float a, float b)
+{
+	if (a < b)
+	{
+		return a;
+	}
+	return b;
+}
+
 void newCorridor(int aRow, int aCol, int bRow, int bCol)
 {
-//	float max = distance(0, 0, ROW, COL);
-//	float min = max;
-//	float top = max;
-//	float down = max;
-//	float left = max;
-//	float right = max;
-//
-//	if (isInside(aRow-1, aCol))
+	if (distance(aRow, aCol, bRow, bCol) == 0) return;
+
+	float max = distance(0, 0, ROW, COL);
+	float min = max;
+	float top = max;
+	float down = max;
+	float left = max;
+	float right = max;
+
+	if (isInside(aRow-1, aCol))
+	{
+		top = distance(aRow-1, aCol, bRow, bCol);
+		min = minimum(min, top);
+	}
+	if (isInside(aRow+1, aCol))
+	{
+		down = distance(aRow+1, aCol, bRow, bCol);
+		min = minimum(min, down);
+	}
+	if (isInside(aRow, aCol-1))
+	{
+		left = distance(aRow, aCol-1, bRow, bCol);
+		min = minimum(min, left);
+	}
+	if (isInside(aRow, aCol+1))
+	{
+		right = distance(aRow, aCol+1, bRow, bCol);
+		min = minimum(min, right);
+	}
+
+	if (min == top)
+	{
+		if (dungeon[aRow-1][aCol] == ROCK)
+		{
+			dungeon[aRow-1][aCol] = CORRIDOR;
+			newCorridor(aRow-1, aCol, bRow, bCol);
+		}
+	}
+	if (min == down)
+	{
+		if (dungeon[aRow+1][aCol] == ROCK)
+		{
+			dungeon[aRow+1][aCol] = CORRIDOR;
+			newCorridor(aRow+1, aCol, bRow, bCol);
+		}
+	}
+	if (min == left)
+	{
+		if (dungeon[aRow][aCol-1] == ROCK)
+		{
+			dungeon[aRow][aCol-1] = CORRIDOR;
+			newCorridor(aRow-1, aCol-1, bRow, bCol);
+		}
+	}
+	if (min == right)
+	{
+		if (dungeon[aRow][aCol+1] == ROCK)
+		{
+			dungeon[aRow][aCol+1] = CORRIDOR;
+			newCorridor(aRow-1, aCol+1, bRow, bCol);
+		}
+	}
+
+//	if (aRow <= bRow) 	//now at dungeon[aRow][aCol]
 //	{
-//		top = (aRow-1, aCol, bRow, bCol);
-//		if (top < min) min = top;
+//		for (int i=aRow; i<=bRow; i++)
+//		{
+//			if (dungeon[i][aCol] == ROCK)
+//			{
+//				dungeon[i][aCol] = CORRIDOR;
+//			}
+//		}
+//		if (aCol <= bCol) 	//now at dungeon[bRow][aCol]
+//		{
+//			for (int i=aCol; i<=bCol; i++)
+//			{
+//				if (dungeon[bRow][i] == ROCK)
+//				{
+//					dungeon[bRow][i] = CORRIDOR;
+//				}
+//			}
+//		}
+//		else
+//		{
+//			for (int i=bCol; i<=aCol; i++)
+//			{
+//				if (dungeon[bRow][i] == ROCK)
+//				{
+//					dungeon[bRow][i] = CORRIDOR;
+//				}
+//			}
+//		}
 //	}
-//	if (isInside(aRow+1, aCol))
+//	else
 //	{
-//		down = (aRow+1, aCol, bRow, bCol);
-//		if (down < min) min = down;
-//	}
-//	if (isInside(aRow, aCol-1))
-//	{
-//		left = (aRow, aCol-1, bRow, bCol);
-//		if (left < min) min = left;
-//	}
-//	if (isInside(aRow, aCol+1))
-//	{
-//		right = (aRow, aCol+1, bRow, bCol);
-//		if (right < min) min = right;
-//	}
-//
-//	if (min == top)
-//	{
-//		dungeon[aRow-1][aCol] = CORRIDOR;
-//		newCorridor(aRow-1, aCol, bRow, bCol);
-//	}
-//	else if (min == down)
-//	{
-//		dungeon[aRow+1][aCol] = CORRIDOR;
-//		newCorridor(aRow+1, aCol, bRow, bCol);
-//	}
-//	else if (min == left)
-//	{
-//		dungeon[aRow][aCol-1] = CORRIDOR;
-//		newCorridor(aRow-1, aCol-1, bRow, bCol);
-//	}
-//	else if (min == right)
-//	{
-//		dungeon[aRow][aCol+1] = CORRIDOR;
-//		newCorridor(aRow-1, aCol+1, bRow, bCol);
+//		for (int i=bRow; i<=aRow; i++)
+//		{
+//			if (dungeon[i][bCol] == ROCK)
+//			{
+//				dungeon[i][bCol] = CORRIDOR;
+//			}
+//		}
+//		if (aCol <= bCol) 	//now at dungeon[aRow][bCol]
+//		{
+//			for (int i=aCol; i<=bCol; i++)
+//			{
+//				if (dungeon[aRow][i] == ROCK)
+//				{
+//					dungeon[aRow][i] = CORRIDOR;
+//				}
+//			}
+//		}
+//		else
+//		{
+//			for (int i=bCol; i<=aCol; i++)
+//			{
+//				if (dungeon[aRow][i] == ROCK)
+//				{
+//					dungeon[aRow][i] = CORRIDOR;
+//				}
+//			}
+//		}
 //	}
 
-	if (aRow <= bRow) 	//now at dungeon[aRow][aCol]
-	{
-		for (int i=aRow; i<=bRow; i++)
-		{
-			if (dungeon[i][aCol] == ROCK)
-			{
-				dungeon[i][aCol] = CORRIDOR;
-			}
-		}
-		if (aCol <= bCol) 	//now at dungeon[bRow][aCol]
-		{
-			for (int i=aCol; i<=bCol; i++)
-			{
-				if (dungeon[bRow][i] == ROCK)
-				{
-					dungeon[bRow][i] = CORRIDOR;
-				}
-			}
-		}
-		else
-		{
-			for (int i=bCol; i<=aCol; i++)
-			{
-				if (dungeon[bRow][i] == ROCK)
-				{
-					dungeon[bRow][i] = CORRIDOR;
-				}
-			}
-		}
-	}
-	else
-	{
-		for (int i=bRow; i<=aRow; i++)
-		{
-			if (dungeon[i][bCol] == ROCK)
-			{
-				dungeon[i][bCol] = CORRIDOR;
-			}
-		}
-		if (aCol <= bCol) 	//now at dungeon[aRow][bCol]
-		{
-			for (int i=aCol; i<=bCol; i++)
-			{
-				if (dungeon[aRow][i] == ROCK)
-				{
-					dungeon[aRow][i] = CORRIDOR;
-				}
-			}
-		}
-		else
-		{
-			for (int i=bCol; i<=aCol; i++)
-			{
-				if (dungeon[aRow][i] == ROCK)
-				{
-					dungeon[aRow][i] = CORRIDOR;
-				}
-			}
-		}
-	}
 }
 
 int main(int argc, char *argv[])
@@ -258,7 +279,9 @@ int main(int argc, char *argv[])
 
 	//set up random
 	int seed = time(NULL);
-	//seed = 1536125881;
+
+	seed = 1536134636;
+
 	srand(seed);
 	printf("seed = %d;\n", seed);
 
@@ -278,7 +301,6 @@ int main(int argc, char *argv[])
 	for (int i=0; i<n-1; i++)
 	{
 		newCorridor(rooms[i].row, rooms[i].col, rooms[i+1].row, rooms[i+1].col);
-		//printDungeon();
 	}
 
 	printDungeon();

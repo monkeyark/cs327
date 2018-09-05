@@ -40,13 +40,6 @@ int getRandom(int modulus, int min)
 
 void printDungeon()
 {
-	printf("   ");
-	for (int i=0; i<COL; i++)
-	{
-		printf("%d", i % 10);
-	}
-	printf("\n");
-
 	for (int i=0; i<COL+2; i++)
 	{
 		printf("-");
@@ -55,7 +48,7 @@ void printDungeon()
 
 	for (int i=0; i<ROW; i++)
 	{
-		printf("%2d|", i);
+		printf("|");
 		for (int j=0; j<COL; j++)
 		{
 			printf("%c", dungeon[i][j]);
@@ -100,13 +93,8 @@ Room newRoom()
 	Room r;
 	r.row = getRandom(ROW, 0);
 	r.col = getRandom(COL, 0);
-
 	r.width = getRandom(7, 3);
 	r.height = getRandom(6, 2);
-
-////	//TODO
-//	r.width = 1;
-//	r.height = 1;
 
 	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
 	if (validRoom)
@@ -144,16 +132,16 @@ int minimum(int a, int b)
 	return b;
 }
 
-bool isConnected(int row, int col)
-{
-	return dungeon[row-1][col] == CORRIDOR
-			|| dungeon[row+1][col] == CORRIDOR
-			|| dungeon[row][col-1] == CORRIDOR
-			|| dungeon[row][col+1] == CORRIDOR;
-}
-
-void newCorridor(int aRow, int aCol, int bRow, int bCol)
-{
+//bool isConnected(int row, int col)
+//{
+//	return dungeon[row-1][col] == CORRIDOR
+//			|| dungeon[row+1][col] == CORRIDOR
+//			|| dungeon[row][col-1] == CORRIDOR
+//			|| dungeon[row][col+1] == CORRIDOR;
+//}
+//
+//void newCorridor(int aRow, int aCol, int bRow, int bCol)
+//{
 //	if (distance(aRow, aCol, bRow, bCol) == 0) return;
 //	if (dungeon[aRow][aCol] == CORRIDOR && isConnected(bRow, bCol)) return;
 //	if (dungeon[aRow][aCol] == ROCK) dungeon[aRow][aCol] = CORRIDOR;
@@ -202,7 +190,10 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 //	{
 //		newCorridor(aRow, aCol+1, bRow, bCol);
 //	}
+//}
 
+void newCorridor(int aRow, int aCol, int bRow, int bCol)
+{
 	if (aRow <= bRow) 	//now at dungeon[aRow][aCol]
 	{
 		for (int i=aRow; i<=bRow; i++)
@@ -273,9 +264,7 @@ int main(int argc, char *argv[])
 
 	//set up random
 	int seed = time(NULL);
-
 	srand(seed);
-	printf("seed = %d;\n", seed);
 
 	//generate random number of rooms
 	int n = getRandom(7, 5);
@@ -283,11 +272,6 @@ int main(int argc, char *argv[])
 	for (int i=0; i<n; i++)
 	{
 		rooms[i] = newRoom();
-	}
-
-	for (int i=0; i<n; i++)//test loop
-	{
-		printf("ROOM%2d  row=%2d   col=%2d   width=%2d   height=%2d\n", i, rooms[i].row, rooms[i].col, rooms[i].width, rooms[i].height);
 	}
 
 	for (int i=0; i<n-1; i++)

@@ -6,4 +6,6 @@ Sep 7
 
 Sep 10
 	add dungeon hardness
+	moving dungeon generation into generateDungeon method
+	add idea of reading command line
 

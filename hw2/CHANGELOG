@@ -8,4 +8,4 @@ Sep 10
 	add dungeon hardness
 	moving dungeon generation into generateDungeon method
 	add idea of reading command line
-
+	finish command line and switch logic in main

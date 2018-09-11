@@ -15,9 +15,11 @@
 
 enum action
 {
-	action_save,
+	action_print,
 	action_load,
-	action_loadsave
+	action_save,
+	action_load_save,
+	action_save_load
 };
 
 typedef struct dungeonCell
@@ -220,8 +222,16 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 
 }
 
-void generateDungeon(int n)
+void generateDungeon(int seed)
 {
+	//initial dungeon
+	initDungeon();
+
+	printf("\nseed = %d;\n", seed);
+	srand(seed);
+
+	//generate random number of rooms
+	int n = getRandom(7, 5);
 	Room rooms[n];
 
 	for (int i=0; i<n; i++)
@@ -235,168 +245,87 @@ void generateDungeon(int n)
 	}
 }
 
+void load()
+{
+
+}
+
+void save()
+{
+
+}
+
 int main(int argc, char *argv[])
 {
-//	enum action act;
 //	FILE *f;
 
-
-	//initial dungeon
-	initDungeon();
-
-	//set up random
+	//set up random seed
 	int seed = time(NULL);
-
 	//seed = 1536656664; seed = 1536656798; seed = 1536657024; seed = 1536657138; 
-	
-	printf("\nseed = %d;\n", seed);
-	srand(seed);
 
-	//generate random number of rooms
-	int n = getRandom(7, 5);
-	generateDungeon(n);
+	enum action act = action_print;
+	bool load = false;
+	bool save = false;
 
-	printDungeon();
-
-
-	if (argv[1][0] != '-' || argv[1][1] != '-')
+	for (int i=1; i<argc; i++)
 	{
-		fprintf(stderr, "Bad format\n");
-		return -1;
-	}
-/*	
-	if (argc == 2)
-	{
-		if (strcmp(argv[1], "--save")) //strcmp == 0 if equal
+		if (strcmp(argv[i], "--save") || strcmp(argv[i], "--load"))
 		{
-			action = action_save;
+			fprintf(stderr, "Bad argument\n");
+			return -1;
 		}
-		else if (strcmp(argv[1], "--load"))
+		if (strcmp(argv[i], "--save"))
 		{
-			action = action_load;
+			if (load)
+			{
+				act = action_load_save;
+			}
+			else
+			{
+				act = action_save;
+			}
 		}
-	}
-	else if (argc == 3)
-	{
-		if (strcmp(argv[1], "--load") && strcmp(argv[2], "--save"))
+		if (strcmp(argv[i], "--load"))
 		{
-			action = action_loadsave;
+			if (save)
+			{
+				act = action_load_save;
+			}
+			else
+			{
+				act = action_load;
+			}
 		}
 	}
-	
-	f = fopen(argv[2], "r");
-	if (!f)
+
+	switch (act)
 	{
-		fprintf(stderr, "Failed to open %s\n", argv[2]);
-		return -1;
+		case action_print:
+			generateDungeon(seed);
+			printDungeon();
+		case action_load:
+			load();
+			printDungeon();
+			break;
+		case action_save:
+			generateDungeon(seed);
+			printDungeon();
+			save();
+			break;
+		case action_load_save:
+			load();
+			printDungeon();
+			save();
+			break;
+		case action_save_load:
+			generateDungeon(seed);
+			printDungeon();
+			save();
+			load();
+			break;
 	}
-
-
-	switch (action)
-	{
-	case action_save:
-	fread(&s, sizeof (s), 1, f);
-	printf("Read %d %d as binary\n", s.i, s.j);
-	break;
-
-	case action_load:
-	fscanf(f, "%hhd %hhd", &s.i, &s.j);
-	printf("Read %d %d as text\n", s.i, s.j);
-	break;
-
-	case action_loadsave::
-	fwrite(&s, sizeof (s), 1, f);
-	printf("Wrote %d %d binary\n", s.i, s.j);
-	break;
-	}
-
-	return 0;
-
-*/
-
 
 
 	return 0;
 }
-
-
-/*
-enum action {
-  action_read_binary,
-  action_read_text,
-  action_write_binary,
-  action_write_text
-};
-
-int main(int argc, char *argv[])
-{
-  enum action action;
-  FILE *f;
-  struct {
-    char i;
-    char j;
-  } s = { 1, 2 };
-
-  if (argc != 3) {
-    fprintf(stderr, "Bad arguments.\n");
-
-    return -1;
-  }
-
-  // Valid switches are -wb -rb -wt and -rt
-  if (argv[1][0] != '-') {
-    fprintf(stderr, "Bad argument format.\n");
-
-    return -1;
-  }
-
-  // From this point on, assume arguments are good
-  if (argv[1][1] == 'w') {
-    // Writing
-    if (argv[1][2] == 'b') {
-      action = action_write_binary;
-    } else {
-      action = action_write_text;
-    }
-    f = fopen(argv[2], "w");
-  } else {
-    // Reading
-    if (argv[1][2] == 'b') {
-      action = action_read_binary;
-    } else {
-      action = action_read_text;
-    }
-    f = fopen(argv[2], "r");
-  }
-
-  if (!f) {
-    fprintf(stderr, "Failed to open %s\n", argv[2]);
-
-    return -1;
-  }
-
-  switch (action) {
-  case action_read_binary:
-    fread(&s, sizeof (s), 1, f);
-    printf("Read %d %d as binary\n", s.i, s.j);
-    break;
-  case action_read_text:
-    fscanf(f, "%hhd %hhd", &s.i, &s.j);
-    printf("Read %d %d as text\n", s.i, s.j);
-    break;
-  case action_write_binary:
-    fwrite(&s, sizeof (s), 1, f);
-    printf("Wrote %d %d binary\n", s.i, s.j);
-    break;
-  case action_write_text:
-    fprintf(f, "%d %d\n", s.i, s.j);
-    printf("Wrote %d %d text\n", s.i, s.j);
-    break;
-  }
-
-  return 0;
-}
-
-*/
-
 

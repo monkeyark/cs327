@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <math.h>
+#include <string.h>
 #define ROW 21
 #define COL 80
 #define ROCK ' '
@@ -266,18 +267,18 @@ int main(int argc, char *argv[])
 /*	
 	if (argc == 2)
 	{
-		if (argc[1] == '--save')
+		if (strcmp(argv[1], "--save")) //strcmp == 0 if equal
 		{
 			action = action_save;
 		}
-		else if (argc[1] == '--load')
+		else if (strcmp(argv[1], "--load"))
 		{
 			action = action_load;
 		}
 	}
 	else if (argc == 3)
 	{
-		if (argc[1] == '--save' && argc[2] == '--load' || argc[1] == '--load' && argc[2] == '--save')
+		if (strcmp(argv[1], "--load") && strcmp(argv[2], "--save"))
 		{
 			action = action_loadsave;
 		}

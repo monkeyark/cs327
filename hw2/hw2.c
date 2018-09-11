@@ -12,6 +12,13 @@
 #define ROOM_H 0
 #define CORRIDOR_H 0
 
+enum action
+{
+	action_save,
+	action_load,
+	action_loadsave
+};
+
 typedef struct dungeonCell
 {
 	char space;
@@ -212,18 +219,10 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 
 }
 
-int main(int argc, char *argv[])
+void generateDungeon(int n)
 {
-	//initial dungeon
-	initDungeon();
-
-	//set up random
-	int seed = time(NULL);
-	srand(seed);
-
-	//generate random number of rooms
-	int n = getRandom(7, 5);
 	Room rooms[n];
+
 	for (int i=0; i<n; i++)
 	{
 		rooms[i] = newRoom();
@@ -233,8 +232,85 @@ int main(int argc, char *argv[])
 	{
 		newCorridor(rooms[i].row, rooms[i].col, rooms[i+1].row, rooms[i+1].col);
 	}
+}
+
+int main(int argc, char *argv[])
+{
+	enum action act;
+	FILE *f;
+
+
+	//initial dungeon
+	initDungeon();
+
+	//set up random
+	int seed = time(NULL);
+	printf("seed = %d\n", seed);
+	srand(seed);
+
+	//generate random number of rooms
+	int n = getRandom(7, 5);
+	generateDungeon(n);
 
 	printDungeon();
+
+
+	if (argv[1][0] != '-' || argv[1][1] != '-')
+	{
+		fprintf(stderr, "Bad format\n");
+		return -1;
+	}
+/*	
+	if (argc == 2)
+	{
+		if (argc[1] == '--save')
+		{
+			action = action_save;
+		}
+		else if (argc[1] == '--load')
+		{
+			action = action_load;
+		}
+	}
+	else if (argc == 3)
+	{
+		if (argc[1] == '--save' && argc[2] == '--load' || argc[1] == '--load' && argc[2] == '--save')
+		{
+			action = action_loadsave;
+		}
+	}
+	
+	f = fopen(argv[2], "r");
+	if (!f)
+	{
+		fprintf(stderr, "Failed to open %s\n", argv[2]);
+		return -1;
+	}
+
+
+	switch (action)
+	{
+	case action_save:
+	fread(&s, sizeof (s), 1, f);
+	printf("Read %d %d as binary\n", s.i, s.j);
+	break;
+
+	case action_load:
+	fscanf(f, "%hhd %hhd", &s.i, &s.j);
+	printf("Read %d %d as text\n", s.i, s.j);
+	break;
+
+	case action_loadsave::
+	fwrite(&s, sizeof (s), 1, f);
+	printf("Wrote %d %d binary\n", s.i, s.j);
+	break;
+	}
+
+	return 0;
+
+*/
+
+
 
 	return 0;
 }

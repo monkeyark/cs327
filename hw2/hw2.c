@@ -236,8 +236,8 @@ void generateDungeon(int n)
 
 int main(int argc, char *argv[])
 {
-	enum action act;
-	FILE *f;
+//	enum action act;
+//	FILE *f;
 
 
 	//initial dungeon
@@ -245,7 +245,10 @@ int main(int argc, char *argv[])
 
 	//set up random
 	int seed = time(NULL);
-	printf("seed = %d\n", seed);
+
+	//seed = 1536656664; seed = 1536656798; seed = 1536657024; seed = 1536657138; 
+	
+	printf("\nseed = %d;\n", seed);
 	srand(seed);
 
 	//generate random number of rooms

@@ -4,12 +4,13 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
+#include <endian.h>
 #define ROW 21
 #define COL 80
 #define ROCK ' '
 #define ROOM '.'
 #define CORRIDOR '#'
-#define ROCK_H 10
+#define ROCK_H 255
 #define ROOM_H 0
 #define CORRIDOR_H 0
 
@@ -36,7 +37,14 @@ typedef struct dungeonRoom
 	int height;
 } Room;
 
+typedef struct player
+{
+	int row;
+	int col;
+} Player;
+
 Cell dungeon[ROW][COL];
+Player me;
 
 void initDungeon()
 {
@@ -134,23 +142,6 @@ Room newRoom()
 	return r;
 }
 
-int distance(int aRow, int aCol, int bRow, int bCol)
-{
-	int row = abs(aRow - bRow);
-	int col = abs(aCol - bCol);
-
-	return row*row + col*col;
-}
-
-int minimum(int a, int b)
-{
-	if (a < b)
-	{
-		return a;
-	}
-	return b;
-}
-
 void newCorridor(int aRow, int aCol, int bRow, int bCol)
 {
 	if (aRow <= bRow) 	//now at dungeon[aRow][aCol]
@@ -243,22 +234,71 @@ void generateDungeon(int seed)
 	{
 		newCorridor(rooms[i].row, rooms[i].col, rooms[i+1].row, rooms[i+1].col);
 	}
+	
+	//add initial player loaction
+	me.row = rooms[0].row;
+	me.col = rooms[0].col;
+	dungeon[me.row][me.col].space = '@';
+	dungeon[me.row][me.col].hardness = 0;
 }
 
 void load()
 {
+	FILE *f;
+	char *path;
+	path = malloc(strlen(getenv("HOME") + strlen("/.rlg327/dungeon") + 1));
+	strcpy(path, getenv("HOME"));
+	strcat(path, "/.rlg327/dungeon");
+	f = fopen(path, "f");
+	free(path);
+	if (!f)
+	{
+		fprintf(stderr, "Failed to open file%s\n", path);
+		return;
+	}
+
+	char *marker;
+	fread(marker, 1, 12, f);
+
+	uint32_t *version;
+	fread(version, 4, 1, f);
+	uint32_t *file_size;
+	fread(file_size, 4, 1, f);
+	uint8_t *PCcol;
+	fread(PCcol, 1, 1, f);
+	uint8_t *PCrow;
+	fread(PCrow, 1, 1, f);
+	
+
+	uint8_t hard[1680];
+	for (int i=0; i<1680; i++)
+	{
+		fread(hard, 1, 1, f);
+	}
+
 
 }
 
 void save()
 {
+	FILE f;
+	char *path;
+	path = malloc(strlen(getenv("HOME") + strlen("/.rlg327/dungeon") + 1));
+	strcpy(path, getenv("HOME"));
+	strcat(path, "/.rlg327/dungeon");
+	f = fopen(path, "w");
+	free(path);
+	if (!f)
+	{
+		fprintf(stderr, "Failed to open file%s\n", path);
+		return;
+	}
+
 
 }
 
 int main(int argc, char *argv[])
 {
-//	FILE *f;
-
 	//set up random seed
 	int seed = time(NULL);
 	//seed = 1536656664; seed = 1536656798; seed = 1536657024; seed = 1536657138; 
@@ -269,13 +309,14 @@ int main(int argc, char *argv[])
 
 	for (int i=1; i<argc; i++)
 	{
-		if (strcmp(argv[i], "--save") || strcmp(argv[i], "--load"))
+		if (!strcmp(argv[i], "--save") || !strcmp(argv[i], "--load"))
 		{
 			fprintf(stderr, "Bad argument\n");
 			return -1;
 		}
-		if (strcmp(argv[i], "--save"))
+		if (!strcmp(argv[i], "--save"))
 		{
+			save = true;
 			if (load)
 			{
 				act = action_load_save;
@@ -285,8 +326,9 @@ int main(int argc, char *argv[])
 				act = action_save;
 			}
 		}
-		if (strcmp(argv[i], "--load"))
+		if (!strcmp(argv[i], "--load"))
 		{
+			load = true;
 			if (save)
 			{
 				act = action_load_save;

@@ -44,6 +44,7 @@ typedef struct player
 } Player;
 
 Cell dungeon[ROW][COL];
+Room *room;
 Player me;
 
 void initDungeon()
@@ -140,6 +141,24 @@ Room newRoom()
 	}
 
 	return r;
+}
+
+void addRoom(int row, int col, int width, int height)
+{
+	room->row = row;
+	room->col = col;
+	room->width = width;
+	room->height = height;
+	room++;
+
+	for (int i=row; i<row+height; i++)
+	{
+		for (int j=col; j<col+width; j++)
+		{
+			dungeon[i][j].space = ROOM;
+			dungeon[i][j].hardness = ROOM_H;
+		}
+	}
 }
 
 void newCorridor(int aRow, int aCol, int bRow, int bCol)
@@ -242,7 +261,7 @@ void generateDungeon(int seed)
 	dungeon[me.row][me.col].hardness = 0;
 }
 
-void load()
+void loadFile()
 {
 	FILE *f;
 	char *path;
@@ -257,30 +276,55 @@ void load()
 		return;
 	}
 
-	char *marker;
+	char marker[12];
 	fread(marker, 1, 12, f);
 
-	uint32_t *version;
+//	uint32_t *version;
+//	fread(version, 4, 1, f);
+	uint32_t version[1];
 	fread(version, 4, 1, f);
-	uint32_t *file_size;
+
+	uint32_t file_size[1];
 	fread(file_size, 4, 1, f);
-	uint8_t *PCcol;
+	int filesize = be32toh(*file_size);
+
+	uint8_t PCcol[1];
 	fread(PCcol, 1, 1, f);
-	uint8_t *PCrow;
+	uint8_t PCrow[1];
 	fread(PCrow, 1, 1, f);
 	
 
 	uint8_t hard[1680];
-	for (int i=0; i<1680; i++)
+	fread(hard, 1, 1680, f);
+	initDungeon();
+	for (int row=0; row<ROW; row++)
 	{
-		fread(hard, 1, 1, f);
+		for (int col=0; col<COL; col++)
+		{
+			int h = hard[ROW*row + col];//TODO
+			dungeon[row][col].hardness = h;
+		}
 	}
 
+	uint8_t room[filesize - 1702];
+	fread(room, 1, filesize - 1702, f);
+	int n = filesize - 1702;
+	for (int i=0; i<n; i+=4)
+	{
+		int row = room[i++];
+		int col = room[i++];
+		int width = room[i++];
+		int height = room[i++];
+
+		addRoom(row, col, width, height);
+	}
 
 }
 
-void save()
+void saveFile()
 {
+/*
+*/
 	FILE f;
 	char *path;
 	path = malloc(strlen(getenv("HOME") + strlen("/.rlg327/dungeon") + 1));
@@ -294,7 +338,11 @@ void save()
 		return;
 	}
 
+	char *marker = "RLG327-F2018";
+	fwrite(marker, 1, 12, f);
 
+/*
+*/
 }
 
 int main(int argc, char *argv[])
@@ -345,25 +393,26 @@ int main(int argc, char *argv[])
 		case action_print:
 			generateDungeon(seed);
 			printDungeon();
+			break;
 		case action_load:
-			load();
+			loadFile();
 			printDungeon();
 			break;
 		case action_save:
 			generateDungeon(seed);
 			printDungeon();
-			save();
+			saveFile();
 			break;
 		case action_load_save:
-			load();
+			loadFile();
 			printDungeon();
-			save();
+			saveFile();
 			break;
 		case action_save_load:
 			generateDungeon(seed);
 			printDungeon();
-			save();
-			load();
+			saveFile();
+			loadFile();
 			break;
 	}
 

@@ -324,8 +324,8 @@ void loadFile()
 void saveFile()
 {
 /*
-*/
-	FILE f;
+
+	FILE *f;
 	char *path;
 	path = malloc(strlen(getenv("HOME") + strlen("/.rlg327/dungeon") + 1));
 	strcpy(path, getenv("HOME"));
@@ -341,7 +341,27 @@ void saveFile()
 	char *marker = "RLG327-F2018";
 	fwrite(marker, 1, 12, f);
 
-/*
+	int version = 0;
+	version = htobe32(version);//TODO
+	fwrite(&version, 4, 1, f);
+
+	int filesize = 0;
+	filesize = heobe32(filesize);
+	fwrite(&filesize, 4, 1, f);
+
+	//write hardness
+	for(int i=0; i<ROW; i++)
+	{
+		for(int j=0; j<COL; j++)
+		{
+			uint8_t hard;
+			dungeon[i][j].space = ROCK;
+		}
+	}
+
+	//write rooms
+
+
 */
 }
 
@@ -357,12 +377,12 @@ int main(int argc, char *argv[])
 
 	for (int i=1; i<argc; i++)
 	{
-		if (!strcmp(argv[i], "--save") || !strcmp(argv[i], "--load"))
+		if (strcmp(argv[i], "--save") == 0 || strcmp(argv[i], "--load" == 0))
 		{
 			fprintf(stderr, "Bad argument\n");
 			return -1;
 		}
-		if (!strcmp(argv[i], "--save"))
+		if (strcmp(argv[i], "--save") == 0)
 		{
 			save = true;
 			if (load)
@@ -374,7 +394,7 @@ int main(int argc, char *argv[])
 				act = action_save;
 			}
 		}
-		if (!strcmp(argv[i], "--load"))
+		if (strcmp(argv[i], "--load") == 0)
 		{
 			load = true;
 			if (save)

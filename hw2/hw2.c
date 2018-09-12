@@ -318,6 +318,8 @@ void loadFile()
 
 		addRoom(row, col, width, height);
 	}
+	
+	fclose(f);
 
 }
 

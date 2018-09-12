@@ -9,3 +9,7 @@ Sep 10
 	moving dungeon generation into generateDungeon method
 	add idea of reading command line
 	finish command line and switch logic in main
+	add defalut player loaction
+
+Sep 11
+	add load dungeon

@@ -241,7 +241,7 @@ void generateDungeon(int n, Room *r)
 	dungeon[map.pc_row][map.pc_col].space = '@';
 	dungeon[map.pc_row][map.pc_col].hardness = 0;
 
-	r = rooms; //TODO
+	r = rooms;
 }
 
 void loadFile(FILE *f)
@@ -310,7 +310,7 @@ void loadFile(FILE *f)
 	fclose(f);
 }
 
-void saveFile(FILE *f)
+void saveFile(FILE *f, Room *r)
 {
 	if (!f)
 	{
@@ -345,12 +345,12 @@ void saveFile(FILE *f)
 	int n = 0;
 	for (int i=0; i<map.num_room; i++)
 	{
-		loc[n++] = (unsigned char) arr_room[i].col;
-		loc[n++] = (unsigned char) arr_room[i].row;
-		loc[n++] = (unsigned char) arr_room[i].width;
-		loc[n++] = (unsigned char) arr_room[i].height;
+		loc[n++] = (unsigned char) r[i].col;
+		loc[n++] = (unsigned char) r[i].row;
+		loc[n++] = (unsigned char) r[i].width;
+		loc[n++] = (unsigned char) r[i].height;
 	}
-	fwrite(location, 1, 4*map.num_room, f);
+	fwrite(loc, 1, 4*map.num_room, f);
 	
 	free(hard);
 	fclose(f);
@@ -373,8 +373,8 @@ int main(int argc, char *argv[])
 
 	//generate random number of rooms
 	map.num_room = getRandom(7, 5);
-	Room room [map.num_room];
-	Room *r = room;
+	Room room[map.num_room];
+	//Room *r = room;
 	bool load = false;
 	bool save = false;
 
@@ -428,7 +428,7 @@ int main(int argc, char *argv[])
 
 			return -1;
 		}
-		saveFile(f);
+		saveFile(f, room);
 	}
 
 	return 0;

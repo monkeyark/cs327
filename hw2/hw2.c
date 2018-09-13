@@ -147,11 +147,8 @@ void addRoom(int row, int col, int width, int height)
 */
 	for (int i=row; i<row+height; i++)
 	{
-		printf("i = %d\n", i);
 		for (int j=col; j<col+width; j++)
 		{
-
-			printf("j = %d\n", j);
 			dungeon[i][j].space = ROOM;
 			dungeon[i][j].hardness = ROOM_H;
 		}
@@ -260,7 +257,6 @@ void generateDungeon(int seed)
 
 void loadFile(FILE *f)
 {
-
 	if (!f)
 	{
 		fprintf(stderr, "Failed to open file\n");
@@ -290,7 +286,9 @@ void loadFile(FILE *f)
 	{
 		for (int col=0; col<COL; col++)
 		{
-			int h = hard[ROW*row + col];
+			int index = COL*row + col;
+			printf("hardness index = %d\n", index);
+			int h = hard[index];
 			dungeon[row][col].hardness = h;
 			if (h == 0)
 			{

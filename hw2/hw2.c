@@ -321,17 +321,9 @@ void loadFile(FILE *f)
 
 void saveFile(FILE *f)
 {
-/*
-	FILE *f;
-	char *path;
-	path = malloc(strlen(getenv("HOME") + strlen("/.rlg327/dungeon") + 1));
-	strcpy(path, getenv("HOME"));
-	strcat(path, "/.rlg327/dungeon");
-	f = fopen(path, "w");
-	free(path);
 	if (!f)
 	{
-		fprintf(stderr, "Failed to open file%s\n", path);
+		fprintf(stderr, "Failed to open file\n");
 		return;
 	}
 
@@ -359,7 +351,7 @@ void saveFile(FILE *f)
 	//write rooms
 
 	fclose(f);
-*/
+
 }
 
 int main(int argc, char *argv[])
@@ -368,7 +360,6 @@ int main(int argc, char *argv[])
 	char *path = strcat(home, "/.rlg327");
 	mkdir(path, 0777);
 	path = strcat(path, "/dungeon");
-
 
 
 	//set up random seed
@@ -405,13 +396,13 @@ int main(int argc, char *argv[])
 	{
 		printf("loading dungeon...\n");
 
-		FILE *ff = fopen("/home/danryw/.rlg327/dungeon", "r");
-		if (!ff)
+		FILE *f = fopen("/home/danryw/.rlg327/dungeon", "r");
+		if (!f)
 		{
 			fprintf(stderr, "Fail in main loadfile\n");
 			return -1;
 		}
-		loadFile(ff);
+		loadFile(f);
 	}
 	else
 	{
@@ -422,14 +413,14 @@ int main(int argc, char *argv[])
 	if (save)
 	{
 		printf("saving dungeon...\n");
-		FILE *ff = fopen("/home/danryw/.rlg327/dungeon", "w");
-		if (!ff)
+		FILE *f = fopen("/home/danryw/.rlg327/dungeon", "w");
+		if (!f)
 		{
 			fprintf(stderr, "Fail in main savefile\n");
 
 			return -1;
 		}
-		saveFile(ff);
+		saveFile(f);
 	}
 
 	return 0;

@@ -290,7 +290,6 @@ void loadFile(FILE *f)
 		}
 	}
 
-//	dungeon.num_room = filesize -1702;
 	u_int8_t room[filesize - 1702];
 	fread(room, 1, filesize - 1702, f);
 	int n = filesize - 1702;
@@ -324,9 +323,14 @@ void saveFile(FILE *f, Room *r)
 	version = htobe32(version);
 	fwrite(&version, 4, 1, f);
 
-	int filesize = 0;
+	int filesize = 1680 + 20 + 4 * map.num_room;
 	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);
+
+	int pc_x = map.pc_col;
+	fwrite(&pc_x, 1, 1, f);
+	int pc_y = map.pc_row;
+	fwrite(&pc_y, 1, 1, f);
 
 	char *hard = malloc(1680);
 	//write hardness

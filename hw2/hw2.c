@@ -5,6 +5,7 @@
 #include <math.h>
 #include <string.h>
 #include <endian.h>
+#include <sys/stat.h>
 #define ROW 21
 #define COL 80
 #define ROCK ' '
@@ -14,14 +15,6 @@
 #define ROOM_H 0
 #define CORRIDOR_H 0
 
-enum action
-{
-	action_print,
-	action_load,
-	action_save,
-	action_load_save,
-	action_save_load
-};
 
 typedef struct dungeonCell
 {
@@ -261,72 +254,79 @@ void generateDungeon(int seed)
 	dungeon[me.row][me.col].hardness = 0;
 }
 
-void loadFile()
+void loadFile(char *path)
 {
+	/*
 	FILE *f;
 	char *path;
 	path = malloc(strlen(getenv("HOME") + strlen("/.rlg327/dungeon") + 1));
 	strcpy(path, getenv("HOME"));
 	strcat(path, "/.rlg327/dungeon");
-	f = fopen(path, "f");
+	mkdir(path, 0777);
+	f = fopen(path, "r");
 	free(path);
-	if (!f)
+	*/
+	if (f)
 	{
-		fprintf(stderr, "Failed to open file%s\n", path);
+		fprintf(stderr, "Failed to open file\n");
 		return;
 	}
 
 	char marker[12];
 	fread(marker, 1, 12, f);
 
-//	uint32_t *version;
-//	fread(version, 4, 1, f);
-	uint32_t version[1];
+	u_int32_t version[1];
 	fread(version, 4, 1, f);
 
-	uint32_t file_size[1];
+	u_int32_t file_size[1];
 	fread(file_size, 4, 1, f);
 	int filesize = be32toh(*file_size);
 
-	uint8_t PCcol[1];
+	u_int8_t PCcol[1];
 	fread(PCcol, 1, 1, f);
-	uint8_t PCrow[1];
+	u_int8_t PCrow[1];
 	fread(PCrow, 1, 1, f);
-	
 
-	uint8_t hard[1680];
+	u_int8_t hard[1680];
 	fread(hard, 1, 1680, f);
 	initDungeon();
 	for (int row=0; row<ROW; row++)
 	{
 		for (int col=0; col<COL; col++)
 		{
-			int h = hard[ROW*row + col];//TODO
+			int h = hard[ROW*row + col];
 			dungeon[row][col].hardness = h;
+			if (h == 0)
+			{
+				dungeon[row][col].space = CORRIDOR;
+			}
+			else
+			{
+				dungeon[row][col].space = ROCK;
+			}
 		}
 	}
 
-	uint8_t room[filesize - 1702];
+	u_int8_t room[filesize - 1702];
 	fread(room, 1, filesize - 1702, f);
 	int n = filesize - 1702;
-	for (int i=0; i<n; i+=4)
+	for (int i=0; i<n; i++)
 	{
 		int row = room[i++];
 		int col = room[i++];
 		int width = room[i++];
-		int height = room[i++];
+		int height = room[i];
 
 		addRoom(row, col, width, height);
 	}
+
 	
 	fclose(f);
-
 }
 
-void saveFile()
+void saveFile(char *path)
 {
 /*
-
 	FILE *f;
 	char *path;
 	path = malloc(strlen(getenv("HOME") + strlen("/.rlg327/dungeon") + 1));
@@ -344,7 +344,7 @@ void saveFile()
 	fwrite(marker, 1, 12, f);
 
 	int version = 0;
-	version = htobe32(version);//TODO
+	version = htobe32(version);
 	fwrite(&version, 4, 1, f);
 
 	int filesize = 0;
@@ -363,81 +363,74 @@ void saveFile()
 
 	//write rooms
 
-
+	fclose(f);
 */
 }
 
 int main(int argc, char *argv[])
 {
+
+	/*
+	FILE *f;
+	char *path;
+	path = malloc(strlen(getenv("HOME") + strlen("/.rlg327/dungeon") + 1));
+	strcpy(path, getenv("HOME"));
+	strcat(path, "/.rlg327/dungeon");
+	mkdir(path, 0777);
+	f = fopen(path, "r");
+	//free(path);
+	*/
+
+	char *home = getenv("HOME");
+	char *path = strcat(home, "/.rlg327");
+	mkdir(path, 0777);
+	path = strcat(path, "/dungeon");
+
 	//set up random seed
 	int seed = time(NULL);
 	//seed = 1536656664; seed = 1536656798; seed = 1536657024; seed = 1536657138; 
 
-	enum action act = action_print;
 	bool load = false;
 	bool save = false;
 
-	for (int i=1; i<argc; i++)
+	if (argc != 1)
 	{
-		if (strcmp(argv[i], "--save") == 0 || strcmp(argv[i], "--load" == 0))
+
+		for (int i=1; i<argc; i++)
 		{
-			fprintf(stderr, "Bad argument\n");
-			return -1;
-		}
-		if (strcmp(argv[i], "--save") == 0)
-		{
-			save = true;
-			if (load)
+			if (strcmp(argv[i], "--save") != 0 && strcmp(argv[i], "--load") != 0)
 			{
-				act = action_load_save;
+				fprintf(stderr, "Bad argument\n");
+				return -1;
 			}
-			else
+			if (strcmp(argv[i], "--save") == 0)
 			{
-				act = action_save;
+				save = true;
 			}
-		}
-		if (strcmp(argv[i], "--load") == 0)
-		{
-			load = true;
-			if (save)
+			if (strcmp(argv[i], "--load") == 0)
 			{
-				act = action_load_save;
-			}
-			else
-			{
-				act = action_load;
+				load = true;
 			}
 		}
+
 	}
 
-	switch (act)
+	if (load)
 	{
-		case action_print:
-			generateDungeon(seed);
-			printDungeon();
-			break;
-		case action_load:
-			loadFile();
-			printDungeon();
-			break;
-		case action_save:
-			generateDungeon(seed);
-			printDungeon();
-			saveFile();
-			break;
-		case action_load_save:
-			loadFile();
-			printDungeon();
-			saveFile();
-			break;
-		case action_save_load:
-			generateDungeon(seed);
-			printDungeon();
-			saveFile();
-			loadFile();
-			break;
+		printf("loading dungeon...\n");
+		loadFile(path);
 	}
+	else
+	{
+		generateDungeon(seed);
+	}
+	printDungeon();
 
+	if (save)
+	{
+		printf("saving dungeon...\n");
+		saveFile(path);
+	}
 
 	return 0;
 }

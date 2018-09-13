@@ -201,6 +201,10 @@ int main(int argc, char *argv[])
 
 	//set up random
 	int seed = time(NULL);
+	seed = 1536656664;
+	//seed = 1536656798; seed = 1536831996;
+	//seed = 1536657024; seed = 1536657138; seed = 1536807801;
+
 	srand(seed);
 
 	//generate random number of rooms

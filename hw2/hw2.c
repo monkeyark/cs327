@@ -333,8 +333,9 @@ void saveFile(FILE *f)
 	version = htobe32(version);
 	fwrite(&version, 4, 1, f);
 
-	int filesize = 1680 + 20 + 4 * map.num_room;
-	printf("map.num_room = %d\n", map.num_room);//TODO debug flag
+	int filesize = 1702 + 4 * map.num_room;
+	//int filesize = 1680 + 20 + 4 * map.num_room;//TODO debug flag
+	printf("map.num_room = %d\n", map.num_room);
 	printf("filesize when saving = %d\n", filesize);
 	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);
@@ -383,9 +384,7 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	seed = 1536656667;
-	//seed = 1536656664; seed = 1536656798; seed = 1536831996; 
-	//seed = 1536657024; seed = 1536657138; seed = 1536807801;	
+	seed = 1536656798;
 	printf("\nseed = %d;\n", seed);
 	srand(seed);
 

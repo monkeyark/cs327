@@ -15,7 +15,12 @@
 #define ROOM_H 0
 #define CORRIDOR_H 0
 
-
+typedef struct dungeon
+{
+	int num_room;
+	int pc_row;
+	int pc_col;
+} Dungeon;
 typedef struct dungeonCell
 {
 	char space;
@@ -28,18 +33,12 @@ typedef struct dungeonRoom
 	int col;
 	int width;
 	int height;
-	int num_room;
 } Room;
 
-typedef struct player
-{
-	int row;
-	int col;
-} Player;
 
 Cell dungeon[ROW][COL];
 Room *room;
-Player me;
+Dungeon map;
 
 void initDungeon()
 {
@@ -237,10 +236,10 @@ void generateDungeon(int n, Room *r)
 	}
 	
 	//add initial player loaction
-	me.row = rooms[0].row;
-	me.col = rooms[0].col;
-	dungeon[me.row][me.col].space = '@';
-	dungeon[me.row][me.col].hardness = 0;
+	map.pc_row = rooms[0].row;
+	map.pc_col = rooms[0].col;
+	dungeon[map.pc_row][map.pc_col].space = '@';
+	dungeon[map.pc_row][map.pc_col].hardness = 0;
 
 	r = rooms; //TODO
 }
@@ -330,7 +329,7 @@ void saveFile(FILE *f)
 	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);
 
-	char *hard = char[ROW*COL];
+	char *hard = malloc(1680);
 	//write hardness
 	for(int i=0; i<ROW; i++)
 	{
@@ -342,16 +341,16 @@ void saveFile(FILE *f)
 	fwrite(hard, 1, 1680, f);
 
 	//write room
-	unsigned char *loc = malloc(4 *dungeon.num_room);
+	unsigned char *loc = malloc(4 *map.num_room);
 	int n = 0;
-	for (int i=0; i<dungeon.num_room; i++)
+	for (int i=0; i<map.num_room; i++)
 	{
-		loc[i++] = (unsigned char) arr_room[i].col;
-		loc[i++] = (unsigned char) arr_room[i].row;
-		loc[i++] = (unsigned char) arr_room[i].width;
-		loc[i++] = (unsigned char) arr_room[i].height;
+		loc[n++] = (unsigned char) arr_room[i].col;
+		loc[n++] = (unsigned char) arr_room[i].row;
+		loc[n++] = (unsigned char) arr_room[i].width;
+		loc[n++] = (unsigned char) arr_room[i].height;
 	}
-	fwrite(location, 1, 4*dungeon.num_room, f);
+	fwrite(location, 1, 4*map.num_room, f);
 	
 	free(hard);
 	fclose(f);
@@ -373,8 +372,8 @@ int main(int argc, char *argv[])
 	srand(seed);
 
 	//generate random number of rooms
-	dungeon.num_room = getRandom(7, 5);
-	Room room = [dungeon.num_room];
+	map.num_room = getRandom(7, 5);
+	Room room [map.num_room];
 	Room *r = room;
 	bool load = false;
 	bool save = false;
@@ -415,7 +414,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		generateDungeon();
+		generateDungeon(map.num_room, room);
 	}
 	printDungeon();
 

@@ -11,9 +11,11 @@
 #define ROCK ' '
 #define ROOM '.'
 #define CORRIDOR '#'
+#define PC '@'
 #define ROCK_H 255
 #define ROOM_H 0
 #define CORRIDOR_H 0
+#define PC_H 0
 
 typedef struct dungeon
 {
@@ -37,7 +39,7 @@ typedef struct dungeonRoom
 
 
 Cell dungeon[ROW][COL];
-Room *room;
+Room *dungeonRoom;
 Dungeon map;
 
 void initDungeon()
@@ -219,29 +221,27 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 
 }
 
-void generateDungeon(int n, Room *r)
+void generateDungeon(int n)
 {
 	//initial dungeon
 	initDungeon();
-	Room rooms[n];
+	dungeonRoom = malloc(map.num_room * sizeof(Room));
 
 	for (int i=0; i<n; i++)
 	{
-		rooms[i] = newRoom();
+		dungeonRoom[i] = newRoom();
 	}
 
 	for (int i=0; i<n-1; i++)
 	{
-		newCorridor(rooms[i].row, rooms[i].col, rooms[i+1].row, rooms[i+1].col);
+		newCorridor(dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i+1].row, dungeonRoom[i+1].col);
 	}
 	
 	//add initial player loaction
-	map.pc_row = rooms[0].row;
-	map.pc_col = rooms[0].col;
+	map.pc_row = dungeonRoom[0].row;
+	map.pc_col = dungeonRoom[0].col;
 	dungeon[map.pc_row][map.pc_col].space = '@';
 	dungeon[map.pc_row][map.pc_col].hardness = 0;
-
-	r = rooms;
 }
 
 void loadFile(FILE *f)
@@ -260,14 +260,17 @@ void loadFile(FILE *f)
 	u_int32_t version[1];
 	fread(&version, 4, 1, f);
 
-	u_int32_t file_size[1];
+	u_int32_t file_size;
 	fread(&file_size, 4, 1, f);
-	int filesize = be32toh(*file_size);
+	int filesize = be32toh(file_size);
 
-	u_int8_t PCcol[1];
-	fread(PCcol, 1, 1, f);
-	u_int8_t PCrow[1];
-	fread(PCrow, 1, 1, f);
+	u_int8_t pc_col;
+	fread(&pc_col, 1, 1, f);
+	map.pc_col = pc_col;
+	u_int8_t pc_row;
+	fread(&pc_row, 1, 1, f);
+	map.pc_row = pc_row;
+
 
 	u_int8_t hard[1680];
 	fread(hard, 1, 1680, f);
@@ -290,25 +293,33 @@ void loadFile(FILE *f)
 		}
 	}
 
-	u_int8_t room[filesize - 1702];
-	fread(room, 1, filesize - 1702, f);
-	int n = filesize - 1702;
+	//TODO save into dungeonRoom
+	map.num_room = (filesize - 1702) / 4;
+	dungeonRoom = malloc(map.num_room * sizeof(Room));
 
+	u_int8_t roomRead[filesize - 1702];
+	fread(roomRead, 1, filesize - 1702, f);
+
+	int n = 0;
 	printf("filesize = %d\n", filesize);
-	for (int i=0; i<n; i++)
+	for (int i=0; i<map.num_room; i++)
 	{
-		int col = room[i++];
-		int row = room[i++];
-		int width = room[i++];
-		int height = room[i];
+		dungeonRoom[i].col = roomRead[n++];
+		dungeonRoom[i].row = roomRead[n++];
+		dungeonRoom[i].width = roomRead[n++];
+		dungeonRoom[i].height = roomRead[n++];
 
-		addRoom(row, col, width, height);
+		addRoom(dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);
 	}
 	
+	//add PC
+	dungeon[map.pc_row][map.pc_col].space = PC;
+	dungeon[map.pc_row][map.pc_col].hardness = PC_H;
+
 	fclose(f);
 }
 
-void saveFile(FILE *f, Room *r)
+void saveFile(FILE *f)
 {
 	if (!f)
 	{
@@ -324,6 +335,8 @@ void saveFile(FILE *f, Room *r)
 	fwrite(&version, 4, 1, f);
 
 	int filesize = 1680 + 20 + 4 * map.num_room;
+	printf("map.num_room = %d\n", map.num_room);//TODO debug flag
+	printf("filesize when saving = %d\n", filesize);
 	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);
 
@@ -348,10 +361,10 @@ void saveFile(FILE *f, Room *r)
 	int n = 0;
 	for (int i=0; i<map.num_room; i++)
 	{
-		loc[n++] = (unsigned char) r[i].col;
-		loc[n++] = (unsigned char) r[i].row;
-		loc[n++] = (unsigned char) r[i].width;
-		loc[n++] = (unsigned char) r[i].height;
+		loc[n++] = (unsigned char) dungeonRoom[i].col;
+		loc[n++] = (unsigned char) dungeonRoom[i].row;
+		loc[n++] = (unsigned char) dungeonRoom[i].width;
+		loc[n++] = (unsigned char) dungeonRoom[i].height;
 	}
 	fwrite(loc, 1, 4*map.num_room, f);
 	
@@ -377,8 +390,7 @@ int main(int argc, char *argv[])
 
 	//generate random number of rooms
 	map.num_room = getRandom(7, 5);
-	Room room[map.num_room];
-	//Room *r = room;
+	//Room rooms[map.num_room];
 	bool load = false;
 	bool save = false;
 
@@ -407,18 +419,12 @@ int main(int argc, char *argv[])
 	if (load)
 	{
 		printf("loading dungeon...\n");
-
 		FILE *f = fopen("/home/danryw/.rlg327/dungeon", "r");
-		if (!f)
-		{
-			fprintf(stderr, "Fail in main loadfile\n");
-			return -1;
-		}
 		loadFile(f);
 	}
 	else
 	{
-		generateDungeon(map.num_room, room);
+		generateDungeon(map.num_room);
 	}
 	printDungeon();
 
@@ -426,13 +432,7 @@ int main(int argc, char *argv[])
 	{
 		printf("saving dungeon...\n");
 		FILE *f = fopen("/home/danryw/.rlg327/dungeon", "w");
-		if (!f)
-		{
-			fprintf(stderr, "Fail in main savefile\n");
-
-			return -1;
-		}
-		saveFile(f, room);
+		saveFile(f);
 	}
 
 	return 0;

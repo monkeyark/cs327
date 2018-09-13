@@ -16,3 +16,4 @@ Sep 11
 	finish load file
 	major bugfix! row and col is swapped when load file
 	success load sample file
+	bugfix save file

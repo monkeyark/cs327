@@ -28,6 +28,7 @@ typedef struct dungeonRoom
 	int col;
 	int width;
 	int height;
+	int num_room;
 } Room;
 
 typedef struct player
@@ -138,13 +139,6 @@ Room newRoom()
 
 void addRoom(int row, int col, int width, int height)
 {
-/*
-	room->row = row;
-	room->col = col;
-	room->width = width;
-	room->height = height;
-	room++;
-*/
 	for (int i=row; i<row+height; i++)
 	{
 		for (int j=col; j<col+width; j++)
@@ -226,16 +220,10 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 
 }
 
-void generateDungeon(int seed)
+void generateDungeon(int n, Room *r)
 {
 	//initial dungeon
 	initDungeon();
-
-	printf("\nseed = %d;\n", seed);
-	srand(seed);
-
-	//generate random number of rooms
-	int n = getRandom(7, 5);
 	Room rooms[n];
 
 	for (int i=0; i<n; i++)
@@ -253,6 +241,8 @@ void generateDungeon(int seed)
 	me.col = rooms[0].col;
 	dungeon[me.row][me.col].space = '@';
 	dungeon[me.row][me.col].hardness = 0;
+
+	r = rooms; //TODO
 }
 
 void loadFile(FILE *f)
@@ -262,6 +252,8 @@ void loadFile(FILE *f)
 		fprintf(stderr, "Failed to open file\n");
 		return;
 	}
+
+	initDungeon();
 
 	char marker[12];
 	fread(&marker, 1, 12, f);
@@ -280,7 +272,6 @@ void loadFile(FILE *f)
 
 	u_int8_t hard[1680];
 	fread(hard, 1, 1680, f);
-	initDungeon();
 
 	for (int row=0; row<ROW; row++)
 	{
@@ -301,6 +292,7 @@ void loadFile(FILE *f)
 		}
 	}
 
+//	dungeon.num_room = filesize -1702;
 	u_int8_t room[filesize - 1702];
 	fread(room, 1, filesize - 1702, f);
 	int n = filesize - 1702;
@@ -335,21 +327,33 @@ void saveFile(FILE *f)
 	fwrite(&version, 4, 1, f);
 
 	int filesize = 0;
-	filesize = heobe32(filesize);
+	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);
 
+	char *hard = char[ROW*COL];
 	//write hardness
 	for(int i=0; i<ROW; i++)
 	{
 		for(int j=0; j<COL; j++)
 		{
-			uint8_t hard;
-			dungeon[i][j].space = ROCK;
+			hard[COL*i + j] = (char) dungeon[i][j].hardness;
 		}
 	}
+	fwrite(hard, 1, 1680, f);
 
-	//write rooms
-
+	//write room
+	unsigned char *loc = malloc(4 *dungeon.num_room);
+	int n = 0;
+	for (int i=0; i<dungeon.num_room; i++)
+	{
+		loc[i++] = (unsigned char) arr_room[i].col;
+		loc[i++] = (unsigned char) arr_room[i].row;
+		loc[i++] = (unsigned char) arr_room[i].width;
+		loc[i++] = (unsigned char) arr_room[i].height;
+	}
+	fwrite(location, 1, 4*dungeon.num_room, f);
+	
+	free(hard);
 	fclose(f);
 
 }
@@ -361,12 +365,17 @@ int main(int argc, char *argv[])
 	mkdir(path, 0777);
 	path = strcat(path, "/dungeon");
 
-
 	//set up random seed
 	int seed = time(NULL);
-	//seed = 1536656664; seed = 1536656798; seed = 1536657024; seed = 1536657138; seed = 1536807801;	
-	
-	seed = 1536656663;
+	//seed = 1536656664; seed = 1536656798; 
+	//seed = 1536657024; seed = 1536657138; seed = 1536807801;	
+	printf("\nseed = %d;\n", seed);
+	srand(seed);
+
+	//generate random number of rooms
+	dungeon.num_room = getRandom(7, 5);
+	Room room = [dungeon.num_room];
+	Room *r = room;
 	bool load = false;
 	bool save = false;
 
@@ -406,7 +415,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		generateDungeon(seed);
+		generateDungeon();
 	}
 	printDungeon();
 

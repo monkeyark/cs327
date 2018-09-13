@@ -54,7 +54,6 @@ void initDungeon()
 	}
 }
 
-
 int getRandom(int modulus, int min)
 {
 	return rand() % modulus + min;
@@ -85,7 +84,7 @@ void printDungeon()
 	printf("\n");
 }
 
-bool isInside (int row, int col)
+bool isInside(int row, int col)
 {
 	//is room not on edge or outside of dungeon
 	return row > 0 && col > 0 && row < ROW && col < COL;
@@ -293,7 +292,6 @@ void loadFile(FILE *f)
 		}
 	}
 
-	//TODO save into dungeonRoom
 	map.num_room = (filesize - 1702) / 4;
 	dungeonRoom = malloc(map.num_room * sizeof(Room));
 
@@ -369,8 +367,10 @@ void saveFile(FILE *f)
 	fwrite(loc, 1, 4*map.num_room, f);
 	
 	free(hard);
+	free(loc);
 	fclose(f);
 
+	printg("File is saved!");
 }
 
 int main(int argc, char *argv[])
@@ -382,7 +382,7 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	seed = 1536656663;
+	seed = 1536656664;
 	//seed = 1536656664; seed = 1536656798; seed = 1536831996; 
 	//seed = 1536657024; seed = 1536657138; seed = 1536807801;	
 	printf("\nseed = %d;\n", seed);
@@ -390,7 +390,6 @@ int main(int argc, char *argv[])
 
 	//generate random number of rooms
 	map.num_room = getRandom(7, 5);
-	//Room rooms[map.num_room];
 	bool load = false;
 	bool save = false;
 
@@ -413,7 +412,6 @@ int main(int argc, char *argv[])
 				load = true;
 			}
 		}
-
 	}
 
 	if (load)

@@ -59,6 +59,8 @@ int getRandom(int modulus, int min)
 	return rand() % modulus + min;
 }
 
+
+/*
 void printDungeon()
 {
 	for (int i=0; i<COL+2; i++)
@@ -73,6 +75,39 @@ void printDungeon()
 		for (int j=0; j<COL; j++)
 		{
 			printf("%c", dungeon[i][j].space);
+		}
+		printf("|\n");
+	}
+
+	for (int i=0; i<COL+2; i++)
+	{
+		printf("-");
+	}
+	printf("\n");
+}
+*/
+
+void printDungeon()
+{
+	printf("   ");
+	for (int i=0; i<COL; i++)
+	{
+		printf("%d", i % 10);
+	}
+	printf("\n");
+
+	for (int i=0; i<COL+2; i++)
+	{
+		printf("-");
+	}
+	printf("\n");
+
+	for (int i=0; i<ROW; i++)
+	{
+		printf("%2d|", i);
+		for (int j=0; j<COL; j++)
+		{
+			printf("%c", dungeon[i][j]);
 		}
 		printf("|\n");
 	}
@@ -118,6 +153,10 @@ Room newRoom()
 	r.height = getRandom(6, 2);
 
 	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
+
+	printf("newRoom    row=%2d   col=%2d   width=%2d   height=%2d", r.row, r.col, r.width, r.height);
+	printf("   %s\n", validRoom?"true":"false");
+
 	if (validRoom)
 	{
 		for (int i=r.row; i<r.row+r.height; i++)
@@ -139,6 +178,7 @@ Room newRoom()
 
 void addRoom(int row, int col, int width, int height)
 {
+	printf("addRoom    row=%2d   col=%2d   width=%2d   height=%2d", row, col, width, height);
 	for (int i=row; i<row+height; i++)
 	{
 		for (int j=col; j<col+width; j++)
@@ -229,7 +269,9 @@ void generateDungeon(int n)
 	for (int i=0; i<n; i++)
 	{
 		dungeonRoom[i] = newRoom();
+		printf("   ROOM    row=%2d   col=%2d   width=%2d   height=%2d\n\n", dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);
 	}
+
 
 	for (int i=0; i<n-1; i++)
 	{

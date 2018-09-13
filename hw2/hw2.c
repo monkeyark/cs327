@@ -365,7 +365,7 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	//seed = 1536656664; seed = 1536656798; 
+	//seed = 1536656664; seed = 1536656798; seed = 1536831996; 
 	//seed = 1536657024; seed = 1536657138; seed = 1536807801;	
 	printf("\nseed = %d;\n", seed);
 	srand(seed);

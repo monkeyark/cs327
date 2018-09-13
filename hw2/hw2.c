@@ -256,19 +256,14 @@ void generateDungeon(int seed)
 
 void loadFile(char *path)
 {
-	/*
-	FILE *f;
-	char *path;
-	path = malloc(strlen(getenv("HOME") + strlen("/.rlg327/dungeon") + 1));
-	strcpy(path, getenv("HOME"));
-	strcat(path, "/.rlg327/dungeon");
-	mkdir(path, 0777);
-	f = fopen(path, "r");
-	free(path);
-	*/
-	if (f)
+	printf("%s\n", path);
+	FILE *f = fopen(path, "r");
+	
+//	printf();
+	if (!f)
 	{
 		fprintf(stderr, "Failed to open file\n");
+
 		return;
 	}
 
@@ -369,18 +364,6 @@ void saveFile(char *path)
 
 int main(int argc, char *argv[])
 {
-
-	/*
-	FILE *f;
-	char *path;
-	path = malloc(strlen(getenv("HOME") + strlen("/.rlg327/dungeon") + 1));
-	strcpy(path, getenv("HOME"));
-	strcat(path, "/.rlg327/dungeon");
-	mkdir(path, 0777);
-	f = fopen(path, "r");
-	//free(path);
-	*/
-
 	char *home = getenv("HOME");
 	char *path = strcat(home, "/.rlg327");
 	mkdir(path, 0777);
@@ -388,7 +371,7 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	//seed = 1536656664; seed = 1536656798; seed = 1536657024; seed = 1536657138; 
+	//seed = 1536656664; seed = 1536656798; seed = 1536657024; seed = 1536657138; seed = 1536807801;	
 
 	bool load = false;
 	bool save = false;

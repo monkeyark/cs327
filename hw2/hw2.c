@@ -60,7 +60,7 @@ int getRandom(int modulus, int min)
 }
 
 
-
+/*
 void printDungeon()
 {
 	for (int i=0; i<COL+2; i++)
@@ -85,9 +85,10 @@ void printDungeon()
 	}
 	printf("\n");
 }
+*/
 
 
-/*
+
 void printDungeon()
 {
 	printf("   ");
@@ -119,7 +120,7 @@ void printDungeon()
 	}
 	printf("\n");
 }
-*/
+
 
 bool isInside(int row, int col)
 {
@@ -156,8 +157,8 @@ Room newRoom()
 
 	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
 
-//	printf("newRoom    row=%2d   col=%2d   width=%2d   height=%2d", r.row, r.col, r.width, r.height);//TODO
-//	printf("   %s\n", validRoom?"true":"false");
+	printf("newRoom    row=%2d   col=%2d   width=%2d   height=%2d", r.row, r.col, r.width, r.height);//TODO
+	printf("   %s\n", validRoom?"true":"false");
 
 	if (validRoom)
 	{
@@ -180,7 +181,7 @@ Room newRoom()
 
 void addRoom(int row, int col, int width, int height)
 {
-//	printf("addRoom    row=%2d   col=%2d   width=%2d   height=%2d\n", row, col, width, height);//TODO
+	printf("addRoom    row=%2d   col=%2d   width=%2d   height=%2d\n", row, col, width, height);//TODO
 	for (int i=row; i<row+height; i++)
 	{
 		for (int j=col; j<col+width; j++)
@@ -271,7 +272,7 @@ void generateDungeon(int n)
 	for (int i=0; i<n; i++)
 	{
 		dungeonRoom[i] = newRoom();
-//		printf("   ROOM    row=%2d   col=%2d   width=%2d   height=%2d\n", dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);//TODO
+		printf("   ROOM    row=%2d   col=%2d   width=%2d   height=%2d\n", dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);//TODO
 	}
 
 
@@ -421,6 +422,7 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
+	seed = 1536656798;
 //	printf("\nseed = %d;\n", seed);//TODO
 	srand(seed);
 

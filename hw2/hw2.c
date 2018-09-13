@@ -138,16 +138,20 @@ Room newRoom()
 
 void addRoom(int row, int col, int width, int height)
 {
+/*
 	room->row = row;
 	room->col = col;
 	room->width = width;
 	room->height = height;
 	room++;
-
+*/
 	for (int i=row; i<row+height; i++)
 	{
+		printf("i = %d\n", i);
 		for (int j=col; j<col+width; j++)
 		{
+
+			printf("j = %d\n", j);
 			dungeon[i][j].space = ROOM;
 			dungeon[i][j].hardness = ROOM_H;
 		}
@@ -254,27 +258,23 @@ void generateDungeon(int seed)
 	dungeon[me.row][me.col].hardness = 0;
 }
 
-void loadFile(char *path)
+void loadFile(FILE *f)
 {
-	printf("%s\n", path);
-	FILE *f = fopen(path, "r");
-	
-//	printf();
+
 	if (!f)
 	{
 		fprintf(stderr, "Failed to open file\n");
-
 		return;
 	}
 
 	char marker[12];
-	fread(marker, 1, 12, f);
-
+	fread(&marker, 1, 12, f);
+	
 	u_int32_t version[1];
-	fread(version, 4, 1, f);
+	fread(&version, 4, 1, f);
 
 	u_int32_t file_size[1];
-	fread(file_size, 4, 1, f);
+	fread(&file_size, 4, 1, f);
 	int filesize = be32toh(*file_size);
 
 	u_int8_t PCcol[1];
@@ -285,6 +285,7 @@ void loadFile(char *path)
 	u_int8_t hard[1680];
 	fread(hard, 1, 1680, f);
 	initDungeon();
+
 	for (int row=0; row<ROW; row++)
 	{
 		for (int col=0; col<COL; col++)
@@ -305,21 +306,22 @@ void loadFile(char *path)
 	u_int8_t room[filesize - 1702];
 	fread(room, 1, filesize - 1702, f);
 	int n = filesize - 1702;
+
+	printf("filesize = %d\n", filesize);
 	for (int i=0; i<n; i++)
 	{
-		int row = room[i++];
 		int col = room[i++];
+		int row = room[i++];
 		int width = room[i++];
 		int height = room[i];
 
 		addRoom(row, col, width, height);
 	}
-
 	
 	fclose(f);
 }
 
-void saveFile(char *path)
+void saveFile(FILE *f)
 {
 /*
 	FILE *f;
@@ -369,10 +371,13 @@ int main(int argc, char *argv[])
 	mkdir(path, 0777);
 	path = strcat(path, "/dungeon");
 
+
+
 	//set up random seed
 	int seed = time(NULL);
 	//seed = 1536656664; seed = 1536656798; seed = 1536657024; seed = 1536657138; seed = 1536807801;	
-
+	
+	seed = 1536656663;
 	bool load = false;
 	bool save = false;
 
@@ -401,7 +406,14 @@ int main(int argc, char *argv[])
 	if (load)
 	{
 		printf("loading dungeon...\n");
-		loadFile(path);
+
+		FILE *ff = fopen("/home/danryw/.rlg327/dungeon", "r");
+		if (!ff)
+		{
+			fprintf(stderr, "Fail in main loadfile\n");
+			return -1;
+		}
+		loadFile(ff);
 	}
 	else
 	{
@@ -412,7 +424,14 @@ int main(int argc, char *argv[])
 	if (save)
 	{
 		printf("saving dungeon...\n");
-		saveFile(path);
+		FILE *ff = fopen("/home/danryw/.rlg327/dungeon", "w");
+		if (!ff)
+		{
+			fprintf(stderr, "Fail in main savefile\n");
+
+			return -1;
+		}
+		saveFile(ff);
 	}
 
 	return 0;

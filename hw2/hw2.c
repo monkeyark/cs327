@@ -277,7 +277,6 @@ void loadFile(FILE *f)
 		for (int col=0; col<COL; col++)
 		{
 			int index = COL*row + col;
-			printf("hardness index = %d\n", index);
 			int h = hard[index];
 			dungeon[row][col].hardness = h;
 			if (h == 0)

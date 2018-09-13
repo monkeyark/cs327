@@ -315,6 +315,7 @@ void loadFile(FILE *f)
 	dungeon[map.pc_row][map.pc_col].hardness = PC_H;
 
 	fclose(f);
+	printf("Dungeon is loaded!\n");//TODO debug flag
 }
 
 void saveFile(FILE *f)
@@ -370,7 +371,7 @@ void saveFile(FILE *f)
 	free(loc);
 	fclose(f);
 
-	printg("File is saved!");
+	printf("Dungeon is saved!\n"); //TODO debug flag
 }
 
 int main(int argc, char *argv[])

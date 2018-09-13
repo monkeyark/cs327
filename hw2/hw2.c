@@ -60,7 +60,7 @@ int getRandom(int modulus, int min)
 }
 
 
-/*
+
 void printDungeon()
 {
 	for (int i=0; i<COL+2; i++)
@@ -85,8 +85,9 @@ void printDungeon()
 	}
 	printf("\n");
 }
-*/
 
+
+/*
 void printDungeon()
 {
 	printf("   ");
@@ -107,7 +108,7 @@ void printDungeon()
 		printf("%2d|", i);
 		for (int j=0; j<COL; j++)
 		{
-			printf("%c", dungeon[i][j]);
+			printf("%c", dungeon[i][j].space);
 		}
 		printf("|\n");
 	}
@@ -118,6 +119,7 @@ void printDungeon()
 	}
 	printf("\n");
 }
+*/
 
 bool isInside(int row, int col)
 {
@@ -154,8 +156,8 @@ Room newRoom()
 
 	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
 
-	printf("newRoom    row=%2d   col=%2d   width=%2d   height=%2d", r.row, r.col, r.width, r.height);
-	printf("   %s\n", validRoom?"true":"false");
+//	printf("newRoom    row=%2d   col=%2d   width=%2d   height=%2d", r.row, r.col, r.width, r.height);//TODO
+//	printf("   %s\n", validRoom?"true":"false");
 
 	if (validRoom)
 	{
@@ -178,7 +180,7 @@ Room newRoom()
 
 void addRoom(int row, int col, int width, int height)
 {
-	printf("addRoom    row=%2d   col=%2d   width=%2d   height=%2d", row, col, width, height);
+//	printf("addRoom    row=%2d   col=%2d   width=%2d   height=%2d\n", row, col, width, height);//TODO
 	for (int i=row; i<row+height; i++)
 	{
 		for (int j=col; j<col+width; j++)
@@ -269,7 +271,7 @@ void generateDungeon(int n)
 	for (int i=0; i<n; i++)
 	{
 		dungeonRoom[i] = newRoom();
-		printf("   ROOM    row=%2d   col=%2d   width=%2d   height=%2d\n\n", dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);
+//		printf("   ROOM    row=%2d   col=%2d   width=%2d   height=%2d\n", dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);//TODO
 	}
 
 
@@ -341,7 +343,6 @@ void loadFile(FILE *f)
 	fread(roomRead, 1, filesize - 1702, f);
 
 	int n = 0;
-	printf("filesize = %d\n", filesize);
 	for (int i=0; i<map.num_room; i++)
 	{
 		dungeonRoom[i].col = roomRead[n++];
@@ -357,7 +358,6 @@ void loadFile(FILE *f)
 	dungeon[map.pc_row][map.pc_col].hardness = PC_H;
 
 	fclose(f);
-	printf("Dungeon is loaded!\n");//TODO debug flag
 }
 
 void saveFile(FILE *f)
@@ -376,9 +376,6 @@ void saveFile(FILE *f)
 	fwrite(&version, 4, 1, f);
 
 	int filesize = 1702 + 4 * map.num_room;
-	//int filesize = 1680 + 20 + 4 * map.num_room;//TODO debug flag
-	printf("map.num_room = %d\n", map.num_room);
-	printf("filesize when saving = %d\n", filesize);
 	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);
 
@@ -413,8 +410,6 @@ void saveFile(FILE *f)
 	free(hard);
 	free(loc);
 	fclose(f);
-
-	printf("Dungeon is saved!\n"); //TODO debug flag
 }
 
 int main(int argc, char *argv[])
@@ -426,8 +421,7 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	seed = 1536656798;
-	printf("\nseed = %d;\n", seed);
+//	printf("\nseed = %d;\n", seed);//TODO
 	srand(seed);
 
 	//generate random number of rooms
@@ -437,7 +431,6 @@ int main(int argc, char *argv[])
 
 	if (argc != 1)
 	{
-
 		for (int i=1; i<argc; i++)
 		{
 			if (strcmp(argv[i], "--save") != 0 && strcmp(argv[i], "--load") != 0)
@@ -458,7 +451,6 @@ int main(int argc, char *argv[])
 
 	if (load)
 	{
-		printf("loading dungeon...\n");
 		FILE *f = fopen("/home/danryw/.rlg327/dungeon", "r");
 		loadFile(f);
 	}
@@ -470,7 +462,6 @@ int main(int argc, char *argv[])
 
 	if (save)
 	{
-		printf("saving dungeon...\n");
 		FILE *f = fopen("/home/danryw/.rlg327/dungeon", "w");
 		saveFile(f);
 	}

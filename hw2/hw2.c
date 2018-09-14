@@ -159,9 +159,6 @@ Room newRoom()
 
 	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
 
-	printf("newRoom    row=%2d   col=%2d   width=%2d   height=%2d", r.row, r.col, r.width, r.height);//TODO
-	printf("   %s\n", validRoom?"true":"false");
-
 	if (validRoom)
 	{
 		for (int i=r.row; i<r.row+r.height; i++)
@@ -183,7 +180,6 @@ Room newRoom()
 
 void addRoom(int row, int col, int width, int height)
 {
-	printf("addRoom    row=%2d   col=%2d   width=%2d   height=%2d\n", row, col, width, height);//TODO
 	for (int i=row; i<row+height; i++)
 	{
 		for (int j=col; j<col+width; j++)
@@ -274,9 +270,8 @@ void generateDungeon(int n)
 	for (int i=0; i<n; i++)
 	{
 		dungeonRoom[i] = newRoom();
-		printf("   ROOM    row=%2d   col=%2d   width=%2d   height=%2d\n", dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);//TODO
+		printf("  ROOM%2d    row=%2d   col=%2d   width=%2d   height=%2d\n", i, dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);//TODO
 	}
-
 
 	for (int i=0; i<n-1; i++)
 	{
@@ -429,8 +424,10 @@ int main(int argc, char *argv[])
 	//seed = 1536657024;
 	//seed = 1536657138;
 	//seed = 1536807801;
+	//////////////////////////Linux above, Windows below
+	//seed = 1536941561;
 
-	//printf("\nseed = %d;\n", seed);//TODD
+	printf("\nseed = %d;\n", seed);//TODD
 	srand(seed);
 
 	//generate random number of rooms

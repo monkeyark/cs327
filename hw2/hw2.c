@@ -22,7 +22,9 @@ typedef struct dungeon
 	int num_room;
 	int pc_row;
 	int pc_col;
+	int version;
 } Dungeon;
+
 typedef struct dungeonCell
 {
 	char space;
@@ -301,8 +303,9 @@ void loadFile(FILE *f)
 	char marker[12];
 	fread(&marker, 1, 12, f);
 	
-	u_int32_t version[1];
-	fread(&version, 4, 1, f);
+	u_int32_t ver;
+	fread(&ver, 4, 1, f);
+	map.version = be32toh(ver);
 
 	u_int32_t file_size;
 	fread(&file_size, 4, 1, f);
@@ -372,9 +375,8 @@ void saveFile(FILE *f)
 	char *marker = "RLG327-F2018";
 	fwrite(marker, 1, 12, f);
 
-	int version = 0;
-	version = htobe32(version);
-	fwrite(&version, 4, 1, f);
+	int ver = htobe32(map.version);
+	fwrite(&ver, 4, 1, f);
 
 	int filesize = 1702 + 4 * map.num_room;
 	filesize = htobe32(filesize);
@@ -422,8 +424,13 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	seed = 1536656798;
-//	printf("\nseed = %d;\n", seed);//TODO
+	//seed = 1536656798;
+	//seed = 1536656664;
+	//seed = 1536657024;
+	//seed = 1536657138;
+	//seed = 1536807801;
+
+	//printf("\nseed = %d;\n", seed);//TODD
 	srand(seed);
 
 	//generate random number of rooms

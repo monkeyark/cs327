@@ -425,7 +425,7 @@ int main(int argc, char *argv[])
 	//seed = 1536657138;
 	//seed = 1536807801;
 	//////////////////////////Linux above, Windows below
-	seed = 1536941561;
+	//seed = 1536941561;
 
 	printf("\nseed = %d;\n", seed);//TODD
 	srand(seed);

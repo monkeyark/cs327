@@ -1,0 +1,5 @@
+Two solutions are attached.
+
+*  tour_offset uses an offset array to calculate knight's moves from the current position. It minimizes code size.
+*  tour_if uses an if statement for each move. This makes the code larger, but the result runs in less than half the time of tour_offset.
+

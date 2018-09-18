@@ -3,10 +3,6 @@
 
 #include "queue.h"
 
-/* WARNING!!!  THERE ARE BUGS IN THIS CODE!!!  WE WILL DEBUG IT IN LECTURE *
- * NEXT WEEK, AND A BUG-FREE IMPLEMENTATION WILL BE INCLUDED IN THE WEEK 5 *
- * NOTES!!!                                                                */
-
 int queue_init(priority_queue *s)
 {
 	s->size = 0;
@@ -41,7 +37,7 @@ int queue_push(priority_queue *s, int v, int p)
 
 	s->size++;
 	n->next = s->peek;
-	//s->peek = n;
+	s->peek = n;
 	n->data = v;
 
 	return 0;

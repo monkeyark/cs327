@@ -2,7 +2,8 @@
 # define MACROS_H
 
 # ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 # endif
 
 # include <stdio.h>
@@ -10,7 +11,7 @@ extern "C" {
 # include <stdlib.h>
 # include <errno.h>
 
-/* General purpose macros */
+	/* General purpose macros */
 
 # ifdef VERBOSE_DEBUG
 #  define dprintf(...) printf(__VA_ARGS__)
@@ -46,15 +47,15 @@ extern "C" {
   _f;                                                                  \
 })
 
-/* If we turn on optimizations, then there are conflicts between a macro *
- * version of strdup() and the macro below.  To avoid that, add the      *
- * conditional block.  Further, if we're optimizing, let's assume that   *
- * don't want all these safe memory macros, so we'll put them in the     *
- * conditional block, too!                                               */
+	/* If we turn on optimizations, then there are conflicts between a macro *
+	 * version of strdup() and the macro below.  To avoid that, add the      *
+	 * conditional block.  Further, if we're optimizing, let's assume that   *
+	 * don't want all these safe memory macros, so we'll put them in the     *
+	 * conditional block, too!                                               */
 # if !defined __OPTIMIZE__
 
-/*
-#  define dmalloc(ptr) ({                                                     \
+	/*
+	 #  define dmalloc(ptr) ({                                                     \
    double t;                                                                  \
    struct timeval tp;                                                         \
    struct timezone tzp;                                                       \
@@ -63,7 +64,7 @@ extern "C" {
    printf("%p: %.0f %s " __FILE__ ":%u m\n", ptr, t, __FUNCTION__, __LINE__); \
 })
 
-#  define dfree(ptr) ({                                                       \
+	 #  define dfree(ptr) ({                                                       \
    double t;                                                                  \
    struct timeval tp;                                                         \
    struct timezone tzp;                                                       \
@@ -71,7 +72,7 @@ extern "C" {
    t = (tzp.tz_minuteswest * 60 + tp.tv_sec) * 1.0e6 + (tp.tv_usec) * 1.0;    \
    printf("%p: %.0f %s " __FILE__ ":%u f\n", ptr, t, __FUNCTION__, __LINE__); \
 })
-*/
+	 */
 
 #  define malloc(size) ({                                                  \
    void *_tmp;                                                             \

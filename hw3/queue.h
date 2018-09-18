@@ -1,24 +1,27 @@
 #ifndef QUEUE_H
 # define QUEUE_H
 
-typedef struct queue_node queue_node_t;
+typedef struct queue_node Node;
 
-struct queue_node {
-  int i;
-  queue_node_t *next;
+struct queue_node
+{
+	int data;
+	int priority;
+	Node *next;
 };
 
-typedef struct queue {
-  int size;
-  queue_node_t *top;
-} queue_t;
+typedef struct queue
+{
+	int size;
+	Node *peek;
+} priority_queue;
 
-int queue_init(queue_t *s);
-int queue_delete(queue_t *s);
-int queue_push(queue_t *s, int v);
-int queue_pop(queue_t *s, int *v);
-int queue_top(queue_t *s, int *v);
-int queue_is_empty(queue_t *s);
-int queue_size(queue_t *s);
+int queue_init(priority_queue *s);
+int queue_delete(priority_queue *s);
+int queue_push(priority_queue *s, int v);
+int queue_pop(priority_queue *s, int *v);
+int queue_peek(priority_queue *s, int *v);
+int queue_isEmpty(priority_queue *s);
+int queue_size(priority_queue *s);
 
 #endif

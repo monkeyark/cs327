@@ -7,78 +7,82 @@
  * NEXT WEEK, AND A BUG-FREE IMPLEMENTATION WILL BE INCLUDED IN THE WEEK 5 *
  * NOTES!!!                                                                */
 
-int queue_init(queue_t *s)
+int queue_init(priority_queue *s)
 {
-  s->size = 0;
-  s->top = NULL;
+	s->size = 0;
+	s->peek = NULL;
 
-  return 0;
+	return 0;
 }
 
-int queue_delete(queue_t *s)
+int queue_delete(priority_queue *s)
 {
-  queue_node_t *n;
+	Node *n;
 
-  while (s->top) {
-    n = s->top;
-    s->top = s->top->next;
-    free(n);
-  }
-  s->size = 0;
+	while (s->peek)
+	{
+		n = s->peek;
+		s->peek = s->peek->next;
+		free(n);
+	}
+	s->size = 0;
 
-  return 0;
+	return 0;
 }
 
-int queue_push(queue_t *s, int v)
+int queue_push(priority_queue *s, int v, int p)
 {
-  queue_node_t *n;
+	Node *n;
 
-  if (!(n = malloc(sizeof (*n)))) {
-    return 1;
-  }
+	if (!(n = malloc(sizeof(*n))))
+	{
+		return 1;
+	}
 
-  s->size++;
-  n->next = s->top;
-  s->top = n;
-  n->i = v;
+	s->size++;
+	n->next = s->peek;
+	//s->peek = n;
+	n->data = v;
 
-  return 0;
+	return 0;
 }
 
-int queue_pop(queue_t *s, int *v)
+int queue_pop(priority_queue *s, int *v)
 {
-  queue_node_t *n;
- 
-  if (!s->top) {
-    return 1;
-  }
+	Node *n;
 
-  *v = s->top->i;
-  s->size--;
-  n = s->top;
-  s->top = s->top->next;
-  free(n);
+	if (!s->peek)
+	{
+		return 1;
+	}
 
-  return 0;
+	*v = s->peek->data;
+	s->size--;
+	n = s->peek;
+	s->peek = s->peek->next;
+	free(n);
+
+	return 0;
 }
 
-int queue_top(queue_t *s, int *v)
+int queue_peek(priority_queue *s, int *v)
 {
-  if (!s->top) {
-    return 1;
-  }
+	if (!s->peek)
+	{
+		return 1;
+	}
 
-  *v = s->top->i;
+	*v = s->peek->data;
 
-  return 0;  
+	return 0;
 }
 
-int queue_is_empty(queue_t *s)
+int queue_isEmpty(priority_queue *s)
 {
-  return !s->top;
+	return !s->peek;
 }
 
-int queue_size(queue_t *s)
+int queue_size(priority_queue *s)
 {
-  return s->size;
+	return s->size;
 }

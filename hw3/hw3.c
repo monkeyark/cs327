@@ -6,6 +6,7 @@
 #include <string.h>
 #include <endian.h>
 #include <sys/stat.h>
+#include "queue.h"
 #define ROW 21
 #define COL 80
 #define ROCK ' '
@@ -279,7 +280,7 @@ void generateDungeon(int n)
 	{
 		newCorridor(dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i+1].row, dungeonRoom[i+1].col);
 	}
-	
+
 	//add initial player loaction
 	map.pc_row = dungeonRoom[0].row;
 	map.pc_col = dungeonRoom[0].col;
@@ -299,7 +300,7 @@ void loadFile(FILE *f)
 
 	char marker[12];
 	fread(&marker, 1, 12, f);
-	
+
 	u_int32_t ver;
 	fread(&ver, 4, 1, f);
 	map.version = be32toh(ver);
@@ -353,7 +354,7 @@ void loadFile(FILE *f)
 
 		addRoom(dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);
 	}
-	
+
 	//add PC
 	dungeon[map.pc_row][map.pc_col].space = PC;
 	dungeon[map.pc_row][map.pc_col].hardness = PC_H;
@@ -406,7 +407,7 @@ void saveFile(FILE *f)
 		loc[n++] = (unsigned char) dungeonRoom[i].height;
 	}
 	fwrite(loc, 1, 4*map.num_room, f);
-	
+
 	free(hard);
 	free(loc);
 	fclose(f);
@@ -568,7 +569,7 @@ void shortestPath(vector<pair<int,int> > adj[], int V, int src)
 		int u = pq.top().second;
 		pq.pop();
 
-		// Get all adjacent of u. 
+		// Get all adjacent of u.
 		for (auto x : adj[u])
 		{
 			// Get vertex label and weight of current adjacent

@@ -14,8 +14,10 @@ struct heap_node
 	uint32_t mark;
 };
 
-#define splice_heap_node_lists(n1, n2) ({ \
-  if ((n1) && (n2)) {                     \
+#define splice_heap_node_lists(n1, n2)	  \
+({										  \
+  if ((n1) && (n2))						  \
+  {                    				      \
     (n1)->next->prev = (n2)->prev;        \
     (n2)->prev->next = (n1)->next;        \
     (n1)->next = (n2);                    \
@@ -23,19 +25,22 @@ struct heap_node
   }                                       \
 })
 
-#define insert_heap_node_in_list(n, l) ({ \
+#define insert_heap_node_in_list(n, l)	  \
+({										  \
   (n)->next = (l);                        \
   (n)->prev = (l)->prev;                  \
   (n)->prev->next = (n);                  \
   (l)->prev = (n);                        \
 })
 
-#define remove_heap_node_from_list(n) ({ \
-  (n)->next->prev = (n)->prev;           \
-  (n)->prev->next = (n)->next;           \
+#define remove_heap_node_from_list(n)	  \
+({										  \
+  (n)->next->prev = (n)->prev;            \
+  (n)->prev->next = (n)->next;            \
 })
 
-void print_heap_node(heap_node_t *n, unsigned indent, char *(*print)(const void *v))
+void print_heap_node(heap_node_t *n, unsigned indent,
+		char *(*print)(const void *v))
 {
 	heap_node_t *nc;
 

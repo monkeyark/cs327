@@ -15,9 +15,9 @@ int queue_init(queue_t *s)
   return 0;
 }
 
-int queue_delete(stack_t *s)
+int queue_delete(queue_t *s)
 {
-  stack_node_t *n;
+  queue_node_t *n;
 
   while (s->top) {
     n = s->top;
@@ -29,9 +29,9 @@ int queue_delete(stack_t *s)
   return 0;
 }
 
-int stack_push(stack_t *s, int v)
+int queue_push(queue_t *s, int v)
 {
-  stack_node_t *n;
+  queue_node_t *n;
 
   if (!(n = malloc(sizeof (*n)))) {
     return 1;
@@ -45,9 +45,9 @@ int stack_push(stack_t *s, int v)
   return 0;
 }
 
-int stack_pop(stack_t *s, int *v)
+int queue_pop(queue_t *s, int *v)
 {
-  stack_node_t *n;
+  queue_node_t *n;
  
   if (!s->top) {
     return 1;
@@ -62,7 +62,7 @@ int stack_pop(stack_t *s, int *v)
   return 0;
 }
 
-int stack_top(stack_t *s, int *v)
+int queue_top(queue_t *s, int *v)
 {
   if (!s->top) {
     return 1;
@@ -73,12 +73,12 @@ int stack_top(stack_t *s, int *v)
   return 0;  
 }
 
-int stack_is_empty(stack_t *s)
+int queue_is_empty(queue_t *s)
 {
   return !s->top;
 }
 
-int stack_size(stack_t *s)
+int queue_size(queue_t *s)
 {
   return s->size;
 }

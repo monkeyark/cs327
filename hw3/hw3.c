@@ -525,7 +525,9 @@ static void dijkstra(int pcRow, int pcCol)
 					path[p->pos[dim_y] + 1][p->pos[dim_x]].hn);
 		}
 	}
-}*/
+}
+*/
+
 
 /*
 # define INF 0x3f3f3f3f

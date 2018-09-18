@@ -112,6 +112,8 @@ void printDungeon()
 		for (int j=0; j<COL; j++)
 		{
 			printf("%c", dungeon[i][j].space);
+			//int x = dungeon[i][j].hardness / 85 + 1;
+			//printf("%d", x);
 		}
 		printf("|\n");
 	}

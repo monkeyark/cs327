@@ -6,7 +6,7 @@
 #include <string.h>
 #include <endian.h>
 #include <sys/stat.h>
-#include "queue.h"
+#include "heap.h"
 #define ROW 21
 #define COL 80
 #define ROCK ' '
@@ -413,6 +413,7 @@ void saveFile(FILE *f)
 	fclose(f);
 }
 
+/*
 static void dijkstra(int pcRow, int pcCol)
 {
 	static corridor_path_t path[DUNGEON_Y][DUNGEON_X], *p;
@@ -524,7 +525,7 @@ static void dijkstra(int pcRow, int pcCol)
 					path[p->pos[dim_y] + 1][p->pos[dim_x]].hn);
 		}
 	}
-}
+}*/
 
 /*
 # define INF 0x3f3f3f3f

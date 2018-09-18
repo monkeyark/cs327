@@ -152,14 +152,14 @@ extern "C" {
 
 # define max2(a, b)             \
          ({                     \
-	   typeof (a) _a = (a); \
+	   	   typeof (a) _a = (a); \
            typeof (b) _b = (b); \
            (_a > _b) ? _a : _b; \
          })
 
 # define min2(a, b)             \
          ({                     \
-	   typeof (a) _a = (a); \
+	   	   typeof (a) _a = (a); \
            typeof (b) _b = (b); \
            (_a < _b) ? _a : _b; \
          })

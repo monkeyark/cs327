@@ -413,6 +413,7 @@ void saveFile(FILE *f)
 	fclose(f);
 }
 
+/*
 static void dijkstra(int pcRow, int pcCol)
 {
 	static corridor_path_t path[DUNGEON_Y][DUNGEON_X], *p;
@@ -525,6 +526,8 @@ static void dijkstra(int pcRow, int pcCol)
 		}
 	}
 }
+*/
+
 
 /*
 # define INF 0x3f3f3f3f

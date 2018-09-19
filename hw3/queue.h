@@ -1,3 +1,4 @@
+/*
 #ifndef QUEUE_H
 # define QUEUE_H
 
@@ -25,3 +26,4 @@ int queue_isEmpty(priority_queue *s);
 int queue_size(priority_queue *s);
 
 #endif
+*/

@@ -1,3 +1,4 @@
+/*
 #include <stdint.h>
 #include <stdio.h>
 
@@ -8,6 +9,7 @@
 int32_t board[BOARD_SIZE][BOARD_SIZE];
 int32_t order[(BOARD_SIZE * BOARD_SIZE)];
 int32_t visited;
+
 
 void tour(int32_t x, int32_t y)
 {
@@ -49,3 +51,4 @@ int main(int argc, char *argv[])
   
   return 0;
 }
+*/

@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -61,36 +62,6 @@ int getRandom(int modulus, int min)
 {
 	return rand() % modulus + min;
 }
-
-
-/*
-void printDungeon()
-{
-	for (int i=0; i<COL+2; i++)
-	{
-		printf("-");
-	}
-	printf("\n");
-
-	for (int i=0; i<ROW; i++)
-	{
-		printf("|");
-		for (int j=0; j<COL; j++)
-		{
-			printf("%c", dungeon[i][j].space);
-		}
-		printf("|\n");
-	}
-
-	for (int i=0; i<COL+2; i++)
-	{
-		printf("-");
-	}
-	printf("\n");
-}
-*/
-
-
 
 void printDungeon()
 {
@@ -413,186 +384,6 @@ void saveFile(FILE *f)
 	fclose(f);
 }
 
-/*
-static void dijkstra(int pcRow, int pcCol)
-{
-	static corridor_path_t path[DUNGEON_Y][DUNGEON_X], *p;
-	static uint32_t initialized = 0;
-	heap_t h;
-	uint32_t x, y;
-
-	if (!initialized)
-	{
-		for (y = 0; y < DUNGEON_Y; y++)
-		{
-			for (x = 0; x < DUNGEON_X; x++)
-			{
-				path[y][x].pos[dim_y] = y;
-				path[y][x].pos[dim_x] = x;
-			}
-		}
-		initialized = 1;
-	}
-
-	for (y = 0; y < DUNGEON_Y; y++)
-	{
-		for (x = 0; x < DUNGEON_X; x++)
-		{
-			path[y][x].cost = INT_MAX;
-		}
-	}
-
-	path[from[dim_y]][from[dim_x]].cost = 0;
-
-	heap_init(&h, corridor_path_cmp, NULL);
-
-	for (y = 0; y < DUNGEON_Y; y++)
-	{
-		for (x = 0; x < DUNGEON_X; x++)
-		{
-			if (mapxy(x, y) != ter_wall_immutable)
-			{
-				path[y][x].hn = heap_insert(&h, &path[y][x]);
-			} else
-			{
-				path[y][x].hn = NULL;
-			}
-		}
-	}
-
-	while ((p = heap_remove_min(&h)))
-	{
-		p->hn = NULL;
-
-		if ((p->pos[dim_y] == to[dim_y]) && p->pos[dim_x] == to[dim_x])
-		{
-			for (x = to[dim_x], y = to[dim_y];
-					(x != from[dim_x]) || (y != from[dim_y]);
-					p = &path[y][x], x = p->from[dim_x], y = p->from[dim_y])
-			{
-				if (mapxy(x, y) != ter_floor_room)
-				{
-					mapxy(x, y) = ter_floor_hall;
-					hardnessxy(x, y) = 0;
-				}
-			}
-			heap_delete(&h);
-			return;
-		}
-
-		if ((path[p->pos[dim_y] - 1][p->pos[dim_x]].hn)
-				&& (path[p->pos[dim_y] - 1][p->pos[dim_x]].cost
-						> p->cost + hardnesspair(p->pos)))
-		{
-			path[p->pos[dim_y] - 1][p->pos[dim_x]].cost = p->cost
-					+ hardnesspair(p->pos);
-			path[p->pos[dim_y] - 1][p->pos[dim_x]].from[dim_y] = p->pos[dim_y];
-			path[p->pos[dim_y] - 1][p->pos[dim_x]].from[dim_x] = p->pos[dim_x];
-			heap_decrease_key_no_replace(&h,
-					path[p->pos[dim_y] - 1][p->pos[dim_x]].hn);
-		}
-		if ((path[p->pos[dim_y]][p->pos[dim_x] - 1].hn)
-				&& (path[p->pos[dim_y]][p->pos[dim_x] - 1].cost
-						> p->cost + hardnesspair(p->pos)))
-		{
-			path[p->pos[dim_y]][p->pos[dim_x] - 1].cost = p->cost
-					+ hardnesspair(p->pos);
-			path[p->pos[dim_y]][p->pos[dim_x] - 1].from[dim_y] = p->pos[dim_y];
-			path[p->pos[dim_y]][p->pos[dim_x] - 1].from[dim_x] = p->pos[dim_x];
-			heap_decrease_key_no_replace(&h,
-					path[p->pos[dim_y]][p->pos[dim_x] - 1].hn);
-		}
-		if ((path[p->pos[dim_y]][p->pos[dim_x] + 1].hn)
-				&& (path[p->pos[dim_y]][p->pos[dim_x] + 1].cost
-						> p->cost + hardnesspair(p->pos)))
-		{
-			path[p->pos[dim_y]][p->pos[dim_x] + 1].cost = p->cost
-					+ hardnesspair(p->pos);
-			path[p->pos[dim_y]][p->pos[dim_x] + 1].from[dim_y] = p->pos[dim_y];
-			path[p->pos[dim_y]][p->pos[dim_x] + 1].from[dim_x] = p->pos[dim_x];
-			heap_decrease_key_no_replace(&h,
-					path[p->pos[dim_y]][p->pos[dim_x] + 1].hn);
-		}
-		if ((path[p->pos[dim_y] + 1][p->pos[dim_x]].hn)
-				&& (path[p->pos[dim_y] + 1][p->pos[dim_x]].cost
-						> p->cost + hardnesspair(p->pos)))
-		{
-			path[p->pos[dim_y] + 1][p->pos[dim_x]].cost = p->cost
-					+ hardnesspair(p->pos);
-			path[p->pos[dim_y] + 1][p->pos[dim_x]].from[dim_y] = p->pos[dim_y];
-			path[p->pos[dim_y] + 1][p->pos[dim_x]].from[dim_x] = p->pos[dim_x];
-			heap_decrease_key_no_replace(&h,
-					path[p->pos[dim_y] + 1][p->pos[dim_x]].hn);
-		}
-	}
-}
-*/
-
-
-/*
-# define INF 0x3f3f3f3f
-// iPair ==> Integer Pair
-typedef pair<int, int> iPair;
-
-// To add an edge
-void addEdge(vector <pair<int, int> > adj[], int u, int v, int wt)
-{
-	adj[u].push_back(make_pair(v, wt));
-	adj[v].push_back(make_pair(u, wt));
-}
-
-// Prints shortest paths from src to all other vertices
-void shortestPath(vector<pair<int,int> > adj[], int V, int src)
-{
-	// Create a priority queue to store vertices that
-	// are being preprocessed. This is weird syntax in C++.
-	// Refer below link for details of this syntax
-	// http://geeksquiz.com/implement-min-heap-using-stl/
-	priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
-
-	// Create a vector for distances and initialize all
-	// distances as infinite (INF)
-	vector<int> dist(V, INF);
-
-	// Insert source itself in priority queue and initialize
-	// its distance as 0.
-	pq.push(make_pair(0, src));
-	dist[src] = 0;
-
-	//Looping till priority queue becomes empty (or all
-	//   distances are not finalized)
-	while (!pq.empty())
-	{
-		// The first vertex in pair is the minimum distance
-		// vertex, extract it from priority queue.
-		// vertex label is stored in second of pair (it
-		// has to be done this way to keep the vertices
-		// sorted distance (distance must be first item
-		// in pair)
-		int u = pq.top().second;
-		pq.pop();
-
-		// Get all adjacent of u.
-		for (auto x : adj[u])
-		{
-			// Get vertex label and weight of current adjacent
-			// of u.
-			int v = x.first;
-			int weight = x.second;
-
-			// If there is shorted path to v through u.
-			if (dist[v] > dist[u] + weight)
-			{
-				// Updating distance of v
-				dist[v] = dist[u] + weight;
-				pq.push(make_pair(dist[v], v));
-			}
-		}
-	}
-}
-*/
-
-
 int main(int argc, char *argv[])
 {
 	char *home = getenv("HOME");
@@ -657,4 +448,4 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
+*/

@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -82,3 +83,4 @@ int queue_size(priority_queue *s)
 {
 	return s->size;
 }
+*/

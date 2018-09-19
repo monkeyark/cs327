@@ -502,14 +502,6 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	//seed = 1536656798;
-	//seed = 1536656664;
-	//seed = 1536657024;
-	//seed = 1536657138;
-	//seed = 1536807801;
-	//////////////////////////Linux above, Windows below
-	//seed = 1536941561;
-
 	printf("\nseed = %d;\n", seed);//TODD
 	srand(seed);
 

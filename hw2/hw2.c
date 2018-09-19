@@ -195,8 +195,86 @@ void addRoom(int row, int col, int width, int height)
 	}
 }
 
+
+int distance(int aRow, int aCol, int bRow, int bCol)
+{
+	int row = abs(aRow - bRow);
+	int col = abs(aCol - bCol);
+
+	return row*row + col*col;
+}
+
+int minimum(int a, int b)
+{
+	if (a < b)
+	{
+		return a;
+	}
+	return b;
+}
+
+bool isConnected(int row, int col)
+{
+	return dungeon[row-1][col].space == CORRIDOR
+		|| dungeon[row+1][col].space == CORRIDOR
+		|| dungeon[row][col-1].space == CORRIDOR
+		|| dungeon[row][col+1].space == CORRIDOR;
+}
+
 void newCorridor(int aRow, int aCol, int bRow, int bCol)
 {
+	if (distance(aRow, aCol, bRow, bCol) == 0) return;
+	if (dungeon[aRow][aCol].space == CORRIDOR && isConnected(bRow, bCol)) return;
+	if (dungeon[aRow][aCol].space == ROCK) dungeon[aRow][aCol].space = CORRIDOR;
+
+	int max = distance(0, 0, ROW, COL);
+	int min = max;
+	int top = max;
+	int down = max;
+	int left = max;
+	int right = max;
+
+	if (isInside(aRow-1, aCol))
+	{
+		top = distance(aRow-1, aCol, bRow, bCol);
+		min = minimum(min, top);
+	}
+	if (isInside(aRow+1, aCol))
+	{
+		down = distance(aRow+1, aCol, bRow, bCol);
+		min = minimum(min, down);
+	}
+	if (isInside(aRow, aCol-1))
+	{
+		left = distance(aRow, aCol-1, bRow, bCol);
+		min = minimum(min, left);
+	}
+	if (isInside(aRow, aCol+1))
+	{
+		right = distance(aRow, aCol+1, bRow, bCol);
+		min = minimum(min, right);
+	}
+
+	if (min == top)
+	{
+		newCorridor(aRow-1, aCol, bRow, bCol);
+
+	}
+	else if (min == down)
+	{
+		newCorridor(aRow+1, aCol, bRow, bCol);
+
+	}
+	else if (min == left)
+	{
+		newCorridor(aRow, aCol-1, bRow, bCol);
+	}
+	else if (min == right)
+	{
+		newCorridor(aRow, aCol+1, bRow, bCol);
+	}
+
+/*
 	if (aRow <= bRow) 	//now at dungeon[aRow][aCol]
 	{
 		for (int i=aRow; i<=bRow; i++)
@@ -263,7 +341,7 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 			}
 		}
 	}
-
+*/
 }
 
 void generateDungeon(int n)

@@ -74,17 +74,22 @@ bool isValidRoom(int row, int col, int width, int height)
 	//is current space free
 	if (dungeon[row][col] != ROCK) return false;
 	if (!isInside(row, col) || !isInside(row+height, col+width)) return false;
-	//is touching another room
+	//touch or overlap another room
 	for (int i=row-1; i<row+height+2; i++)
 	{
-		if (dungeon[i][col-1] != ROCK) return false; //left
-		if (dungeon[i][col+width+1] != ROCK) return false;//right
+		if (dungeon[i][col-1] != ROCK) return false;//left touch
+		if (dungeon[i][col] != ROCK) return false;//left overlap
+		if (dungeon[i][col+width+1] != ROCK) return false;//right touch
+		if (dungeon[i][col+width] != ROCK) return false;//right overlap
 	}
 	for (int j=col-1; j<col+width+2; j++)
 	{
-		if (dungeon[row-1][j] != ROCK) return false;//top
-		if (dungeon[row+height+1][j] != ROCK) return false;//bottom
+		if (dungeon[row-1][j] != ROCK) return false;//top touch
+		if (dungeon[row][j] != ROCK) return false;//top overlap
+		if (dungeon[row+height+1][j] != ROCK) return false;//bottom touch
+		if (dungeon[row+height][j] != ROCK) return false;//bottom overlap
 	}
+
 	return true;
 }
 

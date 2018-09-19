@@ -1,4 +1,3 @@
-/*
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -7,7 +6,6 @@
 #include <string.h>
 #include <endian.h>
 #include <sys/stat.h>
-#include "heap.h"
 #define ROW 21
 #define COL 80
 #define ROCK ' '
@@ -448,4 +446,4 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-*/
+

@@ -244,6 +244,7 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 		newCorridor(aRow, aCol+1, bRow, bCol);
 	}
 
+
 /*
 	if (aRow <= bRow) 	//now at dungeon[aRow][aCol]
 	{

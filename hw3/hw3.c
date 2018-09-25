@@ -6,6 +6,9 @@
 #include <string.h>
 #include <endian.h>
 #include <sys/stat.h>
+
+#include "heap.h"
+
 #define ROW 21
 #define COL 80
 #define ROCK ' '
@@ -41,6 +44,31 @@ typedef struct dungeonLevel
 	Room *rooms;
 	Cell map[ROW][COL];
 } Dungeon;
+
+typedef struct path
+{
+	heap_node_t *hn;
+	uint8_t pos[2];
+	uint8_t from[2];
+	int32_t cost;
+} path_t;
+
+typedef enum __attribute__ ((__packed__)) terrain_type
+{
+	ter_debug,
+	ter_wall,
+	ter_wall_immutable,
+	ter_floor,
+	ter_floor_room,
+	ter_floor_hall,
+} terrain_type_t;
+
+typedef enum dim
+{
+	dim_row, dim_col, num_dims
+} dim_t;
+
+typedef int16_t pair[num_dims];
 
 Dungeon dungeon;
 
@@ -463,50 +491,55 @@ void saveFile(FILE *f)
 	free(loc);
 	fclose(f);
 }
-/*
-static void dijkstra(dungeon_t *d, pair_t from, pair_t to)
+
+static int32_t path_cmp(const void *key, const void *with)
 {
-	static corridor_path_t path[DUNGEON_Y][DUNGEON_X], *p;
-	static uint32_t initialized = 0;
+	return ((path_t *) key)->cost - ((path_t *) with)->cost;
+}
+
+static void dijkstra(pair from, pair to)
+{
 	heap_t h;
-	uint32_t x, y;
+	static path_t path[ROW][COL], *p;
+	static uint32_t initialized = 0;
+	uint32_t row, col;
 
 	if (!initialized)
 	{
-		for (y = 0; y < DUNGEON_Y; y++)
+		for (row = 0; row < ROW; row++)
 		{
-			for (x = 0; x < DUNGEON_X; x++)
+			for (col = 0; col < COL; col++)
 			{
-				path[y][x].pos[dim_y] = y;
-				path[y][x].pos[dim_x] = x;
+				path[row][col].pos[dim_row] = row;
+				path[row][col].pos[dim_col] = col;
 			}
 		}
 		initialized = 1;
 	}
 
-	for (y = 0; y < DUNGEON_Y; y++)
+	for (row = 0; row < ROW; row++)
 	{
-		for (x = 0; x < DUNGEON_X; x++)
+		for (col = 0; col < COL; col++)
 		{
-			path[y][x].cost = INT_MAX;
+			path[row][col].cost = ROW*COL+1;
 		}
 	}
 
-	path[from[dim_y]][from[dim_x]].cost = 0;
+	path[from[dim_row]][from[dim_col]].cost = 0;
 
-	heap_init(&h, corridor_path_cmp, NULL);
+	heap_init(&h, path_cmp, NULL);
 
-	for (y = 0; y < DUNGEON_Y; y++)
+	for (row = 0; row < ROW; row++)
 	{
-		for (x = 0; x < DUNGEON_X; x++)
+		for (col = 0; col < COL; col++)
 		{
-			if (mapxy(x, y) != ter_wall_immutable)
+			if (dungeon.map[row][col] != ter_wall_immutable)
 			{
-				path[y][x].hn = heap_insert(&h, &path[y][x]);
+				path[row][col].hn = heap_insert(&h, &path[row][col]);
 			}
 			else
 			{
-				path[y][x].hn = NULL;
+				path[row][col].hn = NULL;
 			}
 		}
 	}
@@ -515,69 +548,69 @@ static void dijkstra(dungeon_t *d, pair_t from, pair_t to)
 	{
 		p->hn = NULL;
 
-		if ((p->pos[dim_y] == to[dim_y]) && p->pos[dim_x] == to[dim_x])
+		if ((p->pos[dim_row] == to[dim_row]) && p->pos[dim_col] == to[dim_col])
 		{
-			for (x = to[dim_x], y = to[dim_y];
-					(x != from[dim_x]) || (y != from[dim_y]);
-					p = &path[y][x], x = p->from[dim_x], y = p->from[dim_y])
+			for (row = to[dim_col], row = to[dim_row];
+					(col != from[dim_col]) || (row != from[dim_row]);
+					p = &path[row][col], col = p->from[dim_col], row = p->from[dim_row])
 			{
-				if (mapxy(x, y) != ter_floor_room)
+				if (dungeon.map[row][col] != ter_floor_room)
 				{
-					mapxy(x, y) = ter_floor_hall;
-					hardnessxy(x, y) = 0;
+					dungeon.map[row][col] = ter_floor_hall;
+					dungeon.map[row][col].hardness = 0;
 				}
 			}
 			heap_delete(&h);
 			return;
 		}
 
-		if ((path[p->pos[dim_y] - 1] [p->pos[dim_x]].hn) &&
-				(path[p->pos[dim_y] - 1][p->pos[dim_x]].cost >
-				 p->cost + hardnesspair(p->pos)))
+		if ((path[p->pos[dim_row] - 1][p->pos[dim_col]].hn)
+				&& (path[p->pos[dim_row] - 1][p->pos[dim_col]].cost
+						> p->cost + hardnesspair(p->pos)))
 		{
-			path[p->pos[dim_y] - 1][p->pos[dim_x]].cost =
-				p->cost + hardnesspair(p->pos);
-			path[p->pos[dim_y] - 1][p->pos[dim_x]].from[dim_y] = p->pos[dim_y];
-			path[p->pos[dim_y] - 1][p->pos[dim_x]].from[dim_x] = p->pos[dim_x];
-			heap_decrease_key_no_replace(&h, path[p->pos[dim_y] - 1]
-					[p->pos[dim_x]].hn);
+			path[p->pos[dim_row] - 1][p->pos[dim_col]].cost = p->cost
+					+ hardnesspair(p->pos);
+			path[p->pos[dim_row] - 1][p->pos[dim_col]].from[dim_row] = p->pos[dim_row];
+			path[p->pos[dim_row] - 1][p->pos[dim_col]].from[dim_col] = p->pos[dim_col];
+			heap_decrease_key_no_replace(&h,
+					path[p->pos[dim_row] - 1][p->pos[dim_col]].hn);
 		}
-		if ((path[p->pos[dim_y]][p->pos[dim_x] - 1].hn) &&
-				(path[p->pos[dim_y]][p->pos[dim_x] - 1].cost >
-				 p->cost + hardnesspair(p->pos)))
+		if ((path[p->pos[dim_row]][p->pos[dim_col] - 1].hn)
+				&& (path[p->pos[dim_row]][p->pos[dim_col] - 1].cost
+						> p->cost + hardnesspair(p->pos)))
 		{
-			path[p->pos[dim_y]][p->pos[dim_x] - 1].cost =
-				p->cost + hardnesspair(p->pos);
-			path[p->pos[dim_y]][p->pos[dim_x] - 1].from[dim_y] = p->pos[dim_y];
-			path[p->pos[dim_y]][p->pos[dim_x] - 1].from[dim_x] = p->pos[dim_x];
-			heap_decrease_key_no_replace(&h, path[p->pos[dim_y]]
-					[p->pos[dim_x] - 1].hn);
+			path[p->pos[dim_row]][p->pos[dim_col] - 1].cost = p->cost
+					+ hardnesspair(p->pos);
+			path[p->pos[dim_row]][p->pos[dim_col] - 1].from[dim_row] = p->pos[dim_row];
+			path[p->pos[dim_row]][p->pos[dim_col] - 1].from[dim_col] = p->pos[dim_col];
+			heap_decrease_key_no_replace(&h,
+					path[p->pos[dim_row]][p->pos[dim_col] - 1].hn);
 		}
-		if ((path[p->pos[dim_y]][p->pos[dim_x] + 1].hn) &&
-				(path[p->pos[dim_y]][p->pos[dim_x] + 1].cost >
-				 p->cost + hardnesspair(p->pos)))
+		if ((path[p->pos[dim_row]][p->pos[dim_col] + 1].hn)
+				&& (path[p->pos[dim_row]][p->pos[dim_col] + 1].cost
+						> p->cost + hardnesspair(p->pos)))
 		{
-			path[p->pos[dim_y]][p->pos[dim_x] + 1].cost =
-				p->cost + hardnesspair(p->pos);
-			path[p->pos[dim_y]][p->pos[dim_x] + 1].from[dim_y] = p->pos[dim_y];
-			path[p->pos[dim_y]][p->pos[dim_x] + 1].from[dim_x] = p->pos[dim_x];
-			heap_decrease_key_no_replace(&h, path[p->pos[dim_y]]
-					[p->pos[dim_x] + 1].hn);
+			path[p->pos[dim_row]][p->pos[dim_col] + 1].cost = p->cost
+					+ hardnesspair(p->pos);
+			path[p->pos[dim_row]][p->pos[dim_col] + 1].from[dim_row] = p->pos[dim_row];
+			path[p->pos[dim_row]][p->pos[dim_col] + 1].from[dim_col] = p->pos[dim_col];
+			heap_decrease_key_no_replace(&h,
+					path[p->pos[dim_row]][p->pos[dim_col] + 1].hn);
 		}
-		if ((path[p->pos[dim_y] + 1][p->pos[dim_x]].hn) &&
-				(path[p->pos[dim_y] + 1][p->pos[dim_x]].cost >
-				 p->cost + hardnesspair(p->pos)))
+		if ((path[p->pos[dim_row] + 1][p->pos[dim_col]].hn)
+				&& (path[p->pos[dim_row] + 1][p->pos[dim_col]].cost
+						> p->cost + hardnesspair(p->pos)))
 		{
-			path[p->pos[dim_y] + 1][p->pos[dim_x]].cost =
-				p->cost + hardnesspair(p->pos);
-			path[p->pos[dim_y] + 1][p->pos[dim_x]].from[dim_y] = p->pos[dim_y];
-			path[p->pos[dim_y] + 1][p->pos[dim_x]].from[dim_x] = p->pos[dim_x];
-			heap_decrease_key_no_replace(&h, path[p->pos[dim_y] + 1]
-					[p->pos[dim_x]].hn);
+			path[p->pos[dim_row] + 1][p->pos[dim_col]].cost = p->cost
+					+ hardnesspair(p->pos);
+			path[p->pos[dim_row] + 1][p->pos[dim_col]].from[dim_row] = p->pos[dim_row];
+			path[p->pos[dim_row] + 1][p->pos[dim_col]].from[dim_col] = p->pos[dim_col];
+			heap_decrease_key_no_replace(&h,
+					path[p->pos[dim_row] + 1][p->pos[dim_col]].hn);
 		}
 	}
 }
-*/
+
 int main(int argc, char *argv[])
 {
 	char *home = getenv("HOME");

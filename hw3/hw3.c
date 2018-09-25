@@ -17,13 +17,6 @@
 #define CORRIDOR_H 0
 #define PC_H 0
 
-typedef struct dungeon
-{
-	int num_room;
-	int pc_row;
-	int pc_col;
-	int version;
-} Dungeon;
 
 typedef struct dungeonCell
 {
@@ -31,7 +24,7 @@ typedef struct dungeonCell
 	int hardness;
 } Cell;
 
-typedef struct dungeonRoom
+typedef struct rooms
 {
 	int row;
 	int col;
@@ -39,10 +32,17 @@ typedef struct dungeonRoom
 	int height;
 } Room;
 
+typedef struct dungeonLevel
+{
+	int num_room;
+	int pc_row;
+	int pc_col;
+	int version;
+	Room *rooms;
+	Cell map[ROW][COL];
+} Dungeon;
 
-Cell dungeon[ROW][COL];
-Room *dungeonRoom;
-Dungeon map;
+Dungeon dungeon;
 
 void initDungeon()
 {
@@ -50,8 +50,8 @@ void initDungeon()
 	{
 		for(int j=0; j<COL; j++)
 		{
-			dungeon[i][j].space = ROCK;
-			dungeon[i][j].hardness = ROCK_H;
+			dungeon.map[i][j].space = ROCK;
+			dungeon.map[i][j].hardness = ROCK_H;
 		}
 	}
 }
@@ -81,7 +81,7 @@ void printDungeon()
 		printf("%2d|", i);
 		for (int j=0; j<COL; j++)
 		{
-			printf("%c", dungeon[i][j].space);
+			printf("%c", dungeon.map[i][j].space);
 			//int x = dungeon[i][j].hardness / 85 + 1;
 			//printf("%d", x);
 		}
@@ -104,22 +104,22 @@ bool isInside(int row, int col)
 bool isValidRoom(int row, int col, int width, int height)
 {
 	//is current space free
-	if (dungeon[row][col].space != ROCK) return false;
+	if (dungeon.map[row][col].space != ROCK) return false;
 	if (!isInside(row, col) || !isInside(row+height, col+width)) return false;
 	//touch or overlap another room
 	for (int i=row-1; i<row+height+2; i++)
 	{
-		if (dungeon[i][col-1].space != ROCK) return false;//left touch
-		if (dungeon[i][col].space != ROCK) return false;//left overlap
-		if (dungeon[i][col+width+1].space != ROCK) return false;//right touch
-		if (dungeon[i][col+width].space != ROCK) return false;//right overlap
+		if (dungeon.map[i][col-1].space != ROCK) return false;//left touch
+		if (dungeon.map[i][col].space != ROCK) return false;//left overlap
+		if (dungeon.map[i][col+width+1].space != ROCK) return false;//right touch
+		if (dungeon.map[i][col+width].space != ROCK) return false;//right overlap
 	}
 	for (int j=col-1; j<col+width+2; j++)
 	{
-		if (dungeon[row-1][j].space != ROCK) return false;//top touch
-		if (dungeon[row][j].space != ROCK) return false;//top overlap
-		if (dungeon[row+height+1][j].space != ROCK) return false;//bottom touch
-		if (dungeon[row+height][j].space != ROCK) return false;//bottom overlap
+		if (dungeon.map[row-1][j].space != ROCK) return false;//top touch
+		if (dungeon.map[row][j].space != ROCK) return false;//top overlap
+		if (dungeon.map[row+height+1][j].space != ROCK) return false;//bottom touch
+		if (dungeon.map[row+height][j].space != ROCK) return false;//bottom overlap
 	}
 
 	return true;
@@ -141,8 +141,8 @@ Room newRoom()
 		{
 			for (int j=r.col; j<r.col+r.width; j++)
 			{
-				dungeon[i][j].space = ROOM;
-				dungeon[i][j].hardness = ROOM_H;
+				dungeon.map[i][j].space = ROOM;
+				dungeon.map[i][j].hardness = ROOM_H;
 			}
 		}
 	}
@@ -160,8 +160,8 @@ void addRoom(int row, int col, int width, int height)
 	{
 		for (int j=col; j<col+width; j++)
 		{
-			dungeon[i][j].space = ROOM;
-			dungeon[i][j].hardness = ROOM_H;
+			dungeon.map[i][j].space = ROOM;
+			dungeon.map[i][j].hardness = ROOM_H;
 		}
 	}
 }
@@ -185,17 +185,17 @@ int minimum(int a, int b)
 
 bool isConnected(int row, int col)
 {
-	return dungeon[row-1][col].space == CORRIDOR
-		|| dungeon[row+1][col].space == CORRIDOR
-		|| dungeon[row][col-1].space == CORRIDOR
-		|| dungeon[row][col+1].space == CORRIDOR;
+	return dungeon.map[row-1][col].space == CORRIDOR
+		|| dungeon.map[row+1][col].space == CORRIDOR
+		|| dungeon.map[row][col-1].space == CORRIDOR
+		|| dungeon.map[row][col+1].space == CORRIDOR;
 }
 
 void newCorridor(int aRow, int aCol, int bRow, int bCol)
 {
 	if (distance(aRow, aCol, bRow, bCol) == 0) return;
-	if (dungeon[aRow][aCol].space == CORRIDOR && isConnected(bRow, bCol)) return;
-	if (dungeon[aRow][aCol].space == ROCK) dungeon[aRow][aCol].space = CORRIDOR;
+	if (dungeon.map[aRow][aCol].space == CORRIDOR && isConnected(bRow, bCol)) return;
+	if (dungeon.map[aRow][aCol].space == ROCK) dungeon.map[aRow][aCol].space = CORRIDOR;
 
 	int max = distance(0, 0, ROW, COL);
 	int min = max;
@@ -319,24 +319,24 @@ void generateDungeon(int n)
 {
 	//initial dungeon
 	initDungeon();
-	dungeonRoom = malloc(map.num_room * sizeof(Room));
+	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
 
 	for (int i=0; i<n; i++)
 	{
-		dungeonRoom[i] = newRoom();
-//		printf("  ROOM%2d    row=%2d   col=%2d   width=%2d   height=%2d\n", i, dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);//TODO
+		dungeon.rooms[i] = newRoom();
+//		printf("  ROOM%2d    row=%2d   col=%2d   width=%2d   height=%2d\n", i, rooms[i].row, rooms[i].col, rooms[i].width, rooms[i].height);//TODO
 	}
 
 	for (int i=0; i<n-1; i++)
 	{
-		newCorridor(dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i+1].row, dungeonRoom[i+1].col);
+		newCorridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i+1].row, dungeon.rooms[i+1].col);
 	}
 
 	//add initial player loaction
-	map.pc_row = dungeonRoom[0].row;
-	map.pc_col = dungeonRoom[0].col;
-	dungeon[map.pc_row][map.pc_col].space = '@';
-	dungeon[map.pc_row][map.pc_col].hardness = 0;
+	dungeon.pc_row = dungeon.rooms[0].row;
+	dungeon.pc_col = dungeon.rooms[0].col;
+	dungeon.map[dungeon.pc_row][dungeon.pc_col].space = '@';
+	dungeon.map[dungeon.pc_row][dungeon.pc_col].hardness = 0;
 }
 
 void loadFile(FILE *f)
@@ -354,7 +354,7 @@ void loadFile(FILE *f)
 
 	u_int32_t ver;
 	fread(&ver, 4, 1, f);
-	map.version = be32toh(ver);
+	dungeon.version = be32toh(ver);
 
 	u_int32_t file_size;
 	fread(&file_size, 4, 1, f);
@@ -362,10 +362,10 @@ void loadFile(FILE *f)
 
 	u_int8_t pc_col;
 	fread(&pc_col, 1, 1, f);
-	map.pc_col = pc_col;
+	dungeon.pc_col = pc_col;
 	u_int8_t pc_row;
 	fread(&pc_row, 1, 1, f);
-	map.pc_row = pc_row;
+	dungeon.pc_row = pc_row;
 
 
 	u_int8_t hard[1680];
@@ -377,38 +377,38 @@ void loadFile(FILE *f)
 		{
 			int index = COL*row + col;
 			int h = hard[index];
-			dungeon[row][col].hardness = h;
+			dungeon.map[row][col].hardness = h;
 			if (h == 0)
 			{
-				dungeon[row][col].space = CORRIDOR;
+				dungeon.map[row][col].space = CORRIDOR;
 			}
 			else
 			{
-				dungeon[row][col].space = ROCK;
+				dungeon.map[row][col].space = ROCK;
 			}
 		}
 	}
 
-	map.num_room = (filesize - 1702) / 4;
-	dungeonRoom = malloc(map.num_room * sizeof(Room));
+	dungeon.num_room = (filesize - 1702) / 4;
+	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
 
 	u_int8_t roomRead[filesize - 1702];
 	fread(roomRead, 1, filesize - 1702, f);
 
 	int n = 0;
-	for (int i=0; i<map.num_room; i++)
+	for (int i=0; i<dungeon.num_room; i++)
 	{
-		dungeonRoom[i].col = roomRead[n++];
-		dungeonRoom[i].row = roomRead[n++];
-		dungeonRoom[i].width = roomRead[n++];
-		dungeonRoom[i].height = roomRead[n++];
+		dungeon.rooms[i].col = roomRead[n++];
+		dungeon.rooms[i].row = roomRead[n++];
+		dungeon.rooms[i].width = roomRead[n++];
+		dungeon.rooms[i].height = roomRead[n++];
 
-		addRoom(dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i].width, dungeonRoom[i].height);
+		addRoom(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i].width, dungeon.rooms[i].height);
 	}
 
 	//add PC
-	dungeon[map.pc_row][map.pc_col].space = PC;
-	dungeon[map.pc_row][map.pc_col].hardness = PC_H;
+	dungeon.map[dungeon.pc_row][dungeon.pc_col].space = PC;
+	dungeon.map[dungeon.pc_row][dungeon.pc_col].hardness = PC_H;
 
 	fclose(f);
 }
@@ -424,16 +424,16 @@ void saveFile(FILE *f)
 	char *marker = "RLG327-F2018";
 	fwrite(marker, 1, 12, f);
 
-	int ver = htobe32(map.version);
+	int ver = htobe32(dungeon.version);
 	fwrite(&ver, 4, 1, f);
 
-	int filesize = 1702 + 4 * map.num_room;
+	int filesize = 1702 + 4 * dungeon.num_room;
 	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);
 
-	int pc_x = map.pc_col;
+	int pc_x = dungeon.pc_col;
 	fwrite(&pc_x, 1, 1, f);
-	int pc_y = map.pc_row;
+	int pc_y = dungeon.pc_row;
 	fwrite(&pc_y, 1, 1, f);
 
 	char *hard = malloc(1680);
@@ -442,28 +442,28 @@ void saveFile(FILE *f)
 	{
 		for(int j=0; j<COL; j++)
 		{
-			hard[COL*i + j] = (char) dungeon[i][j].hardness;
+			hard[COL*i + j] = (char) dungeon.map[i][j].hardness;
 		}
 	}
 	fwrite(hard, 1, 1680, f);
 
 	//write room
-	unsigned char *loc = malloc(4 *map.num_room);
+	unsigned char *loc = malloc(4 *dungeon.num_room);
 	int n = 0;
-	for (int i=0; i<map.num_room; i++)
+	for (int i=0; i<dungeon.num_room; i++)
 	{
-		loc[n++] = (unsigned char) dungeonRoom[i].col;
-		loc[n++] = (unsigned char) dungeonRoom[i].row;
-		loc[n++] = (unsigned char) dungeonRoom[i].width;
-		loc[n++] = (unsigned char) dungeonRoom[i].height;
+		loc[n++] = (unsigned char) dungeon.rooms[i].col;
+		loc[n++] = (unsigned char) dungeon.rooms[i].row;
+		loc[n++] = (unsigned char) dungeon.rooms[i].width;
+		loc[n++] = (unsigned char) dungeon.rooms[i].height;
 	}
-	fwrite(loc, 1, 4*map.num_room, f);
+	fwrite(loc, 1, 4*dungeon.num_room, f);
 
 	free(hard);
 	free(loc);
 	fclose(f);
 }
-
+/*
 static void dijkstra(dungeon_t *d, pair_t from, pair_t to)
 {
 	static corridor_path_t path[DUNGEON_Y][DUNGEON_X], *p;
@@ -577,7 +577,7 @@ static void dijkstra(dungeon_t *d, pair_t from, pair_t to)
 		}
 	}
 }
-
+*/
 int main(int argc, char *argv[])
 {
 	char *home = getenv("HOME");
@@ -591,7 +591,7 @@ int main(int argc, char *argv[])
 	srand(seed);
 
 	//generate random number of rooms
-	map.num_room = getRandom(7, 5);
+	dungeon.num_room = getRandom(7, 5);
 	bool load = false;
 	bool save = false;
 
@@ -622,7 +622,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		generateDungeon(map.num_room);
+		generateDungeon(dungeon.num_room);
 	}
 	printDungeon();
 

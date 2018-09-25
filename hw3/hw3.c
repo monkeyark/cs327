@@ -523,7 +523,8 @@ static void dijkstra(pair from, pair to)
 	{
 		for (col = 0; col < COL; col++)
 		{
-			if (dungeon.map[row][col] != ter_wall_immutable)
+			if (dungeon.map[row][col].hardness != 255)
+			//if (dungeon.map[row][col] != ter_wall_immutable)
 			{
 				path[row][col].hn = heap_insert(&h, &path[row][col]);
 			}
@@ -544,10 +545,12 @@ static void dijkstra(pair from, pair to)
 					(col != from[dim_col]) || (row != from[dim_row]);
 					p = &path[row][col], col = p->from[dim_col], row = p->from[dim_row])
 			{
-				if (dungeon.map[row][col] != ter_floor_room)
+				if (dungeon.map[row][col].hardness != 0)
+				//if (dungeon.map[row][col] != ter_floor_room)
 				{
 					dungeon.map[row][col] = ter_floor_hall;
 					dungeon.map[row][col].hardness = 0;
+					//TODO change make corridor to find path
 				}
 			}
 			heap_delete(&h);

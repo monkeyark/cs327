@@ -20,7 +20,7 @@
 #define CORRIDOR_H 0
 #define PC_H 0
 
-#define hardnesspair(pair) (d->hardness[pair[dim_y]][pair[dim_x]])
+#define hardnesspair(pair) (d->hardness[pair[dim_row]][pair[dim_col]])
 
 typedef struct dungeonCell
 {
@@ -564,7 +564,7 @@ static void dijkstra(Dungeon *d, pair from, pair to)
 
 		//updating cost to PC
 		if ((path[p->pos[dim_row] - 1][p->pos[dim_col]].hn)
-				&& (path[p->pos[dim_row] - 1][p->pos[dim_col]].cost > p->cost + hardnesspair(p->pos)))
+				&& (path[p->pos[dim_row] - 1][p->pos[dim_col]].cost > p->cost + (dungeon.map[row][col].hardness[(p->pos)[dim_row]][(p->pos)[dim_col]]))
 		{
 			path[p->pos[dim_row] - 1][p->pos[dim_col]].cost = p->cost + hardnesspair(p->pos);
 			path[p->pos[dim_row] - 1][p->pos[dim_col]].from[dim_row] = p->pos[dim_row];

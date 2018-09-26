@@ -20,11 +20,13 @@
 #define CORRIDOR_H 0
 #define PC_H 0
 
+#define hardnesspair(pair) (d->hardness[pair[dim_y]][pair[dim_x]])
 
 typedef struct dungeonCell
 {
 	char space;
 	int hardness;
+	int costtoPC;
 } Cell;
 
 typedef struct rooms
@@ -370,23 +372,23 @@ void loadFile(FILE *f)
 	char marker[12];
 	fread(&marker, 1, 12, f);
 
-	u_int32_t ver;
+	uint32_t ver;
 	fread(&ver, 4, 1, f);
 	dungeon.version = be32toh(ver);
 
-	u_int32_t file_size;
+	uint32_t file_size;
 	fread(&file_size, 4, 1, f);
 	int filesize = be32toh(file_size);
 
-	u_int8_t pc_col;
+	uint8_t pc_col;
 	fread(&pc_col, 1, 1, f);
 	dungeon.pc_col = pc_col;
-	u_int8_t pc_row;
+	uint8_t pc_row;
 	fread(&pc_row, 1, 1, f);
 	dungeon.pc_row = pc_row;
 
 
-	u_int8_t hard[1680];
+	uint8_t hard[1680];
 	fread(hard, 1, 1680, f);
 
 	for (int row=0; row<ROW; row++)
@@ -410,7 +412,7 @@ void loadFile(FILE *f)
 	dungeon.num_room = (filesize - 1702) / 4;
 	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
 
-	u_int8_t roomRead[filesize - 1702];
+	uint8_t roomRead[filesize - 1702];
 	fread(roomRead, 1, filesize - 1702, f);
 
 	int n = 0;
@@ -487,7 +489,7 @@ static int32_t path_cmp(const void *key, const void *with)
 	return ((path_t *) key)->cost - ((path_t *) with)->cost;
 }
 
-static void dijkstra(pair from, pair to)
+static void dijkstra(Dungeon *d, pair from, pair to)
 {
 	heap_t h;
 	static path_t path[ROW][COL], *p;
@@ -545,10 +547,13 @@ static void dijkstra(pair from, pair to)
 					(col != from[dim_col]) || (row != from[dim_row]);
 					p = &path[row][col], col = p->from[dim_col], row = p->from[dim_row])
 			{
-				if (dungeon.map[row][col].hardness != 0)
+				dungeon.map[row][col].costtoPC = 0;
+
+				if (dungeon.map[row][col].space != ROOM)
 				//if (dungeon.map[row][col] != ter_floor_room)
 				{
-					dungeon.map[row][col] = ter_floor_hall;
+					dungeon.map[row][col].costtoPC = 0;
+					dungeon.map[row][col].space = CORRIDOR;
 					dungeon.map[row][col].hardness = 0;
 					//TODO change make corridor to find path
 				}
@@ -557,53 +562,43 @@ static void dijkstra(pair from, pair to)
 			return;
 		}
 
+		//updating cost to PC
 		if ((path[p->pos[dim_row] - 1][p->pos[dim_col]].hn)
-				&& (path[p->pos[dim_row] - 1][p->pos[dim_col]].cost
-						> p->cost + hardnesspair(p->pos)))
+				&& (path[p->pos[dim_row] - 1][p->pos[dim_col]].cost > p->cost + hardnesspair(p->pos)))
 		{
-			path[p->pos[dim_row] - 1][p->pos[dim_col]].cost = p->cost
-					+ hardnesspair(p->pos);
+			path[p->pos[dim_row] - 1][p->pos[dim_col]].cost = p->cost + hardnesspair(p->pos);
 			path[p->pos[dim_row] - 1][p->pos[dim_col]].from[dim_row] = p->pos[dim_row];
 			path[p->pos[dim_row] - 1][p->pos[dim_col]].from[dim_col] = p->pos[dim_col];
-			heap_decrease_key_no_replace(&h,
-					path[p->pos[dim_row] - 1][p->pos[dim_col]].hn);
+			heap_decrease_key_no_replace(&h, path[p->pos[dim_row] - 1][p->pos[dim_col]].hn);
 		}
 		if ((path[p->pos[dim_row]][p->pos[dim_col] - 1].hn)
-				&& (path[p->pos[dim_row]][p->pos[dim_col] - 1].cost
-						> p->cost + hardnesspair(p->pos)))
+				&& (path[p->pos[dim_row]][p->pos[dim_col] - 1].cost > p->cost + hardnesspair(p->pos)))
 		{
-			path[p->pos[dim_row]][p->pos[dim_col] - 1].cost = p->cost
-					+ hardnesspair(p->pos);
+			path[p->pos[dim_row]][p->pos[dim_col] - 1].cost = p->cost + hardnesspair(p->pos);
 			path[p->pos[dim_row]][p->pos[dim_col] - 1].from[dim_row] = p->pos[dim_row];
 			path[p->pos[dim_row]][p->pos[dim_col] - 1].from[dim_col] = p->pos[dim_col];
-			heap_decrease_key_no_replace(&h,
-					path[p->pos[dim_row]][p->pos[dim_col] - 1].hn);
+			heap_decrease_key_no_replace(&h, path[p->pos[dim_row]][p->pos[dim_col] - 1].hn);
 		}
 		if ((path[p->pos[dim_row]][p->pos[dim_col] + 1].hn)
-				&& (path[p->pos[dim_row]][p->pos[dim_col] + 1].cost
-						> p->cost + hardnesspair(p->pos)))
+				&& (path[p->pos[dim_row]][p->pos[dim_col] + 1].cost > p->cost + hardnesspair(p->pos)))
 		{
-			path[p->pos[dim_row]][p->pos[dim_col] + 1].cost = p->cost
-					+ hardnesspair(p->pos);
+			path[p->pos[dim_row]][p->pos[dim_col] + 1].cost = p->cost + hardnesspair(p->pos);
 			path[p->pos[dim_row]][p->pos[dim_col] + 1].from[dim_row] = p->pos[dim_row];
 			path[p->pos[dim_row]][p->pos[dim_col] + 1].from[dim_col] = p->pos[dim_col];
-			heap_decrease_key_no_replace(&h,
-					path[p->pos[dim_row]][p->pos[dim_col] + 1].hn);
+			heap_decrease_key_no_replace(&h, path[p->pos[dim_row]][p->pos[dim_col] + 1].hn);
 		}
 		if ((path[p->pos[dim_row] + 1][p->pos[dim_col]].hn)
-				&& (path[p->pos[dim_row] + 1][p->pos[dim_col]].cost
-						> p->cost + hardnesspair(p->pos)))
+				&& (path[p->pos[dim_row] + 1][p->pos[dim_col]].cost > p->cost + hardnesspair(p->pos)))
 		{
-			path[p->pos[dim_row] + 1][p->pos[dim_col]].cost = p->cost
-					+ hardnesspair(p->pos);
+			path[p->pos[dim_row] + 1][p->pos[dim_col]].cost = p->cost + hardnesspair(p->pos);
 			path[p->pos[dim_row] + 1][p->pos[dim_col]].from[dim_row] = p->pos[dim_row];
 			path[p->pos[dim_row] + 1][p->pos[dim_col]].from[dim_col] = p->pos[dim_col];
-			heap_decrease_key_no_replace(&h,
-					path[p->pos[dim_row] + 1][p->pos[dim_col]].hn);
+			heap_decrease_key_no_replace(&h, path[p->pos[dim_row] + 1][p->pos[dim_col]].hn);
 		}
 	}
 }
 
+/*
 int main(int argc, char *argv[])
 {
 	char *home = getenv("HOME");
@@ -613,7 +608,7 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	printf("\nseed = %d;\n", seed);//TODD
+	printf("\nseed = %d;\n", seed);
 	srand(seed);
 
 	//generate random number of rooms
@@ -660,4 +655,4 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
+*/

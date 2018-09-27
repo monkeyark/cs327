@@ -127,7 +127,7 @@ void printDungeon()
 bool isInside(int row, int col)
 {
 	//is room not on edge or outside of dungeon
-	return row > 0 && col > 0 && row < ROW && col < COL;
+	return row > 0 && col > 0 && row < ROW-1 && col < COL-1;
 }
 
 bool isValidRoom(int row, int col, int width, int height)

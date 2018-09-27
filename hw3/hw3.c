@@ -23,7 +23,7 @@ typedef struct cell
 {
 	char space;
 	int hardness;
-	int distance;
+	//int distance;
 } Cell;
 
 typedef struct rooms
@@ -417,19 +417,19 @@ Node *node_new(int priority)
 	return temp;
 }
 
-void pq_insert(Node **head, int priority, int dis[ROW * COL])
+void pq_insert(Node **head, int priority, int dist[ROW * COL])
 {
 	Node *temp = (*head);
 	Node *new = node_new(priority);
 
-	if (dis[(*head)->priority] >= dis[new->priority])
+	if (dist[(*head)->priority] >= dist[new->priority])
 	{
 		new->next = (*head);
 		(*head) = new;
 	}
 	else
 	{
-		while (temp->next != NULL && dis[temp->next->priority] < dis[new->priority])
+		while (temp->next != NULL && dist[temp->next->priority] < dist[new->priority])
 		{
 			temp = temp->next;
 		}
@@ -451,7 +451,7 @@ bool pq_isEmpty(Node **head)
 	return (*head) == NULL;
 }
 
-int getHardness(int hardness)
+int getHardnessCost(int hardness)
 {
 	if (hardness == 255) return 3;
 
@@ -460,7 +460,7 @@ int getHardness(int hardness)
 	return 1 + (hardness / 85);
 }
 
-void print_dijkstra_path(int dis[ROW * COL], int row, int col)
+void print_dijkstra_path(int dist[ROW * COL], int row, int col)
 {
 	printf("print_dijkstra_bounded\n");
 	putchar('\n');
@@ -473,9 +473,9 @@ void print_dijkstra_path(int dis[ROW * COL], int row, int col)
 			{
 				printf("%c", PC);
 			}
-			else if (dis[i * COL + j] != -1)
+			else if (dist[i * COL + j] != -1)
 			{
-				int n = dis[i * COL + j] % 10;
+				int n = dist[i * COL + j] % 10;
 				printf("%d", n);
 			}
 			else
@@ -494,7 +494,7 @@ static void dijkstra_tunneling()
 	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
 	//initialization
 	int i, j;
-	int dis[ROW * COL];
+	int dist[ROW * COL];
 	int PC_pos = dungeon.pc_row * COL + dungeon.pc_col;
 	Node *node = node_new(PC_pos);
 	for (i = 0; i < ROW; i++)
@@ -503,17 +503,17 @@ static void dijkstra_tunneling()
 		{
 			if (!isInside(i, j))
 			{
-				dis[i * COL + j] = -1;
+				dist[i * COL + j] = -1;
 			}
 			else if (dungeon.map[i][j].space != PC)
 			{
-				dis[i * COL + j] = ROW * COL + 1;
+				dist[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
-				pq_insert(&node, i * COL + j, dis);
+				pq_insert(&node, i * COL + j, dist);
 			}
 		}
 	}
-	dis[dungeon.pc_row * COL + dungeon.pc_col] = 0;
+	dist[dungeon.pc_row * COL + dungeon.pc_col] = 0;
 	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 
 	while (!pq_isEmpty(&node))
@@ -521,22 +521,22 @@ static void dijkstra_tunneling()
 		int u = pq_pop(&node);
 		for (i = 0; i < 8; i++)
 		{
-			int alt = 0;
+			//int alt = 0;
 			int v = u + rowMove[i] + colMove[i] * COL;
 			if (0 > v || v > ROW * COL) continue;
 
-			if (dis[v] >= 0)
+			if (dist[v] >= 0)
 			{
-				alt = dis[u] + getHardness(dungeon.map[u / COL][u % COL].hardness);
-				if (alt < dis[v])
+				int alt = dist[u] + getHardnessCost(dungeon.map[u / COL][u % COL].hardness);
+				if (alt < dist[v])
 				{
-					dis[v] = alt;
-					pq_insert(&node, v, dis);
+					dist[v] = alt;
+					pq_insert(&node, v, dist);
 				}
 			}
 		}
 	}
-	print_dijkstra_path(dis, dungeon.pc_row, dungeon.pc_col);
+	print_dijkstra_path(dist, dungeon.pc_row, dungeon.pc_col);
 	free(node);
 }
 
@@ -546,7 +546,7 @@ static void dijkstra_nontunneling()
 	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
 	//initialization
 	int i, j;
-	int dis[ROW * COL];
+	int dist[ROW * COL];
 	int PC_pos = dungeon.pc_row * COL + dungeon.pc_col;
 	Node *node = node_new(PC_pos);
 	for (i = 0; i < ROW; i++)
@@ -555,18 +555,18 @@ static void dijkstra_nontunneling()
 		{
 			if (dungeon.map[i][j].space == ROOM || dungeon.map[i][j].space == CORRIDOR)
 			{
-				dis[i * COL + j] = ROW * COL + 1;
+				dist[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
-				pq_insert(&node, i * COL + j, dis);
+				pq_insert(&node, i * COL + j, dist);
 			}
 			else if (dungeon.map[i][j].space == ROCK)
 			{
-				dis[i * COL + j] = -1;
+				dist[i * COL + j] = -1;
 				//dungeon.map[i][j].distance = -1;
 			}
 		}
 	}
-	dis[dungeon.pc_row * COL + dungeon.pc_col] = 0;
+	dist[dungeon.pc_row * COL + dungeon.pc_col] = 0;
 	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 
 	while (!pq_isEmpty(&node))
@@ -574,22 +574,21 @@ static void dijkstra_nontunneling()
 		int u = pq_pop(&node);
 		for (i = 0; i < 8; i++)
 		{
-			int alt = 0;
 			int v = u + rowMove[i] + colMove[i] * COL;
 			if (0 > v || v > ROW * COL) continue;
 
-			if (dis[v] >= 0)
+			if (dist[v] >= 0)
 			{
-				alt = dis[u] + 1;
-				if (alt < dis[v])
+				int alt = dist[u] + 1;
+				if (alt < dist[v])
 				{
-					dis[v] = alt;
-					pq_insert(&node, v, dis);
+					dist[v] = alt;
+					pq_insert(&node, v, dist);
 				}
 			}
 		}
 	}
-	print_dijkstra_path(dis, dungeon.pc_row, dungeon.pc_col);
+	print_dijkstra_path(dist, dungeon.pc_row, dungeon.pc_col);
 	free(node);
 }
 

@@ -6,8 +6,9 @@
 #include <string.h>
 #include <endian.h>
 #include <sys/stat.h>
+#include <stdint.h>
 
-#include "heap.h"
+//#include "heap.h"
 
 #define ROW 21
 #define COL 80
@@ -20,11 +21,11 @@
 #define CORRIDOR_H 0
 #define PC_H 0
 
-typedef struct dungeonCell
+typedef struct cell
 {
 	char space;
 	int hardness;
-	int costtoPC;
+	int distance;
 } Cell;
 
 typedef struct rooms
@@ -35,7 +36,7 @@ typedef struct rooms
 	int height;
 } Room;
 
-typedef struct dungeonLevel
+typedef struct level
 {
 	int num_room;
 	int pc_row;
@@ -44,21 +45,6 @@ typedef struct dungeonLevel
 	Room *rooms;
 	Cell map[ROW][COL];
 } Dungeon;
-
-typedef enum dim
-{
-	dim_row, dim_col, num_dims
-} dim_t;
-
-typedef struct path
-{
-	heap_node_t *hn;
-	uint8_t pos[num_dims];
-	uint8_t from[num_dims];
-	int32_t cost;
-} path_t;
-
-typedef int16_t pair[num_dims];
 
 Dungeon dungeon;
 
@@ -261,76 +247,6 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 	{
 		newCorridor(aRow, aCol+1, bRow, bCol);
 	}
-
-
-/*
-	if (aRow <= bRow) 	//now at dungeon[aRow][aCol]
-	{
-		for (int i=aRow; i<=bRow; i++)
-		{
-			if (dungeon[i][aCol].space == ROCK)
-			{
-				dungeon[i][aCol].space = CORRIDOR;
-				dungeon[i][aCol].hardness = CORRIDOR_H;
-			}
-		}
-		if (aCol <= bCol) 	//now at dungeon[bRow][aCol]
-		{
-			for (int i=aCol; i<=bCol; i++)
-			{
-				if (dungeon[bRow][i].space == ROCK)
-				{
-					dungeon[bRow][i].space = CORRIDOR;
-					dungeon[bRow][i].hardness = CORRIDOR_H;
-				}
-			}
-		}
-		else
-		{
-			for (int i=bCol; i<=aCol; i++)
-			{
-				if (dungeon[bRow][i].space == ROCK)
-				{
-					dungeon[bRow][i].space = CORRIDOR;
-					dungeon[bRow][i].hardness = CORRIDOR_H;
-				}
-			}
-		}
-	}
-	else
-	{
-		for (int i=bRow; i<=aRow; i++)
-		{
-			if (dungeon[i][bCol].space == ROCK)
-			{
-				dungeon[i][bCol].space = CORRIDOR;
-				dungeon[i][bCol].hardness = CORRIDOR_H;
-			}
-		}
-		if (aCol <= bCol) 	//now at dungeon[aRow][bCol]
-		{
-			for (int i=aCol; i<=bCol; i++)
-			{
-				if (dungeon[aRow][i].space == ROCK)
-				{
-					dungeon[aRow][i].space = CORRIDOR;
-					dungeon[aRow][i].hardness = CORRIDOR_H;
-				}
-			}
-		}
-		else
-		{
-			for (int i=bCol; i<=aCol; i++)
-			{
-				if (dungeon[aRow][i].space == ROCK)
-				{
-					dungeon[aRow][i].space = CORRIDOR;
-					dungeon[aRow][i].hardness = CORRIDOR_H;
-				}
-			}
-		}
-	}
-*/
 }
 
 void generateDungeon(int n)
@@ -342,8 +258,6 @@ void generateDungeon(int n)
 	for (int i=0; i<n; i++)
 	{
 		dungeon.rooms[i] = newRoom();
-//		printf("  ROOM%2d    row=%2d   col=%2d   width=%2d   height=%2d\n",
-//		i, rooms[i].row, rooms[i].col, rooms[i].width, rooms[i].height);//TODO
 	}
 
 	for (int i=0; i<n-1; i++)
@@ -483,116 +397,135 @@ void saveFile(FILE *f)
 	fclose(f);
 }
 
-static int32_t path_cmp(const void *key, const void *with)
+typedef struct Node
 {
-	return ((path_t *) key)->cost - ((path_t *) with)->cost;
+	int priority;
+	struct Node *next;
+} Node;
+
+Node *newNode(int priority)
+{
+	Node *temp = malloc(sizeof(Node));
+	temp->priority = priority;
+	temp->next = NULL;
+
+	return temp;
 }
 
-static void dijkstra(Dungeon *d, pair from, pair to)
+void insert(Node **head, int priority, int dis[ROW*COL])
 {
-	heap_t h;
-	static path_t path[ROW][COL], *p;
-	static uint32_t initialized = 0;
-	uint32_t row, col;
+	Node *temp = (*head);
+	Node *new = newNode(priority);
 
-	if (!initialized)
+	if (dis[(*head)->priority] >= dis[new->priority])
 	{
-		for (row = 0; row < ROW; row++)
+		new->next = *head;
+		(*head) = new;
+	}
+	else
+	{
+		while (temp->next != NULL && dis[temp->next->priority] < dis[new->priority])
 		{
-			for (col = 0; col < COL; col++)
+			temp = temp->next;
+		}
+
+		new->next = temp->next;
+		temp->next = new;
+	}
+}
+
+int pop(Node **head)
+{
+	int n = (*head)->priority;
+	(*head) = (*head)->next;
+	return n;
+}
+
+bool isEmpty(Node **head)
+{
+	return (*head) == NULL;
+}
+
+void printPath(int dis[ROW*COL], Node **head, int row, int col)
+{
+	int i, j;
+	for (i = 0; i < 21; i++)
+	{
+		for (j = 0; j < 80; j++)
+		{
+			if (row == i && col == j)
 			{
-				path[row][col].pos[dim_row] = row;
-				path[row][col].pos[dim_col] = col;
+				printf("%c", '@');
 			}
-		}
-		initialized = 1;
-	}
-
-	for (row = 0; row < ROW; row++)
-	{
-		for (col = 0; col < COL; col++)
-		{
-			path[row][col].cost = ROW*COL+1;
-		}
-	}
-
-	path[from[dim_row]][from[dim_col]].cost = 0;
-
-	heap_init(&h, path_cmp, NULL);
-
-	for (row = 0; row < ROW; row++)
-	{
-		for (col = 0; col < COL; col++)
-		{
-			if (dungeon.map[row][col].hardness != 255)
-			//if (dungeon.map[row][col] != ter_wall_immutable)
+			else if (dis[i*COL + j] != -1)
 			{
-				path[row][col].hn = heap_insert(&h, &path[row][col]);
+				int n = dis[i*COL + j] % 10;
+				printf("%d", n);
 			}
 			else
 			{
-				path[row][col].hn = NULL;
+				printf("%c", ' ');
+			}
+		}
+		printf("\n");
+	}
+}
+
+static void dijkstra_bounded()
+{
+	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
+	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
+	//initialization
+	int i, j;
+	int dis[ROW*COL];
+	int pos = dungeon.pc_row*COL + dungeon.pc_col;
+	Node* node = newNode(pos);
+	dis[dungeon.pc_row*COL + dungeon.pc_col] = 0;
+	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
+
+	for (i = 0; i < ROW; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			if (dungeon.map[i][j].space == ROOM || dungeon.map[i][j].space == CORRIDOR)
+			{
+				dis[dungeon.pc_row*COL + dungeon.pc_col] = ROW*COL+1;
+				//dungeon.map[i][j].distance = ROW*COL+1;
+				insert(&node, i*COL+j, dis);
+			}
+			else if (dungeon.map[i][j].space == ROCK)
+			{
+				dis[dungeon.pc_row*COL + dungeon.pc_col] = -1;
+				//dungeon.map[i][j].distance = -1;
 			}
 		}
 	}
 
-	while ((p = heap_remove_min(&h)))
+	while (!isEmpty(&node))
 	{
-		p->hn = NULL;
-
-		if ((p->pos[dim_row] == to[dim_row]) && p->pos[dim_col] == to[dim_col])
+		int u = pop(&node);
+		for (i = 0; i < 8; i++)
 		{
-			for (row = to[dim_col], row = to[dim_row];
-					(col != from[dim_col]) || (row != from[dim_row]);
-					p = &path[row][col], col = p->from[dim_col], row = p->from[dim_row])
+			int alt = 0;
+			int v = u + rowMove[i] + colMove[i];
+			if (0 < v || v > ROW*COL)
 			{
-				dungeon.map[row][col].costtoPC = 0;
+				continue;
+			}
 
-				if (dungeon.map[row][col].space != ROOM)
-				//if (dungeon.map[row][col] != ter_floor_room)
+			if (dis[v] >= 0)
+			{
+				alt = dis[u] + 1;
+				if (alt < dis[v])
 				{
-					dungeon.map[row][col].costtoPC = 0;
-					dungeon.map[row][col].space = CORRIDOR;
-					dungeon.map[row][col].hardness = 0;
-					//TODO change make corridor to find path
+					dis[v] = alt;
+					insert(&node , v, dis);
 				}
 			}
-			heap_delete(&h);
-			return;
 		}
-
-		//updating cost to PC
-		int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
-		int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
-		int i=0;
-		for (i=0; i<8; i++)
-		{
-			heap_node_t *head_node = path[p->pos[dim_row] + rowMove[i]][p->pos[dim_col] + colMove[i]].hn;
-			int32_t head_node_cost = path[p->pos[dim_row] + rowMove[i]][p->pos[dim_col] + colMove[i]].cost;
-			int32_t current_cost = p->cost + hardnesspair(p->pos);
-			hardnesspair(pair) (d->hardness[p->pos[dim_row]][p->pos[dim_col]])
-			//int32_t current_cost = p->cost + hardnesspair(p->pos);
-			//hardnesspair(pair) (d->hardness[pair[dim_row]][pair[dim_col]])
-			if (head_node && (head_node_cost > current_cost))
-			{
-				path[p->pos[dim_row] + rowMove[i]][p->pos[dim_col] + colMove[i]].cost = current_cost;
-				path[p->pos[dim_row] + rowMove[i]][p->pos[dim_col] + colMove[i]].from[dim_row] = p->pos[dim_row];
-				path[p->pos[dim_row] + rowMove[i]][p->pos[dim_col] + colMove[i]].from[dim_col] = p->pos[dim_col];
-				heap_decrease_key_no_replace(&h, path[p->pos[dim_row] + rowMove[i]][p->pos[dim_col] + colMove[i]].hn);
-			}
-		}
-		/*
-			if ((path[p->pos[dim_y] + 1][p->pos[dim_x] + 1].hn) &&
-				(path[p->pos[dim_y] + 1][p->pos[dim_x] + 1].cost > p->cost + hardnesspair(p->pos)))
-			{
-				path[p->pos[dim_y] + 1][p->pos[dim_x] + 1].cost = p->cost + hardnesspair(p->pos);
-				path[p->pos[dim_y] + 1][p->pos[dim_x] + 1].from[dim_y] = p->pos[dim_y];
-				path[p->pos[dim_y] + 1][p->pos[dim_x] + 1].from[dim_x] = p->pos[dim_x];
-				heap_decrease_key_no_replace(&h, path[p->pos[dim_y] + 1][p->pos[dim_x] + 1].hn);
-			}
-		*/
-
 	}
+	printPath(dis, &node, dungeon.pc_row, dungeon.pc_col);
+	free(node);
 }
 
 int main(int argc, char *argv[])
@@ -648,7 +581,7 @@ int main(int argc, char *argv[])
 		FILE *f = fopen(path, "w");
 		saveFile(f);
 	}
+	dijkstra_bounded();
 
 	return 0;
 }
-

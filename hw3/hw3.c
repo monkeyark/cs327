@@ -8,8 +8,6 @@
 #include <sys/stat.h>
 #include <stdint.h>
 
-//#include "heap.h"
-
 #define ROW 21
 #define COL 80
 #define ROCK ' '
@@ -67,6 +65,7 @@ int getRandom(int modulus, int min)
 
 void printDungeon()
 {
+	printf("printDungeon\n");
 	printf("   ");
 	for (int i = 0; i < COL; i++)
 	{
@@ -74,6 +73,7 @@ void printDungeon()
 	}
 	printf("\n");
 
+	printf("  ");
 	for (int i = 0; i < COL + 2; i++)
 	{
 		printf("-");
@@ -86,12 +86,10 @@ void printDungeon()
 		for (int j = 0; j < COL; j++)
 		{
 			printf("%c", dungeon.map[i][j].space);
-			//int x = dungeon[i][j].hardness / 85 + 1;
-			//printf("%d", x);
 		}
 		printf("|\n");
 	}
-
+	printf("  ");
 	for (int i = 0; i < COL + 2; i++)
 	{
 		printf("-");
@@ -406,11 +404,11 @@ void saveFile(FILE *f)
 
 typedef struct Node
 {
-	int priority;
 	struct Node *next;
+	int priority;
 } Node;
 
-Node *newNode(int priority)
+Node *node_new(int priority)
 {
 	Node *temp = malloc(sizeof(Node));
 	temp->priority = priority;
@@ -419,10 +417,10 @@ Node *newNode(int priority)
 	return temp;
 }
 
-void insert(Node **head, int priority, int dis[ROW * COL])
+void pq_insert(Node **head, int priority, int dis[ROW * COL])
 {
 	Node *temp = (*head);
-	Node *new = newNode(priority);
+	Node *new = node_new(priority);
 
 	if (dis[(*head)->priority] >= dis[new->priority])
 	{
@@ -441,35 +439,28 @@ void insert(Node **head, int priority, int dis[ROW * COL])
 	}
 }
 
-int pop(Node **head)
+int pq_pop(Node **head)
 {
 	int n = (*head)->priority;
 	(*head) = (*head)->next;
 	return n;
 }
 
-bool isEmpty(Node **head)
+bool pq_isEmpty(Node **head)
 {
 	return (*head) == NULL;
 }
 
 int getHardness(int hardness)
 {
-	if (hardness == 255)
-	{
-		return 3;
-	}
-	else if (hardness == 0)
-	{
-		return 1;
-	}
-	else
-	{
-		return 1 + (hardness / 85);
-	}
+	if (hardness == 255) return 3;
+
+	if (hardness == 0) return 1;
+
+	return 1 + (hardness / 85);
 }
 
-void print_dijkstra_bounded(int dis[ROW * COL], int row, int col)
+void print_dijkstra_path(int dis[ROW * COL], int row, int col)
 {
 	printf("print_dijkstra_bounded\n");
 	putchar('\n');
@@ -497,44 +488,15 @@ void print_dijkstra_bounded(int dis[ROW * COL], int row, int col)
 	putchar('\n');
 }
 
-void print_dijkstra_map(int dis[ROW * COL], int row, int col)
+static void dijkstra_tunneling()
 {
-	printf("print_dijkstra_map\n");
-	int i, j;
-	for (i = 0; i < ROW; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-			if (row == i && col == j)
-			{
-				printf("%c", PC);
-			}
-			else if (dis[i * COL + j] != -1)
-			{
-				int n = dis[i * COL + j] % 10;
-				printf("%d", n);
-			}
-			else
-			{
-				printf(" ");
-			}
-		}
-
-		printf("\n");
-	}
-}
-
-static void dijkstra_map()
-{
-	//	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
-	//	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
-	int colMove[8] = {-80, -80, -80, 0, 0, 80, 80, 80};
-	int rowMove[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
+	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
 	//initialization
 	int i, j;
 	int dis[ROW * COL];
-	int pos = dungeon.pc_row * COL + dungeon.pc_col;
-	Node *node = newNode(pos);
+	int PC_pos = dungeon.pc_row * COL + dungeon.pc_col;
+	Node *node = node_new(PC_pos);
 	for (i = 0; i < ROW; i++)
 	{
 		for (j = 0; j < COL; j++)
@@ -547,24 +509,21 @@ static void dijkstra_map()
 			{
 				dis[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
-				insert(&node, i * COL + j, dis);
+				pq_insert(&node, i * COL + j, dis);
 			}
 		}
 	}
 	dis[dungeon.pc_row * COL + dungeon.pc_col] = 0;
 	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 
-	while (!isEmpty(&node))
+	while (!pq_isEmpty(&node))
 	{
-		int u = pop(&node);
+		int u = pq_pop(&node);
 		for (i = 0; i < 8; i++)
 		{
 			int alt = 0;
-			int v = u + rowMove[i] + colMove[i];
-			if (0 > v || v > ROW * COL)
-			{
-				continue;
-			}
+			int v = u + rowMove[i] + colMove[i] * COL;
+			if (0 > v || v > ROW * COL) continue;
 
 			if (dis[v] >= 0)
 			{
@@ -572,26 +531,24 @@ static void dijkstra_map()
 				if (alt < dis[v])
 				{
 					dis[v] = alt;
-					insert(&node, v, dis);
+					pq_insert(&node, v, dis);
 				}
 			}
 		}
 	}
-	print_dijkstra_map(dis, dungeon.pc_row, dungeon.pc_col);
+	print_dijkstra_path(dis, dungeon.pc_row, dungeon.pc_col);
 	free(node);
 }
 
-static void dijkstra_bounded()
+static void dijkstra_nontunneling()
 {
-	//	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
-	//	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
-	int colMove[8] = {-80, -80, -80, 0, 0, 80, 80, 80};
-	int rowMove[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
+	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
 	//initialization
 	int i, j;
 	int dis[ROW * COL];
-	int pos = dungeon.pc_row * COL + dungeon.pc_col;
-	Node *node = newNode(pos);
+	int PC_pos = dungeon.pc_row * COL + dungeon.pc_col;
+	Node *node = node_new(PC_pos);
 	for (i = 0; i < ROW; i++)
 	{
 		for (j = 0; j < COL; j++)
@@ -600,7 +557,7 @@ static void dijkstra_bounded()
 			{
 				dis[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
-				insert(&node, i * COL + j, dis);
+				pq_insert(&node, i * COL + j, dis);
 			}
 			else if (dungeon.map[i][j].space == ROCK)
 			{
@@ -612,17 +569,14 @@ static void dijkstra_bounded()
 	dis[dungeon.pc_row * COL + dungeon.pc_col] = 0;
 	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 
-	while (!isEmpty(&node))
+	while (!pq_isEmpty(&node))
 	{
-		int u = pop(&node);
+		int u = pq_pop(&node);
 		for (i = 0; i < 8; i++)
 		{
 			int alt = 0;
-			int v = u + rowMove[i] + colMove[i];
-			if (0 > v || v > ROW * COL)
-			{
-				continue;
-			}
+			int v = u + rowMove[i] + colMove[i] * COL;
+			if (0 > v || v > ROW * COL) continue;
 
 			if (dis[v] >= 0)
 			{
@@ -630,12 +584,12 @@ static void dijkstra_bounded()
 				if (alt < dis[v])
 				{
 					dis[v] = alt;
-					insert(&node, v, dis);
+					pq_insert(&node, v, dis);
 				}
 			}
 		}
 	}
-	print_dijkstra_bounded(dis, dungeon.pc_row, dungeon.pc_col);
+	print_dijkstra_path(dis, dungeon.pc_row, dungeon.pc_col);
 	free(node);
 }
 
@@ -652,7 +606,7 @@ int main(int argc, char *argv[])
 	//seed = 1538040335;
 	//seed = 1538040390;
 
-	printf("\nseed = %d;\n", seed);
+	printf("\nseed = %d;\n\n", seed);
 	srand(seed);
 
 	//generate random number of rooms
@@ -696,8 +650,8 @@ int main(int argc, char *argv[])
 		FILE *f = fopen(path, "w");
 		saveFile(f);
 	}
-	dijkstra_bounded();
-	dijkstra_map();
+	dijkstra_nontunneling();
+	dijkstra_tunneling();
 
 	return 0;
 }

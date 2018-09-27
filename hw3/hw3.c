@@ -419,7 +419,7 @@ void insert(Node **head, int priority, int dis[ROW*COL])
 
 	if (dis[(*head)->priority] >= dis[new->priority])
 	{
-		new->next = *head;
+		new->next = (*head);
 		(*head) = new;
 	}
 	else
@@ -446,8 +446,25 @@ bool isEmpty(Node **head)
 	return (*head) == NULL;
 }
 
+int getHardness(int hardness)
+{
+	if (hardness == 255)
+	{
+		return 3;
+	}
+	else if (hardness == 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return 1 + (hardness / 85);
+	}
+}
+
 void printPath(int dis[ROW*COL], Node **head, int row, int col)
 {
+	putchar('\n');
 	int i, j;
 	for (i = 0; i < 21; i++)
 	{
@@ -455,7 +472,7 @@ void printPath(int dis[ROW*COL], Node **head, int row, int col)
 		{
 			if (row == i && col == j)
 			{
-				printf("%c", '@');
+				printf("%c", PC);
 			}
 			else if (dis[i*COL + j] != -1)
 			{
@@ -469,12 +486,15 @@ void printPath(int dis[ROW*COL], Node **head, int row, int col)
 		}
 		printf("\n");
 	}
+	putchar('\n');
 }
 
-static void dijkstra_bounded()
+static void dijkstra_map()
 {
-	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
-	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
+//	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
+//	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
+	int colMove[8] = {-80,-80,-80,0,0,80,80,80};
+	int rowMove[8] = {-1,0,1,-1,1,-1,0,1};
 	//initialization
 	int i, j;
 	int dis[ROW*COL];
@@ -482,24 +502,23 @@ static void dijkstra_bounded()
 	Node* node = newNode(pos);
 	dis[dungeon.pc_row*COL + dungeon.pc_col] = 0;
 	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
-
 	for (i = 0; i < ROW; i++)
 	{
 		for (j = 0; j < COL; j++)
 		{
-			if (dungeon.map[i][j].space == ROOM || dungeon.map[i][j].space == CORRIDOR)
+			if (isInside(i, j) && dungeon.map[i][j].space != PC)
 			{
 				dis[dungeon.pc_row*COL + dungeon.pc_col] = ROW*COL+1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
 				insert(&node, i*COL+j, dis);
 			}
-			else if (dungeon.map[i][j].space == ROCK)
+			else if (!isInside(i, j))
 			{
-				dis[dungeon.pc_row*COL + dungeon.pc_col] = -1;
-				//dungeon.map[i][j].distance = -1;
+				dis[i*COL + j] = -1;
 			}
 		}
 	}
+
 
 	while (!isEmpty(&node))
 	{
@@ -508,7 +527,66 @@ static void dijkstra_bounded()
 		{
 			int alt = 0;
 			int v = u + rowMove[i] + colMove[i];
-			if (0 < v || v > ROW*COL)
+			if (0 > v || v > ROW*COL)
+			{
+				continue;
+			}
+
+			if (dis[v] >= 0)
+			{
+				alt = dis[u] + getHardness(dungeon.map[u/COL][u%COL].hardness);
+				if (alt < dis[v])
+				{
+					dis[v] = alt;
+					insert(&node , v, dis);
+				}
+			}
+		}
+	}
+	printPath(dis, &node, dungeon.pc_row, dungeon.pc_col);
+	free(node);
+}
+
+static void dijkstra_bounded()
+{
+//	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
+//	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
+	int colMove[8] = {-80,-80,-80,0,0,80,80,80};
+	int rowMove[8] = {-1,0,1,-1,1,-1,0,1};
+	//initialization
+	int i, j;
+	int dis[ROW*COL];
+	int pos = dungeon.pc_row*COL + dungeon.pc_col;
+	Node* node = newNode(pos);
+	dis[dungeon.pc_row*COL + dungeon.pc_col] = 0;
+	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
+	for (i = 0; i < ROW; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			if (dungeon.map[i][j].space == ROOM || dungeon.map[i][j].space == CORRIDOR)
+			{
+				dis[i*COL + j] = 99999;
+				//dungeon.map[i][j].distance = ROW*COL+1;
+				insert(&node, i*COL+j, dis);
+			}
+			else if (dungeon.map[i][j].space == ROCK)
+			{
+				dis[i*COL + j] = -1;
+				//dungeon.map[i][j].distance = -1;
+			}
+		}
+	}
+
+
+	while (!isEmpty(&node))
+	{
+		int u = pop(&node);
+		for (i = 0; i < 8; i++)
+		{
+			int alt = 0;
+			int v = u + rowMove[i] + colMove[i];
+			if (0 > v || v > ROW*COL)
 			{
 				continue;
 			}
@@ -537,6 +615,7 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
+	seed = 1538034287;
 	printf("\nseed = %d;\n", seed);
 	srand(seed);
 
@@ -582,6 +661,7 @@ int main(int argc, char *argv[])
 		saveFile(f);
 	}
 	dijkstra_bounded();
+	dijkstra_map();
 
 	return 0;
 }

@@ -351,7 +351,6 @@ void loadFile(FILE *f)
 	dungeon.map[dungeon.pc_row][dungeon.pc_col].space = PC;
 	dungeon.map[dungeon.pc_row][dungeon.pc_col].hardness = PC_H;
 
-	free(dungeon.rooms);
 	fclose(f);
 }
 

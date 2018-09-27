@@ -368,6 +368,7 @@ void saveFile(FILE *f)
 	int ver = htobe32(dungeon.version);
 	fwrite(&ver, 4, 1, f);
 
+	//TODO
 	int filesize = 1702 + 4 * dungeon.num_room;
 	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);

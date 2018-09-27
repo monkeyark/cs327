@@ -351,6 +351,7 @@ void loadFile(FILE *f)
 	dungeon.map[dungeon.pc_row][dungeon.pc_col].space = PC;
 	dungeon.map[dungeon.pc_row][dungeon.pc_col].hardness = PC_H;
 
+	free(dungeon.rooms);
 	fclose(f);
 }
 
@@ -445,7 +446,9 @@ void pq_insert(Node **head, int priority, int dist[ROW * COL])
 int pq_pop(Node **head)
 {
 	int n = (*head)->priority;
+	Node *t = *head;
 	(*head) = (*head)->next;
+	free(t);
 	return n;
 }
 
@@ -465,7 +468,6 @@ int getHardnessCost(int hardness)
 
 void print_dijkstra_path(int dist[ROW * COL], int row, int col)
 {
-	printf("print_dijkstra_bounded\n");
 	putchar('\n');
 	int i, j;
 	for (i = 0; i < ROW; i++)
@@ -491,7 +493,7 @@ void print_dijkstra_path(int dist[ROW * COL], int row, int col)
 	putchar('\n');
 }
 
-static void dijkstra_tunneling()
+void dijkstra_tunneling()
 {
 	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
 	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
@@ -500,6 +502,7 @@ static void dijkstra_tunneling()
 	int dist[ROW * COL];
 	int PC_pos = dungeon.pc_row * COL + dungeon.pc_col;
 	Node *node = node_new(PC_pos);
+
 	for (i = 0; i < ROW; i++)
 	{
 		for (j = 0; j < COL; j++)
@@ -540,10 +543,9 @@ static void dijkstra_tunneling()
 		}
 	}
 	print_dijkstra_path(dist, dungeon.pc_row, dungeon.pc_col);
-	free(node);
 }
 
-static void dijkstra_nontunneling()
+void dijkstra_nontunneling()
 {
 	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
 	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
@@ -551,7 +553,9 @@ static void dijkstra_nontunneling()
 	int i, j;
 	int dist[ROW * COL];
 	int PC_pos = dungeon.pc_row * COL + dungeon.pc_col;
+	memset(dist, 0, sizeof (dist));
 	Node *node = node_new(PC_pos);
+
 	for (i = 0; i < ROW; i++)
 	{
 		for (j = 0; j < COL; j++)
@@ -593,7 +597,6 @@ static void dijkstra_nontunneling()
 		}
 	}
 	print_dijkstra_path(dist, dungeon.pc_row, dungeon.pc_col);
-	free(node);
 }
 
 int main(int argc, char *argv[])
@@ -605,9 +608,6 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	//seed = 1538040255;
-	//seed = 1538040335;
-	//seed = 1538040390;
 
 	printf("\nseed = %d;\n\n", seed);
 	srand(seed);
@@ -655,6 +655,8 @@ int main(int argc, char *argv[])
 	}
 	dijkstra_nontunneling();
 	dijkstra_tunneling();
+
+	free(dungeon.rooms);
 
 	return 0;
 }

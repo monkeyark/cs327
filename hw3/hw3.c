@@ -50,9 +50,9 @@ Dungeon dungeon;
 
 void initDungeon()
 {
-	for(int i=0; i<ROW; i++)
+	for (int i = 0; i < ROW; i++)
 	{
-		for(int j=0; j<COL; j++)
+		for (int j = 0; j < COL; j++)
 		{
 			dungeon.map[i][j].space = ROCK;
 			dungeon.map[i][j].hardness = ROCK_H;
@@ -68,22 +68,22 @@ int getRandom(int modulus, int min)
 void printDungeon()
 {
 	printf("   ");
-	for (int i=0; i<COL; i++)
+	for (int i = 0; i < COL; i++)
 	{
 		printf("%d", i % 10);
 	}
 	printf("\n");
 
-	for (int i=0; i<COL+2; i++)
+	for (int i = 0; i < COL + 2; i++)
 	{
 		printf("-");
 	}
 	printf("\n");
 
-	for (int i=0; i<ROW; i++)
+	for (int i = 0; i < ROW; i++)
 	{
 		printf("%2d|", i);
-		for (int j=0; j<COL; j++)
+		for (int j = 0; j < COL; j++)
 		{
 			printf("%c", dungeon.map[i][j].space);
 			//int x = dungeon[i][j].hardness / 85 + 1;
@@ -92,7 +92,7 @@ void printDungeon()
 		printf("|\n");
 	}
 
-	for (int i=0; i<COL+2; i++)
+	for (int i = 0; i < COL + 2; i++)
 	{
 		printf("-");
 	}
@@ -102,28 +102,38 @@ void printDungeon()
 bool isInside(int row, int col)
 {
 	//is room not on edge or outside of dungeon or cross dungeon
-	return row > 0 && col > 0 && row < ROW && col < COL;
+	return row > 0 && col > 0 && row < ROW-1 && col < COL-1;
 }
 
 bool isValidRoom(int row, int col, int width, int height)
 {
 	//is current space free
-	if (dungeon.map[row][col].space != ROCK) return false;
-	if (!isInside(row, col) || !isInside(row+height, col+width)) return false;
+	if (dungeon.map[row][col].space != ROCK)
+		return false;
+	if (!isInside(row, col) || !isInside(row + height, col + width))
+		return false;
 	//touch or overlap another room
-	for (int i=row-1; i<row+height+2; i++)
+	for (int i = row - 1; i < row + height + 2; i++)
 	{
-		if (dungeon.map[i][col-1].space != ROCK) return false;//left touch
-		if (dungeon.map[i][col].space != ROCK) return false;//left overlap
-		if (dungeon.map[i][col+width+1].space != ROCK) return false;//right touch
-		if (dungeon.map[i][col+width].space != ROCK) return false;//right overlap
+		if (dungeon.map[i][col - 1].space != ROCK)
+			return false; //left touch
+		if (dungeon.map[i][col].space != ROCK)
+			return false; //left overlap
+		if (dungeon.map[i][col + width + 1].space != ROCK)
+			return false; //right touch
+		if (dungeon.map[i][col + width].space != ROCK)
+			return false; //right overlap
 	}
-	for (int j=col-1; j<col+width+2; j++)
+	for (int j = col - 1; j < col + width + 2; j++)
 	{
-		if (dungeon.map[row-1][j].space != ROCK) return false;//top touch
-		if (dungeon.map[row][j].space != ROCK) return false;//top overlap
-		if (dungeon.map[row+height+1][j].space != ROCK) return false;//bottom touch
-		if (dungeon.map[row+height][j].space != ROCK) return false;//bottom overlap
+		if (dungeon.map[row - 1][j].space != ROCK)
+			return false; //top touch
+		if (dungeon.map[row][j].space != ROCK)
+			return false; //top overlap
+		if (dungeon.map[row + height + 1][j].space != ROCK)
+			return false; //bottom touch
+		if (dungeon.map[row + height][j].space != ROCK)
+			return false; //bottom overlap
 	}
 
 	return true;
@@ -141,9 +151,9 @@ Room newRoom()
 
 	if (validRoom)
 	{
-		for (int i=r.row; i<r.row+r.height; i++)
+		for (int i = r.row; i < r.row + r.height; i++)
 		{
-			for (int j=r.col; j<r.col+r.width; j++)
+			for (int j = r.col; j < r.col + r.width; j++)
 			{
 				dungeon.map[i][j].space = ROOM;
 				dungeon.map[i][j].hardness = ROOM_H;
@@ -160,9 +170,9 @@ Room newRoom()
 
 void addRoom(int row, int col, int width, int height)
 {
-	for (int i=row; i<row+height; i++)
+	for (int i = row; i < row + height; i++)
 	{
-		for (int j=col; j<col+width; j++)
+		for (int j = col; j < col + width; j++)
 		{
 			dungeon.map[i][j].space = ROOM;
 			dungeon.map[i][j].hardness = ROOM_H;
@@ -175,7 +185,7 @@ int distance(int aRow, int aCol, int bRow, int bCol)
 	int row = abs(aRow - bRow);
 	int col = abs(aCol - bCol);
 
-	return row*row + col*col;
+	return row * row + col * col;
 }
 
 int minimum(int a, int b)
@@ -189,17 +199,17 @@ int minimum(int a, int b)
 
 bool isConnected(int row, int col)
 {
-	return dungeon.map[row-1][col].space == CORRIDOR
-		|| dungeon.map[row+1][col].space == CORRIDOR
-		|| dungeon.map[row][col-1].space == CORRIDOR
-		|| dungeon.map[row][col+1].space == CORRIDOR;
+	return dungeon.map[row - 1][col].space == CORRIDOR || dungeon.map[row + 1][col].space == CORRIDOR || dungeon.map[row][col - 1].space == CORRIDOR || dungeon.map[row][col + 1].space == CORRIDOR;
 }
 
 void newCorridor(int aRow, int aCol, int bRow, int bCol)
 {
-	if (distance(aRow, aCol, bRow, bCol) == 0) return;
-	if (dungeon.map[aRow][aCol].space == CORRIDOR && isConnected(bRow, bCol)) return;
-	if (dungeon.map[aRow][aCol].space == ROCK) dungeon.map[aRow][aCol].space = CORRIDOR;
+	if (distance(aRow, aCol, bRow, bCol) == 0)
+		return;
+	if (dungeon.map[aRow][aCol].space == CORRIDOR && isConnected(bRow, bCol))
+		return;
+	if (dungeon.map[aRow][aCol].space == ROCK)
+		dungeon.map[aRow][aCol].space = CORRIDOR;
 
 	int max = distance(0, 0, ROW, COL);
 	int min = max;
@@ -208,44 +218,42 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 	int left = max;
 	int right = max;
 
-	if (isInside(aRow-1, aCol))
+	if (isInside(aRow - 1, aCol))
 	{
-		top = distance(aRow-1, aCol, bRow, bCol);
+		top = distance(aRow - 1, aCol, bRow, bCol);
 		min = minimum(min, top);
 	}
-	if (isInside(aRow+1, aCol))
+	if (isInside(aRow + 1, aCol))
 	{
-		down = distance(aRow+1, aCol, bRow, bCol);
+		down = distance(aRow + 1, aCol, bRow, bCol);
 		min = minimum(min, down);
 	}
-	if (isInside(aRow, aCol-1))
+	if (isInside(aRow, aCol - 1))
 	{
-		left = distance(aRow, aCol-1, bRow, bCol);
+		left = distance(aRow, aCol - 1, bRow, bCol);
 		min = minimum(min, left);
 	}
-	if (isInside(aRow, aCol+1))
+	if (isInside(aRow, aCol + 1))
 	{
-		right = distance(aRow, aCol+1, bRow, bCol);
+		right = distance(aRow, aCol + 1, bRow, bCol);
 		min = minimum(min, right);
 	}
 
 	if (min == top)
 	{
-		newCorridor(aRow-1, aCol, bRow, bCol);
-
+		newCorridor(aRow - 1, aCol, bRow, bCol);
 	}
 	else if (min == down)
 	{
-		newCorridor(aRow+1, aCol, bRow, bCol);
-
+		newCorridor(aRow + 1, aCol, bRow, bCol);
 	}
 	else if (min == left)
 	{
-		newCorridor(aRow, aCol-1, bRow, bCol);
+		newCorridor(aRow, aCol - 1, bRow, bCol);
 	}
 	else if (min == right)
 	{
-		newCorridor(aRow, aCol+1, bRow, bCol);
+		newCorridor(aRow, aCol + 1, bRow, bCol);
 	}
 }
 
@@ -255,14 +263,14 @@ void generateDungeon(int n)
 	initDungeon();
 	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
 
-	for (int i=0; i<n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		dungeon.rooms[i] = newRoom();
 	}
 
-	for (int i=0; i<n-1; i++)
+	for (int i = 0; i < n - 1; i++)
 	{
-		newCorridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i+1].row, dungeon.rooms[i+1].col);
+		newCorridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
 	}
 
 	//add initial player loaction
@@ -300,15 +308,14 @@ void loadFile(FILE *f)
 	fread(&pc_row, 1, 1, f);
 	dungeon.pc_row = pc_row;
 
-
 	uint8_t hard[1680];
 	fread(hard, 1, 1680, f);
 
-	for (int row=0; row<ROW; row++)
+	for (int row = 0; row < ROW; row++)
 	{
-		for (int col=0; col<COL; col++)
+		for (int col = 0; col < COL; col++)
 		{
-			int index = COL*row + col;
+			int index = COL * row + col;
 			int h = hard[index];
 			dungeon.map[row][col].hardness = h;
 			if (h == 0)
@@ -329,7 +336,7 @@ void loadFile(FILE *f)
 	fread(roomRead, 1, filesize - 1702, f);
 
 	int n = 0;
-	for (int i=0; i<dungeon.num_room; i++)
+	for (int i = 0; i < dungeon.num_room; i++)
 	{
 		dungeon.rooms[i].col = roomRead[n++];
 		dungeon.rooms[i].row = roomRead[n++];
@@ -371,26 +378,26 @@ void saveFile(FILE *f)
 
 	char *hard = malloc(1680);
 	//write hardness
-	for(int i=0; i<ROW; i++)
+	for (int i = 0; i < ROW; i++)
 	{
-		for(int j=0; j<COL; j++)
+		for (int j = 0; j < COL; j++)
 		{
-			hard[COL*i + j] = (char) dungeon.map[i][j].hardness;
+			hard[COL * i + j] = (char)dungeon.map[i][j].hardness;
 		}
 	}
 	fwrite(hard, 1, 1680, f);
 
 	//write room
-	unsigned char *loc = malloc(4 *dungeon.num_room);
+	unsigned char *loc = malloc(4 * dungeon.num_room);
 	int n = 0;
-	for (int i=0; i<dungeon.num_room; i++)
+	for (int i = 0; i < dungeon.num_room; i++)
 	{
-		loc[n++] = (unsigned char) dungeon.rooms[i].col;
-		loc[n++] = (unsigned char) dungeon.rooms[i].row;
-		loc[n++] = (unsigned char) dungeon.rooms[i].width;
-		loc[n++] = (unsigned char) dungeon.rooms[i].height;
+		loc[n++] = (unsigned char)dungeon.rooms[i].col;
+		loc[n++] = (unsigned char)dungeon.rooms[i].row;
+		loc[n++] = (unsigned char)dungeon.rooms[i].width;
+		loc[n++] = (unsigned char)dungeon.rooms[i].height;
 	}
-	fwrite(loc, 1, 4*dungeon.num_room, f);
+	fwrite(loc, 1, 4 * dungeon.num_room, f);
 
 	free(hard);
 	free(loc);
@@ -412,7 +419,7 @@ Node *newNode(int priority)
 	return temp;
 }
 
-void insert(Node **head, int priority, int dis[ROW*COL])
+void insert(Node **head, int priority, int dis[ROW * COL])
 {
 	Node *temp = (*head);
 	Node *new = newNode(priority);
@@ -462,26 +469,27 @@ int getHardness(int hardness)
 	}
 }
 
-void printPath(int dis[ROW*COL], Node **head, int row, int col)
+void print_dijkstra_bounded(int dis[ROW * COL], int row, int col)
 {
+	printf("print_dijkstra_bounded\n");
 	putchar('\n');
 	int i, j;
-	for (i = 0; i < 21; i++)
+	for (i = 0; i < ROW; i++)
 	{
-		for (j = 0; j < 80; j++)
+		for (j = 0; j < COL; j++)
 		{
 			if (row == i && col == j)
 			{
 				printf("%c", PC);
 			}
-			else if (dis[i*COL + j] != -1)
+			else if (dis[i * COL + j] != -1)
 			{
-				int n = dis[i*COL + j] % 10;
+				int n = dis[i * COL + j] % 10;
 				printf("%d", n);
 			}
 			else
 			{
-				printf("%c", ' ');
+				printf("%c", ROCK);
 			}
 		}
 		printf("\n");
@@ -489,36 +497,62 @@ void printPath(int dis[ROW*COL], Node **head, int row, int col)
 	putchar('\n');
 }
 
-static void dijkstra_map()
+void print_dijkstra_map(int dis[ROW * COL], int row, int col)
 {
-//	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
-//	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
-	int colMove[8] = {-80,-80,-80,0,0,80,80,80};
-	int rowMove[8] = {-1,0,1,-1,1,-1,0,1};
-	//initialization
+	printf("print_dijkstra_map\n");
 	int i, j;
-	int dis[ROW*COL];
-	int pos = dungeon.pc_row*COL + dungeon.pc_col;
-	Node* node = newNode(pos);
-	dis[dungeon.pc_row*COL + dungeon.pc_col] = 0;
-	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 	for (i = 0; i < ROW; i++)
 	{
 		for (j = 0; j < COL; j++)
 		{
-			if (isInside(i, j) && dungeon.map[i][j].space != PC)
+			if (row == i && col == j)
 			{
-				dis[dungeon.pc_row*COL + dungeon.pc_col] = ROW*COL+1;
-				//dungeon.map[i][j].distance = ROW*COL+1;
-				insert(&node, i*COL+j, dis);
+				printf("%c", PC);
 			}
-			else if (!isInside(i, j))
+			else if (dis[i * COL + j] != -1)
 			{
-				dis[i*COL + j] = -1;
+				int n = dis[i * COL + j] % 10;
+				printf("%d", n);
+			}
+			else
+			{
+				printf(" ");
+			}
+		}
+
+		printf("\n");
+	}
+}
+
+static void dijkstra_map()
+{
+	//	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
+	//	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
+	int colMove[8] = {-80, -80, -80, 0, 0, 80, 80, 80};
+	int rowMove[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+	//initialization
+	int i, j;
+	int dis[ROW * COL];
+	int pos = dungeon.pc_row * COL + dungeon.pc_col;
+	Node *node = newNode(pos);
+	for (i = 0; i < ROW; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			if (!isInside(i, j))
+			{
+				dis[i * COL + j] = -1;
+			}
+			else if (dungeon.map[i][j].space != PC)
+			{
+				dis[i * COL + j] = ROW * COL + 1;
+				//dungeon.map[i][j].distance = ROW*COL+1;
+				insert(&node, i * COL + j, dis);
 			}
 		}
 	}
-
+	dis[dungeon.pc_row * COL + dungeon.pc_col] = 0;
+	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 
 	while (!isEmpty(&node))
 	{
@@ -527,57 +561,56 @@ static void dijkstra_map()
 		{
 			int alt = 0;
 			int v = u + rowMove[i] + colMove[i];
-			if (0 > v || v > ROW*COL)
+			if (0 > v || v > ROW * COL)
 			{
 				continue;
 			}
 
 			if (dis[v] >= 0)
 			{
-				alt = dis[u] + getHardness(dungeon.map[u/COL][u%COL].hardness);
+				alt = dis[u] + getHardness(dungeon.map[u / COL][u % COL].hardness);
 				if (alt < dis[v])
 				{
 					dis[v] = alt;
-					insert(&node , v, dis);
+					insert(&node, v, dis);
 				}
 			}
 		}
 	}
-	printPath(dis, &node, dungeon.pc_row, dungeon.pc_col);
+	print_dijkstra_map(dis, dungeon.pc_row, dungeon.pc_col);
 	free(node);
 }
 
 static void dijkstra_bounded()
 {
-//	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
-//	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
-	int colMove[8] = {-80,-80,-80,0,0,80,80,80};
-	int rowMove[8] = {-1,0,1,-1,1,-1,0,1};
+	//	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
+	//	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
+	int colMove[8] = {-80, -80, -80, 0, 0, 80, 80, 80};
+	int rowMove[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
 	//initialization
 	int i, j;
-	int dis[ROW*COL];
-	int pos = dungeon.pc_row*COL + dungeon.pc_col;
-	Node* node = newNode(pos);
-	dis[dungeon.pc_row*COL + dungeon.pc_col] = 0;
-	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
+	int dis[ROW * COL];
+	int pos = dungeon.pc_row * COL + dungeon.pc_col;
+	Node *node = newNode(pos);
 	for (i = 0; i < ROW; i++)
 	{
 		for (j = 0; j < COL; j++)
 		{
 			if (dungeon.map[i][j].space == ROOM || dungeon.map[i][j].space == CORRIDOR)
 			{
-				dis[i*COL + j] = 99999;
+				dis[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
-				insert(&node, i*COL+j, dis);
+				insert(&node, i * COL + j, dis);
 			}
 			else if (dungeon.map[i][j].space == ROCK)
 			{
-				dis[i*COL + j] = -1;
+				dis[i * COL + j] = -1;
 				//dungeon.map[i][j].distance = -1;
 			}
 		}
 	}
-
+	dis[dungeon.pc_row * COL + dungeon.pc_col] = 0;
+	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 
 	while (!isEmpty(&node))
 	{
@@ -586,7 +619,7 @@ static void dijkstra_bounded()
 		{
 			int alt = 0;
 			int v = u + rowMove[i] + colMove[i];
-			if (0 > v || v > ROW*COL)
+			if (0 > v || v > ROW * COL)
 			{
 				continue;
 			}
@@ -597,12 +630,12 @@ static void dijkstra_bounded()
 				if (alt < dis[v])
 				{
 					dis[v] = alt;
-					insert(&node , v, dis);
+					insert(&node, v, dis);
 				}
 			}
 		}
 	}
-	printPath(dis, &node, dungeon.pc_row, dungeon.pc_col);
+	print_dijkstra_bounded(dis, dungeon.pc_row, dungeon.pc_col);
 	free(node);
 }
 
@@ -615,7 +648,7 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	seed = 1538034287;
+	seed = 1016644798;
 	printf("\nseed = %d;\n", seed);
 	srand(seed);
 
@@ -626,7 +659,7 @@ int main(int argc, char *argv[])
 
 	if (argc != 1)
 	{
-		for (int i=1; i<argc; i++)
+		for (int i = 1; i < argc; i++)
 		{
 			if (strcmp(argv[i], "--save") != 0 && strcmp(argv[i], "--load") != 0)
 			{

@@ -421,11 +421,12 @@ Node *node_new(int priority)
 	return temp;
 }
 
-void pq_insert(Node **head, int priority, int dist[ROW * COL])
+void pq_insert(Node **head, int priority, int *dist)
 {
-	Node *temp = (*head);
+	Node *temp = *head;
 	Node *new = node_new(priority);
 
+	//TODO
 	if (dist[(*head)->priority] >= dist[new->priority])
 	{
 		new->next = (*head);
@@ -500,8 +501,8 @@ void dijkstra_tunneling()
 	//initialization
 	int i, j;
 	int dist[ROW * COL];
-	int PC_pos = dungeon.pc_row * COL + dungeon.pc_col;
-	Node *node = node_new(PC_pos);
+	memset(dist, 0, sizeof (dist));
+	Node *node = node_new(dungeon.pc_row * COL + dungeon.pc_col);
 
 	for (i = 0; i < ROW; i++)
 	{
@@ -517,6 +518,7 @@ void dijkstra_tunneling()
 				//dungeon.map[i][j].distance = ROW*COL+1;
 				pq_insert(&node, i * COL + j, dist);
 			}
+			
 		}
 	}
 	dist[dungeon.pc_row * COL + dungeon.pc_col] = 0;
@@ -552,9 +554,8 @@ void dijkstra_nontunneling()
 	//initialization
 	int i, j;
 	int dist[ROW * COL];
-	int PC_pos = dungeon.pc_row * COL + dungeon.pc_col;
 	memset(dist, 0, sizeof (dist));
-	Node *node = node_new(PC_pos);
+	Node *node = node_new(dungeon.pc_row * COL + dungeon.pc_col);
 
 	for (i = 0; i < ROW; i++)
 	{

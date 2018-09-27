@@ -23,7 +23,7 @@ typedef struct cell
 {
 	char space;
 	int hardness;
-	//int distance;
+//	int distance;
 } Cell;
 
 typedef struct rooms
@@ -197,7 +197,10 @@ int minimum(int a, int b)
 
 bool isConnected(int row, int col)
 {
-	return dungeon.map[row - 1][col].space == CORRIDOR || dungeon.map[row + 1][col].space == CORRIDOR || dungeon.map[row][col - 1].space == CORRIDOR || dungeon.map[row][col + 1].space == CORRIDOR;
+	return dungeon.map[row - 1][col].space == CORRIDOR
+	|| dungeon.map[row + 1][col].space == CORRIDOR
+	|| dungeon.map[row][col - 1].space == CORRIDOR
+	|| dungeon.map[row][col + 1].space == CORRIDOR;
 }
 
 void newCorridor(int aRow, int aCol, int bRow, int bCol)
@@ -521,13 +524,13 @@ static void dijkstra_tunneling()
 		int u = pq_pop(&node);
 		for (i = 0; i < 8; i++)
 		{
-			//int alt = 0;
+			int alt = 0;
 			int v = u + rowMove[i] + colMove[i] * COL;
 			if (0 > v || v > ROW * COL) continue;
 
 			if (dist[v] >= 0)
 			{
-				int alt = dist[u] + getHardnessCost(dungeon.map[u / COL][u % COL].hardness);
+				alt = dist[u] + getHardnessCost(dungeon.map[u / COL][u % COL].hardness);
 				if (alt < dist[v])
 				{
 					dist[v] = alt;
@@ -574,12 +577,13 @@ static void dijkstra_nontunneling()
 		int u = pq_pop(&node);
 		for (i = 0; i < 8; i++)
 		{
+			int alt = 0;
 			int v = u + rowMove[i] + colMove[i] * COL;
 			if (0 > v || v > ROW * COL) continue;
 
 			if (dist[v] >= 0)
 			{
-				int alt = dist[u] + 1;
+				alt = dist[u] + 1;
 				if (alt < dist[v])
 				{
 					dist[v] = alt;

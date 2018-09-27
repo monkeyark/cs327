@@ -45,18 +45,18 @@ typedef struct dungeonLevel
 	Cell map[ROW][COL];
 } Dungeon;
 
-typedef struct path
-{
-	heap_node_t *hn;
-	uint8_t pos[2];
-	uint8_t from[2];
-	int32_t cost;
-} path_t;
-
 typedef enum dim
 {
 	dim_row, dim_col, num_dims
 } dim_t;
+
+typedef struct path
+{
+	heap_node_t *hn;
+	uint8_t pos[num_dims];
+	uint8_t from[num_dims];
+	int32_t cost;
+} path_t;
 
 typedef int16_t pair[num_dims];
 

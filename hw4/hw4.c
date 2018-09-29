@@ -18,6 +18,12 @@
 #define ROOM_H 0
 #define CORRIDOR_H 0
 #define PC_H 0
+#define MIN(x,y)			\
+({							\
+    typeof(x) _x = (x);     \
+    typeof(y) _y = (y);     \
+    (void) (&_x == &_y);    \
+    _x < _y ? _x : _y;})
 
 typedef struct cell
 {

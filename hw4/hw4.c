@@ -4,9 +4,9 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
+#include <stdint.h>
 #include <endian.h>
 #include <sys/stat.h>
-#include <stdint.h>
 
 #define ROW 21
 #define COL 80
@@ -467,9 +467,7 @@ bool pq_isEmpty(Node **head)
 int getHardnessCost(int hardness)
 {
 	if (hardness == 255) return 3;
-
 	if (hardness == 0) return 1;
-
 	return 1 + (hardness / 85);
 }
 

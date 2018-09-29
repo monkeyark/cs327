@@ -4,8 +4,10 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
+#include <stdint.h>
 #include <endian.h>
 #include <sys/stat.h>
+
 #define ROW 21
 #define COL 80
 #define ROCK ' '
@@ -381,23 +383,23 @@ void loadFile(FILE *f)
 	char marker[12];
 	fread(&marker, 1, 12, f);
 	
-	u_int32_t ver;
+	uint32_t ver;
 	fread(&ver, 4, 1, f);
 	map.version = be32toh(ver);
 
-	u_int32_t file_size;
+	uint32_t file_size;
 	fread(&file_size, 4, 1, f);
 	int filesize = be32toh(file_size);
 
-	u_int8_t pc_col;
+	uint8_t pc_col;
 	fread(&pc_col, 1, 1, f);
 	map.pc_col = pc_col;
-	u_int8_t pc_row;
+	uint8_t pc_row;
 	fread(&pc_row, 1, 1, f);
 	map.pc_row = pc_row;
 
 
-	u_int8_t hard[1680];
+	uint8_t hard[1680];
 	fread(hard, 1, 1680, f);
 
 	for (int row=0; row<ROW; row++)
@@ -421,7 +423,7 @@ void loadFile(FILE *f)
 	map.num_room = (filesize - 1702) / 4;
 	dungeonRoom = malloc(map.num_room * sizeof(Room));
 
-	u_int8_t roomRead[filesize - 1702];
+	uint8_t roomRead[filesize - 1702];
 	fread(roomRead, 1, filesize - 1702, f);
 
 	int n = 0;

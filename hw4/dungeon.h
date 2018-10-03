@@ -1,3 +1,7 @@
+#ifndef DUNGEON_H
+# define DUNGEON_H
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -87,35 +91,14 @@ int getRandom(int modulus, int min);
 
 void printDungeon();
 
-bool isInside(int row, int col);
-
-bool isValidRoom(int row, int col, int width, int height);
-
-Room newRoom();
-
-void addRoom(int row, int col, int width, int height);
-
-int distance(int aRow, int aCol, int bRow, int bCol);
-
-int minimum(int a, int b);
-
-bool isConnected(int row, int col);
-
-void newCorridor(int aRow, int aCol, int bRow, int bCol);
-
-NPC newMonster(int birth);
-
 void generateDungeon();
 
 void loadFile(FILE *f);
 
 void saveFile(FILE *f);
 
-int getHardnessCost(int hardness);
-
-void print_dijkstra_path(int dist[ROW * COL], int row, int col);
-
 void dijkstra_tunneling();
 
 void dijkstra_nontunneling();
 
+#endif

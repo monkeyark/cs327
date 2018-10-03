@@ -1,7 +1,41 @@
-all: hw4
+CC = gcc
+CXX = g++
+ECHO = echo
+RM = rm -f
 
-hw4: hw4.c
-	gcc -Wall -Werror -ggdb -g hw4.c -o hw4
+CFLAGS = -Wall -Werror -ggdb3 -funroll-loops -pg
+CXXFLAGS = -Wall -Werror -ggdb3 -funroll-loops                                           
+LDFLAGS = 
+
+BIN = hw4
+OBJS = hw4.o queue.o dungeon.o
+
+all: $(BIN) etags
+
+$(BIN): $(OBJS)
+	@$(ECHO) Linking $@
+	@$(CC) $^ -o $@ $(LDFLAGS)
+
+-include $(OBJS:.o=.d)
+
+%.o: %.c
+	@$(ECHO) Compiling $<
+	@$(CC) $(CFLAGS) -MMD -MF $*.d -c $<
+
+%.o: %.cpp
+	@$(ECHO) Compiling $<
+	@$(CXX) $(CXXFLAGS) -MMD -MF $*.d -c $<
+
+.PHONY: all clean clobber etags
 
 clean:
-	rm -f hw4
+	@$(ECHO) Removing all generated files
+	@$(RM) *.o $(BIN) *.d TAGS core vgcore.* gmon.out
+
+clobber: clean
+	@$(ECHO) Removing backup files
+	@$(RM) *~ \#* *pgm
+
+etags:
+	@$(ECHO) Updating TAGS
+	@etags *.[ch]

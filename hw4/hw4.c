@@ -13,7 +13,7 @@
 #define ROCK ' '
 #define ROOM '.'
 #define CORRIDOR '#'
-#define PC '@'
+#define PLAYER '@'
 #define ROCK_H 255
 #define ROOM_H 0
 #define CORRIDOR_H 0
@@ -25,12 +25,31 @@
     (void) (&_x == &_y);    \
     _x < _y ? _x : _y;})
 
-typedef struct cell
+#define NPC_SMART         0x00000001
+#define NPC_TELEPATH      0x00000002
+#define NPC_TUNNEL        0x00000004
+#define NPC_ERRATIC       0x00000008
+
+typedef struct Terrain
 {
 	char space;
 	int hardness;
 //	int distance;
-} Cell;
+} Terrain;
+
+typedef struct Player_Character
+{
+	int characteristics;
+	int row;
+	int col;
+} PC;
+
+typedef struct Non_Player_Character
+{
+	int characteristics;
+	int row;
+	int col;
+} NPC;
 
 typedef struct rooms
 {
@@ -42,12 +61,13 @@ typedef struct rooms
 
 typedef struct level
 {
+	int num_mon;
 	int num_room;
-	int pc_row;
-	int pc_col;
 	int version;
 	Room *rooms;
-	Cell map[ROW][COL];
+	NPC *monster;
+	PC PC;
+	Terrain map[ROW][COL];
 } Dungeon;
 
 Dungeon dungeon;
@@ -71,7 +91,6 @@ int getRandom(int modulus, int min)
 
 void printDungeon()
 {
-	printf("printDungeon\n");
 	printf("   ");
 	for (int i = 0; i < COL; i++)
 	{
@@ -184,6 +203,27 @@ void addRoom(int row, int col, int width, int height)
 	}
 }
 
+NPC newMonster()
+{
+	NPC npc;
+	//creating NPC with all four characteristics having 1/2 probability
+	npc.characteristics = rand();
+
+	//clean unused bits
+	npc.characteristics = rand() & 0xf;
+
+	int i = 0; int j = 0;
+
+	for (i = 0; i < ROW; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+		}
+	}
+
+	return npc;
+}
+
 int distance(int aRow, int aCol, int bRow, int bCol)
 {
 	int row = abs(aRow - bRow);
@@ -266,25 +306,31 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 
 void generateDungeon(int n)
 {
-	//initial dungeon
+	//initialize dungeon
 	initDungeon();
 	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
-
-	for (int i = 0; i < n; i++)
+	dungeon.monster = malloc(dungeon.num_mon * sizeof(Room));
+	int i = 0;
+	for (i = 0; i < n; i++)
 	{
 		dungeon.rooms[i] = newRoom();
 	}
 
-	for (int i = 0; i < n - 1; i++)
+	for (i = 0; i < n - 1; i++)
 	{
 		newCorridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
 	}
 
-	//add initial player loaction
-	dungeon.pc_row = dungeon.rooms[0].row;
-	dungeon.pc_col = dungeon.rooms[0].col;
-	dungeon.map[dungeon.pc_row][dungeon.pc_col].space = '@';
-	dungeon.map[dungeon.pc_row][dungeon.pc_col].hardness = 0;
+	for (i = 0; i < n; i++)
+	{
+		dungeon.monster[i] = newMonster();
+	}
+
+	//add initial player location
+	dungeon.PC.row = dungeon.rooms[0].row;
+	dungeon.PC.col = dungeon.rooms[0].col;
+	dungeon.map[dungeon.PC.row][dungeon.PC.col].space = '@';
+	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
 }
 
 void loadFile(FILE *f)
@@ -310,10 +356,10 @@ void loadFile(FILE *f)
 
 	uint8_t pc_col;
 	fread(&pc_col, 1, 1, f);
-	dungeon.pc_col = pc_col;
+	dungeon.PC.col = pc_col;
 	uint8_t pc_row;
 	fread(&pc_row, 1, 1, f);
-	dungeon.pc_row = pc_row;
+	dungeon.PC.row = pc_row;
 
 	uint8_t hard[1680];
 	fread(hard, 1, 1680, f);
@@ -354,8 +400,8 @@ void loadFile(FILE *f)
 	}
 
 	//add PC
-	dungeon.map[dungeon.pc_row][dungeon.pc_col].space = PC;
-	dungeon.map[dungeon.pc_row][dungeon.pc_col].hardness = PC_H;
+	dungeon.map[dungeon.PC.row][dungeon.PC.col].space = PLAYER;
+	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = PC_H;
 
 	fclose(f);
 }
@@ -374,14 +420,13 @@ void saveFile(FILE *f)
 	int ver = htobe32(dungeon.version);
 	fwrite(&ver, 4, 1, f);
 
-	//TODO
 	int filesize = 1702 + 4 * dungeon.num_room;
 	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);
 
-	int pc_x = dungeon.pc_col;
+	int pc_x = dungeon.PC.col;
 	fwrite(&pc_x, 1, 1, f);
-	int pc_y = dungeon.pc_row;
+	int pc_y = dungeon.PC.row;
 	fwrite(&pc_y, 1, 1, f);
 
 	char *hard = malloc(1680);
@@ -432,7 +477,6 @@ void pq_insert(Node **head, int priority, int *dist)
 	Node *temp = *head;
 	Node *new = node_new(priority);
 
-	//TODO
 	if (dist[(*head)->priority] >= dist[new->priority])
 	{
 		new->next = (*head);
@@ -481,7 +525,7 @@ void print_dijkstra_path(int dist[ROW * COL], int row, int col)
 		{
 			if (row == i && col == j)
 			{
-				printf("%c", PC);
+				printf("%c", PLAYER);
 			}
 			else if (dist[i * COL + j] != -1)
 			{
@@ -506,7 +550,7 @@ void dijkstra_tunneling()
 	int i, j;
 	int dist[ROW * COL];
 	memset(dist, 0, sizeof (dist));
-	Node *node = node_new(dungeon.pc_row * COL + dungeon.pc_col);
+	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
 	for (i = 0; i < ROW; i++)
 	{
@@ -516,7 +560,7 @@ void dijkstra_tunneling()
 			{
 				dist[i * COL + j] = -1;
 			}
-			else if (dungeon.map[i][j].space != PC)
+			else if (dungeon.map[i][j].space != PLAYER)
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
@@ -525,7 +569,7 @@ void dijkstra_tunneling()
 			
 		}
 	}
-	dist[dungeon.pc_row * COL + dungeon.pc_col] = 0;
+	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
 	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 
 	while (!pq_isEmpty(&node))
@@ -548,7 +592,7 @@ void dijkstra_tunneling()
 			}
 		}
 	}
-	print_dijkstra_path(dist, dungeon.pc_row, dungeon.pc_col);
+	print_dijkstra_path(dist, dungeon.PC.row, dungeon.PC.col);
 }
 
 void dijkstra_nontunneling()
@@ -559,7 +603,7 @@ void dijkstra_nontunneling()
 	int i, j;
 	int dist[ROW * COL];
 	memset(dist, 0, sizeof (dist));
-	Node *node = node_new(dungeon.pc_row * COL + dungeon.pc_col);
+	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
 	for (i = 0; i < ROW; i++)
 	{
@@ -578,7 +622,7 @@ void dijkstra_nontunneling()
 			}
 		}
 	}
-	dist[dungeon.pc_row * COL + dungeon.pc_col] = 0;
+	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
 	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 
 	while (!pq_isEmpty(&node))
@@ -601,7 +645,7 @@ void dijkstra_nontunneling()
 			}
 		}
 	}
-	print_dijkstra_path(dist, dungeon.pc_row, dungeon.pc_col);
+	print_dijkstra_path(dist, dungeon.PC.row, dungeon.PC.col);
 }
 
 int main(int argc, char *argv[])
@@ -613,14 +657,20 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
+	seed = 1538543174;
 
 	printf("\nseed = %d;\n\n", seed);
 	srand(seed);
 
 	//generate random number of rooms
 	dungeon.num_room = getRandom(7, 5);
+	//generate random number of monster
+	//dungeon.num_mon = getRandom(5, 10);
+	dungeon.num_mon = 10;
+
 	bool load = false;
 	bool save = false;
+	//bool nummon = false;
 
 	if (argc != 1)
 	{
@@ -662,6 +712,7 @@ int main(int argc, char *argv[])
 	dijkstra_tunneling();
 
 	free(dungeon.rooms);
+	free(dungeon.monster);
 
 	return 0;
 }

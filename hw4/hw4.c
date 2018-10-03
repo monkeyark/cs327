@@ -101,6 +101,21 @@ void printDungeon()
 	printf("   ");
 	for (int i = 0; i < COL; i++)
 	{
+		int row = (i - i % 10) / 10;
+		if (i % 10 == 0)
+		{
+			printf("%d", row);
+		}
+		else
+		{
+			putchar(' ');
+		}
+	}
+	printf("\n");
+
+	printf("   ");
+	for (int i = 0; i < COL; i++)
+	{
 		printf("%d", i % 10);
 	}
 	printf("\n");
@@ -322,6 +337,7 @@ NPC newMonster(int birth)
 
 //	if (npc.characteristics & NPC_TUNNEL)  //monster is TUNNEL
 //	{
+//		printf("birth = %d; npc.row = %d; npc.col = %d\n", birth, npc.row, npc.col);//TODO
 //		if (dungeon.map[npc.row][npc.col].space == ROOM ||
 //				dungeon.map[npc.row][npc.col].space == CORRIDOR ||
 //				dungeon.map[npc.row][npc.col].space == ROCK)
@@ -349,30 +365,32 @@ NPC newMonster(int birth)
 	return npc;
 }
 
-void generateDungeon(int n)
+void generateDungeon()
 {
 	//initialize dungeon
 	initDungeon();
 	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
 	dungeon.monster = malloc(dungeon.num_mon * sizeof(Room));
 	int i = 0;
-	for (i = 0; i < n; i++)
+	for (i = 0; i < dungeon.num_room; i++)
 	{
 		dungeon.rooms[i] = newRoom();
 	}
 
-	for (i = 0; i < n - 1; i++)
+	for (i = 0; i < dungeon.num_room - 1; i++)
 	{
 		newCorridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
 	}
 
-	for (i = 0; i < n; i++)
+	for (i = 0; i < dungeon.num_mon; i++)
 	{
-		dungeon.monster[i] = newMonster(i+1);
+		dungeon.monster[i] = newMonster(i);
+		printf("birth = %d; npc.row = %d; npc.col = %d\n", dungeon.monster[i].birth, dungeon.monster[i].row, dungeon.monster[i].col);//TODO
+		;
 	}
 
 	//add initial player location
-	dungeon.PC.birth = 0;
+	dungeon.PC.birth = -1;
 	dungeon.PC.speed = 10;
 	dungeon.PC.row = dungeon.rooms[0].row;
 	dungeon.PC.col = dungeon.rooms[0].col;
@@ -656,7 +674,10 @@ void dijkstra_nontunneling()
 	{
 		for (j = 0; j < COL; j++)
 		{
-			if (dungeon.map[i][j].space == ROOM || dungeon.map[i][j].space == CORRIDOR)
+			if (dungeon.map[i][j].space == ROOM ||
+					dungeon.map[i][j].space == CORRIDOR ||
+					dungeon.map[i][j].space == MONSTER)
+			//if (dungeon.map[i][j].space == ROOM || dungeon.map[i][j].space == CORRIDOR)
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
@@ -704,7 +725,8 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	seed = 1538543174;
+	//seed = 1538543175;
+	seed = 1538556186;
 
 	printf("\nseed = %d;\n\n", seed);
 	srand(seed);
@@ -712,8 +734,8 @@ int main(int argc, char *argv[])
 	//generate random number of rooms
 	dungeon.num_room = getRandom(7, 5);
 	//generate random number of monster
-	//dungeon.num_mon = getRandom(5, 10);
-	dungeon.num_mon = 10;
+	//dungeon.num_mon = getRandom(5, 8);
+	dungeon.num_mon = 8;
 
 	bool load = false;
 	bool save = false;
@@ -746,7 +768,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		generateDungeon(dungeon.num_room);
+		generateDungeon();
 	}
 	printDungeon();
 

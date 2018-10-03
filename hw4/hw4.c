@@ -14,6 +14,7 @@
 #define ROOM '.'
 #define CORRIDOR '#'
 #define PLAYER '@'
+#define MONSTER 'D'
 #define ROCK_H 255
 #define ROOM_H 0
 #define CORRIDOR_H 0
@@ -42,6 +43,8 @@ typedef struct Player_Character
 	int characteristics;
 	int row;
 	int col;
+	int birth;
+	int speed;
 } PC;
 
 typedef struct Non_Player_Character
@@ -49,6 +52,10 @@ typedef struct Non_Player_Character
 	int characteristics;
 	int row;
 	int col;
+	int birth;
+	int speed;
+	int pc_row;
+	int pc_col;
 } NPC;
 
 typedef struct rooms
@@ -203,27 +210,6 @@ void addRoom(int row, int col, int width, int height)
 	}
 }
 
-NPC newMonster()
-{
-	NPC npc;
-	//creating NPC with all four characteristics having 1/2 probability
-	npc.characteristics = rand();
-
-	//clean unused bits
-	npc.characteristics = rand() & 0xf;
-
-	int i = 0; int j = 0;
-
-	for (i = 0; i < ROW; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-		}
-	}
-
-	return npc;
-}
-
 int distance(int aRow, int aCol, int bRow, int bCol)
 {
 	int row = abs(aRow - bRow);
@@ -304,6 +290,65 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 	}
 }
 
+NPC newMonster(int birth)
+{
+	NPC npc;
+	//creating NPC with all four characteristics having 1/2 probability, clean unused bits
+	npc.characteristics = rand() & 0xf;
+	npc.birth = birth;
+	npc.speed = getRandom(20, 5);
+
+	npc.row = getRandom(ROW, 0);
+	npc.col = getRandom(COL, 0);
+
+	if (npc.characteristics & NPC_TELEPATH)  //monster is
+	{
+		npc.pc_row = dungeon.PC.row;
+		npc.pc_col = dungeon.PC.col;
+	}
+
+	//add monster into map
+	if (dungeon.map[npc.row][npc.col].space == ROOM ||
+			dungeon.map[npc.row][npc.col].space == CORRIDOR)
+	{
+		dungeon.map[npc.row][npc.col].space = MONSTER;
+		dungeon.map[npc.row][npc.col].hardness = 0;
+
+	}
+	else
+	{
+		newMonster(birth);
+	}
+
+//	if (npc.characteristics & NPC_TUNNEL)  //monster is TUNNEL
+//	{
+//		if (dungeon.map[npc.row][npc.col].space == ROOM ||
+//				dungeon.map[npc.row][npc.col].space == CORRIDOR ||
+//				dungeon.map[npc.row][npc.col].space == ROCK)
+//		{
+//			dungeon.map[npc.row][npc.col].space = MONSTER;
+//		}
+//		else
+//		{
+//			newMonster(birth);
+//		}
+//	}
+//	else
+//	{
+//		if (dungeon.map[npc.row][npc.col].space == ROOM ||
+//				dungeon.map[npc.row][npc.col].space == CORRIDOR)
+//		{
+//			dungeon.map[npc.row][npc.col].space = MONSTER;
+//		}
+//		else
+//		{
+//			newMonster(birth);
+//		}
+//	}
+
+	return npc;
+}
+
 void generateDungeon(int n)
 {
 	//initialize dungeon
@@ -323,10 +368,12 @@ void generateDungeon(int n)
 
 	for (i = 0; i < n; i++)
 	{
-		dungeon.monster[i] = newMonster();
+		dungeon.monster[i] = newMonster(i+1);
 	}
 
 	//add initial player location
+	dungeon.PC.birth = 0;
+	dungeon.PC.speed = 10;
 	dungeon.PC.row = dungeon.rooms[0].row;
 	dungeon.PC.col = dungeon.rooms[0].col;
 	dungeon.map[dungeon.PC.row][dungeon.PC.col].space = '@';

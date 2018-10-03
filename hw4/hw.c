@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -717,6 +718,7 @@ void dijkstra_nontunneling()
 	print_dijkstra_path(dist, dungeon.PC.row, dungeon.PC.col);
 }
 
+
 int main(int argc, char *argv[])
 {
 	char *home = getenv("HOME");
@@ -786,3 +788,4 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+*/

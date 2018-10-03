@@ -3,8 +3,13 @@
 #include <stdbool.h>
 #include "queue.h"
 
+struct queue_node
+{
+	Node *next;
+	int priority;
+};
 
-Node *node_new(int priority)
+Node *node_new(Queue pq, int priority)
 {
 	Node *temp = malloc(sizeof(Node));
 	temp->priority = priority;
@@ -13,7 +18,7 @@ Node *node_new(int priority)
 	return temp;
 }
 
-void pq_insert(Node **head, int priority, int *dist)
+void pq_insert(Queue pq, Node **head, int priority, int *dist)
 {
 	Node *temp = *head;
 	Node *new = node_new(priority);
@@ -35,7 +40,7 @@ void pq_insert(Node **head, int priority, int *dist)
 	}
 }
 
-int pq_pop(Node **head)
+int pq_pop(Queue pq, Node **head)
 {
 	int n = (*head)->priority;
 	Node *t = *head;
@@ -44,7 +49,7 @@ int pq_pop(Node **head)
 	return n;
 }
 
-bool pq_isEmpty(Node **head)
+bool pq_isEmpty(Queue pq, Node **head)
 {
 	return (*head) == NULL;
 }

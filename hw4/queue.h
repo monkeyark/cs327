@@ -1,22 +1,25 @@
 #ifndef QUEUE_H
 # define QUEUE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
 
-typedef struct Node
+struct queue_node;
+
+typedef struct queue_node Node;
+
+typedef struct Priority_Queue
 {
-	struct Node *next;
-	int priority;
-} Node;
+  Node *min;
+  uint32_t size;
+  int32_t (*compare)(const void *key, const void *with);
+  void (*datum_delete)(void *);
+} Queue;
 
-Node *node_new(int priority);
+Node *node_new(Queue pq, int priority);
 
-void pq_insert(Node **head, int priority, int *dist);
+void pq_insert(Queue pq, Node **head, int priority, int *dist);
 
-int pq_pop(Node **head);
+int pq_pop(Queue pq, Node **head);
 
-bool pq_isEmpty(Node **head);
+bool pq_isEmpty(Queue pq, Node **head);
 
 #endif

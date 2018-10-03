@@ -8,7 +8,6 @@
 #include <endian.h>
 #include <sys/stat.h>
 
-#include "queue.h"
 
 #define ROW 21
 #define COL 80

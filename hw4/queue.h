@@ -8,7 +8,7 @@ typedef struct queue_node Node;
 
 typedef struct Priority_Queue
 {
-  Node *min;
+  Node *head;
   uint32_t size;
   int32_t (*compare)(const void *key, const void *with);
   void (*datum_delete)(void *);

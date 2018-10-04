@@ -20,7 +20,7 @@
 #define ROOM '.'
 #define CORRIDOR '#'
 #define PLAYER '@'
-#define MONSTER 'D'
+#define MONSTER 'M'
 #define ROCK_H 255
 #define ROOM_H 0
 #define CORRIDOR_H 0
@@ -41,7 +41,6 @@ typedef struct Terrain
 {
 	char space;
 	int hardness;
-//	int distance;
 } Terrain;
 
 typedef struct Player_Character
@@ -51,6 +50,7 @@ typedef struct Player_Character
 	int col;
 	int birth;
 	int speed;
+	bool dead;
 } PC;
 
 typedef struct Non_Player_Character
@@ -62,6 +62,7 @@ typedef struct Non_Player_Character
 	int speed;
 	int pc_row;
 	int pc_col;
+	bool dead;
 } NPC;
 
 typedef struct rooms

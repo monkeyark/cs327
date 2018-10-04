@@ -271,6 +271,7 @@ NPC newMonster(int birth)
 		//creating NPC with all four characteristics having 1/2 probability, clean unused bits
 		npc.characteristics = rand() & 0xf;
 		npc.speed = getRandom(20, 5);
+		npc.dead = false;
 		if (npc.characteristics & NPC_TELEPATH)//monster is telepath
 		{
 			npc.pc_row = dungeon.PC.row;
@@ -279,6 +280,7 @@ NPC newMonster(int birth)
 
 		//printf("npc.characteristics = %d in hex: %x\n", npc.characteristics, npc.characteristics);
 		//dungeon.map[npc.row][npc.col].space = MONSTER;
+
 		dungeon.map[npc.row][npc.col].hardness = 0;
 
 	}
@@ -315,11 +317,89 @@ void generateDungeon()
 	//add initial player location
 	dungeon.PC.birth = -1;
 	dungeon.PC.speed = 10;
+	dungeon.PC.dead = false;
 	dungeon.PC.row = dungeon.rooms[0].row;
 	dungeon.PC.col = dungeon.rooms[0].col;
 	dungeon.map[dungeon.PC.row][dungeon.PC.col].space = '@';
 	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
+
 }
+
+//npc_move_func[c->npc->characteristics & 0x0000000f](d, c, next);
+
+void (*npc_move_func[])(NPC *c) =
+{
+	/* We'll have one function for each combination of bits, so the *
+	 * order is based on binary counting through the NPC_* bits.    *
+	 * It could be very easy to mess this up, so be careful.  We'll *
+	 * name them according to their hex value.                      */
+	npc_next_pos_00,
+	npc_next_pos_01,
+	npc_next_pos_02,
+	npc_next_pos_03,
+	npc_next_pos_04,
+	npc_next_pos_05,
+	npc_next_pos_06,
+	npc_next_pos_07,
+	npc_next_pos_08,
+	npc_next_pos_09,
+	npc_next_pos_0a,
+	npc_next_pos_0b,
+	npc_next_pos_0c,
+	npc_next_pos_0d,
+	npc_next_pos_0e,
+	npc_next_pos_0f,
+};
+
+void npc_next_pos_00 ()
+{
+}
+void npc_next_pos_01 ()
+{
+}
+void npc_next_pos_02 ()
+{
+}
+void npc_next_pos_03 ()
+{
+}
+void npc_next_pos_04 ()
+{
+}
+void npc_next_pos_05 ()
+{
+}
+void npc_next_pos_06 ()
+{
+}
+void npc_next_pos_07 ()
+{
+}
+void npc_next_pos_08 ()
+{
+}
+void npc_next_pos_09 ()
+{
+}
+void npc_next_pos_0a ()
+{
+}
+void npc_next_pos_0b ()
+{
+}
+void npc_next_pos_0c ()
+{
+}
+void npc_next_pos_0d ()
+{
+}
+void npc_next_pos_0e ()
+{
+}
+void npc_next_pos_0f ()
+{
+}
+void
 
 void loadFile(FILE *f)
 {

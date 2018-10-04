@@ -8,5 +8,6 @@ Oct 3
 	add NPC to dungeon map
 	fix monster showing issue
 	split project into few compilation units
+	print NPC in correct type
 	
 	

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <unistd.h>
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
@@ -313,6 +314,7 @@ Node_t *pq_pop_NPC(Queue pq, Node_t **head)
 
 	int next_turn = priority + 1000 / (*head)->character.speed;
 	Character h = (*head)->character;
+
 	return node_new_NPC(next_turn, h);
 }
 
@@ -333,7 +335,12 @@ void move_character()
 	while (!dungeon.PC.dead)
 	{
 		Node_t *n = pq_pop_NPC(pq, &character);
-
+		//TODO
+		if ((*n).character.row == dungeon.PC.row && (*n).character.col == dungeon.PC.col)
+		{
+			usleep(250000);
+			printDungeon();
+		}
 		pq_insert_NPC(pq, &character, &n);
 	}
 

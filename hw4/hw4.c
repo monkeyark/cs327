@@ -31,17 +31,18 @@ int main(int argc, char *argv[])
 
 	bool load = false;
 	bool save = false;
-	//bool nummon = false;
+	bool nummon = false;
 
 	if (argc != 1)
 	{
 		for (int i = 1; i < argc; i++)
 		{
-			if (strcmp(argv[i], "--save") != 0 && strcmp(argv[i], "--load") != 0)
-			{
-				fprintf(stderr, "Bad argument\n");
-				return -1;
-			}
+//			if (strcmp(argv[i], "--save") != 0 && strcmp(argv[i], "--load") != 0 &&
+//					strcmp(argv[i], "--nummon") != 0)
+//			{
+//				fprintf(stderr, "Bad argument\n");
+//				return -1;
+//			}
 			if (strcmp(argv[i], "--save") == 0)
 			{
 				save = true;
@@ -49,6 +50,11 @@ int main(int argc, char *argv[])
 			if (strcmp(argv[i], "--load") == 0)
 			{
 				load = true;
+			}
+			if (strcmp(argv[i], "--nummon") == 0)
+			{
+				nummon = true;
+				dungeon.num_mon = argv[i+1];
 			}
 		}
 	}
@@ -69,8 +75,8 @@ int main(int argc, char *argv[])
 		FILE *f = fopen(path, "w");
 		saveFile(f);
 	}
-	dijkstra_nontunneling();
-	dijkstra_tunneling();
+	//dijkstra_nontunneling();
+	//dijkstra_tunneling();
 
 	free(dungeon.rooms);
 	free(dungeon.monster);

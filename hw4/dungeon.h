@@ -46,7 +46,7 @@ typedef struct Terrain
 
 typedef struct Player_Character
 {
-	int characteristics;
+	//int characteristics;
 	int row;
 	int col;
 	int birth;
@@ -55,7 +55,7 @@ typedef struct Player_Character
 
 typedef struct Non_Player_Character
 {
-	int characteristics;
+	unsigned int characteristics;
 	int row;
 	int col;
 	int birth;

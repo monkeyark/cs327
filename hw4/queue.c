@@ -9,7 +9,7 @@ struct queue_node
 	int priority;
 };
 
-Node *node_new(Queue pq, int priority)
+Node *node_new(int priority)
 {
 	Node *temp = malloc(sizeof(Node));
 	temp->priority = priority;

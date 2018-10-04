@@ -15,7 +15,7 @@ typedef struct Priority_Queue
   void (*datum_delete)(void *);
 } Queue;
 
-Node *node_new(Queue pq, int priority);
+Node *node_new(int priority);
 
 void pq_insert(Queue pq, Node **head, int priority, int *dist);
 

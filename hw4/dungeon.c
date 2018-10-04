@@ -28,6 +28,17 @@ int getRandom(int modulus, int min)
 	return rand() % modulus + min;
 }
 
+int isMonster(int row, int col)
+{
+	for (int i = 0; i < dungeon.num_mon; i++)
+	{
+		if (row == dungeon.monster[i].row && col == dungeon.monster[i].col)
+		{
+			return i+1;
+		}
+	}
+	return 0;
+}
 void printDungeon()
 {
 	printf("   ");
@@ -64,7 +75,14 @@ void printDungeon()
 		printf("%2d|", i);
 		for (int j = 0; j < COL; j++)
 		{
-			printf("%c", dungeon.map[i][j].space);
+			if (isMonster(i, j))
+			{
+				printf("%x", dungeon.monster[isMonster(i, j)-1].characteristics);
+			}
+			else
+			{
+				printf("%c", dungeon.map[i][j].space);
+			}
 		}
 		printf("|\n");
 	}
@@ -240,59 +258,34 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 NPC newMonster(int birth)
 {
 	NPC npc;
-	//creating NPC with all four characteristics having 1/2 probability, clean unused bits
-	npc.characteristics = rand() & 0xf;
-	npc.birth = birth;
-	npc.speed = getRandom(20, 5);
-
-	npc.row = getRandom(ROW, 0);
-	npc.col = getRandom(COL, 0);
-
-	if (npc.characteristics & NPC_TELEPATH)  //monster is
-	{
-		npc.pc_row = dungeon.PC.row;
-		npc.pc_col = dungeon.PC.col;
-	}
-
+	int row = getRandom(ROW, 0);
+	int col = getRandom(COL, 0);
 	//add monster into map
-	if (dungeon.map[npc.row][npc.col].space == ROOM ||
-			dungeon.map[npc.row][npc.col].space == CORRIDOR)
+	if (dungeon.map[row][col].space == ROOM)
+	//if (dungeon.map[npc.row][npc.col].hardness == 0)
 	{
-		dungeon.map[npc.row][npc.col].space = MONSTER;
+		printf("\n");
+		npc.row = row;
+		npc.col = col;
+		npc.birth = birth;
+		//creating NPC with all four characteristics having 1/2 probability, clean unused bits
+		npc.characteristics = rand() & 0xf;
+		npc.speed = getRandom(20, 5);
+		if (npc.characteristics & NPC_TELEPATH)//monster is telepath
+		{
+			npc.pc_row = dungeon.PC.row;
+			npc.pc_col = dungeon.PC.col;
+		}
+
+		//printf("npc.characteristics = %d in hex: %x\n", npc.characteristics, npc.characteristics);
+		//dungeon.map[npc.row][npc.col].space = MONSTER;
 		dungeon.map[npc.row][npc.col].hardness = 0;
 
 	}
 	else
 	{
-		newMonster(birth);
+		return newMonster(birth);
 	}
-
-//	if (npc.characteristics & NPC_TUNNEL)  //monster is TUNNEL
-//	{
-//		printf("birth = %d; npc.row = %d; npc.col = %d\n", birth, npc.row, npc.col);//TODO
-//		if (dungeon.map[npc.row][npc.col].space == ROOM ||
-//				dungeon.map[npc.row][npc.col].space == CORRIDOR ||
-//				dungeon.map[npc.row][npc.col].space == ROCK)
-//		{
-//			dungeon.map[npc.row][npc.col].space = MONSTER;
-//		}
-//		else
-//		{
-//			newMonster(birth);
-//		}
-//	}
-//	else
-//	{
-//		if (dungeon.map[npc.row][npc.col].space == ROOM ||
-//				dungeon.map[npc.row][npc.col].space == CORRIDOR)
-//		{
-//			dungeon.map[npc.row][npc.col].space = MONSTER;
-//		}
-//		else
-//		{
-//			newMonster(birth);
-//		}
-//	}
 
 	return npc;
 }
@@ -314,11 +307,9 @@ void generateDungeon()
 		newCorridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
 	}
 
-	for (i = 0; i < dungeon.num_mon; i++)
+	for (int i = 0; i < dungeon.num_mon; i++)
 	{
 		dungeon.monster[i] = newMonster(i);
-		printf("birth = %d; npc.row = %d; npc.col = %d\n", dungeon.monster[i].birth, dungeon.monster[i].row, dungeon.monster[i].col);//TODO
-		;
 	}
 
 	//add initial player location
@@ -495,6 +486,7 @@ void dijkstra_tunneling()
 	//initialization
 	int i, j;
 	int dist[ROW * COL];
+	Queue pq_tunel;
 	memset(dist, 0, sizeof (dist));
 	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
@@ -510,7 +502,7 @@ void dijkstra_tunneling()
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
-				pq_insert(&node, i * COL + j, dist);
+				pq_insert(pq_tunel, &node, i * COL + j, dist);
 			}
 			
 		}
@@ -518,9 +510,9 @@ void dijkstra_tunneling()
 	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
 	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 
-	while (!pq_isEmpty(&node))
+	while (!pq_isEmpty(pq_tunel, &node))
 	{
-		int u = pq_pop(&node);
+		int u = pq_pop(pq_tunel, &node);
 		for (i = 0; i < 8; i++)
 		{
 			int alt = 0;
@@ -533,7 +525,7 @@ void dijkstra_tunneling()
 				if (alt < dist[v])
 				{
 					dist[v] = alt;
-					pq_insert(&node, v, dist);
+					pq_insert(pq_tunel, &node, v, dist);
 				}
 			}
 		}
@@ -548,6 +540,7 @@ void dijkstra_nontunneling()
 	//initialization
 	int i, j;
 	int dist[ROW * COL];
+	Queue pq_nontunel;;
 	memset(dist, 0, sizeof (dist));
 	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
@@ -562,7 +555,7 @@ void dijkstra_nontunneling()
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
-				pq_insert(&node, i * COL + j, dist);
+				pq_insert(pq_nontunel, &node, i * COL + j, dist);
 			}
 			else if (dungeon.map[i][j].space == ROCK)
 			{
@@ -574,9 +567,9 @@ void dijkstra_nontunneling()
 	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
 	//dungeon.map[dungeon.pc_row][dungeon.pc_col].distance = 0;
 
-	while (!pq_isEmpty(&node))
+	while (!pq_isEmpty(pq_nontunel, &node))
 	{
-		int u = pq_pop(&node);
+		int u = pq_pop(pq_nontunel, &node);
 		for (i = 0; i < 8; i++)
 		{
 			int alt = 0;
@@ -589,7 +582,7 @@ void dijkstra_nontunneling()
 				if (alt < dist[v])
 				{
 					dist[v] = alt;
-					pq_insert(&node, v, dist);
+					pq_insert(pq_nontunel, &node, v, dist);
 				}
 			}
 		}

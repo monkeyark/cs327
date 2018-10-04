@@ -31,7 +31,6 @@ int main(int argc, char *argv[])
 
 	bool load = false;
 	bool save = false;
-	bool nummon = false;
 
 	if (argc != 1)
 	{
@@ -53,8 +52,7 @@ int main(int argc, char *argv[])
 			}
 			if (strcmp(argv[i], "--nummon") == 0)
 			{
-				nummon = true;
-				dungeon.num_mon = argv[i+1];
+				dungeon.num_mon = atoi(argv[i+1]);
 			}
 		}
 	}

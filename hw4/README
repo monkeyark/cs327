@@ -1,1 +1,2 @@
 Add NPC to our dungeon. NPC has four characteristics, NPC_SMART, NPC_TELEPATH, NPC_TUNNEL, NPC_ERRATIC, with 1/2 probability.
+This assignment is unfinished. --nummon is working, but monster's are not moving for now.

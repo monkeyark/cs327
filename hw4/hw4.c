@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "dungeon.h"
+#include "queue.h"
 
 int main(int argc, char *argv[])
 {

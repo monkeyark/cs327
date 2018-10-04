@@ -255,16 +255,99 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 	}
 }
 
-NPC newMonster(int birth)
+
+typedef struct Node_t
 {
-	NPC npc;
+	struct Node_t *next;
+	int priority;
+	Character character;
+} Node_t;
+
+Node_t *node_new_NPC(int priority, Character c)
+{
+	Node_t *temp = malloc(sizeof(Node_t));
+	temp->priority = priority;
+	temp->character = c;
+	temp->next = NULL;
+
+	return temp;
+}
+
+void pq_insert_NPC(Queue pq, Node_t** head, Node_t** new)
+{
+	Node_t *temp = *head;
+
+	int head_priority = (*head)->priority;
+	int new_priority = (*new)->priority;
+	if (head_priority == new_priority)
+	{
+		head_priority = (*head)->character.birth;
+		new_priority = (*new)->character.birth;
+	}
+
+	if (head_priority > new_priority)
+	{
+		(*new)->next = *head;
+		*head = *new;
+	}
+	else
+	{
+		int c = temp->next->priority;
+		int d = (*new)->priority;
+		while (temp->next != NULL && (c < d))
+		{
+			temp = temp->next;
+		}
+
+		(*new)->next = temp->next;
+		temp->next = (*new);
+	}
+}
+
+Node_t *pq_pop_NPC(Queue pq, Node_t **head)
+{
+	int priority = (*head)->priority;
+	Node_t *t = *head;
+	(*head) = (*head)->next;
+	free(t);
+
+	int next_turn = priority + 1000 / (*head)->character.speed;
+	Character h = (*head)->character;
+	return node_new_NPC(next_turn, h);
+}
+
+void move_character()
+{
+	Queue pq;
+	Character pc;
+	int pc_turn = 0;
+	int npc_turn = 0;
+	Node_t *character = node_new_NPC(pc_turn, pc);
+
+	for (int i = 0; i < dungeon.num_mon; i++)
+	{
+		Node_t *new = node_new_NPC(npc_turn, dungeon.monster[i]);
+		pq_insert_NPC(pq, &character, &new);
+	}
+
+	while (!dungeon.PC.dead)
+	{
+		Node_t *n = pq_pop_NPC(pq, &character);
+
+		pq_insert_NPC(pq, &character, &n);
+	}
+
+}
+
+Character new_NPC(int birth)
+{
+	Character npc;
 	int row = getRandom(ROW, 0);
 	int col = getRandom(COL, 0);
 	//add monster into map
 	if (dungeon.map[row][col].space == ROOM)
 	//if (dungeon.map[npc.row][npc.col].hardness == 0)
 	{
-		printf("\n");
 		npc.row = row;
 		npc.col = col;
 		npc.birth = birth;
@@ -286,7 +369,7 @@ NPC newMonster(int birth)
 	}
 	else
 	{
-		return newMonster(birth);
+		return new_NPC(birth);
 	}
 
 	return npc;
@@ -311,7 +394,7 @@ void generateDungeon()
 
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
-		dungeon.monster[i] = newMonster(i);
+		dungeon.monster[i] = new_NPC(i);
 	}
 
 	//add initial player location

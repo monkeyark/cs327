@@ -3,11 +3,6 @@
 #include <stdbool.h>
 #include "queue.h"
 
-struct queue_node
-{
-	Node *next;
-	int priority;
-};
 
 Node *node_new(int priority)
 {
@@ -17,17 +12,6 @@ Node *node_new(int priority)
 
 	return temp;
 }
-
-/*
-Node *node_new_NPC(int priority)
-{
-	Node *temp = malloc(sizeof(Node));
-	temp->priority = priority;
-	temp->next = NULL;
-
-	return temp;
-}
-*/
 
 void pq_insert(Queue pq, Node **head, int priority, int *dist)
 {
@@ -50,35 +34,6 @@ void pq_insert(Queue pq, Node **head, int priority, int *dist)
 		temp->next = new;
 	}
 }
-/*
-void pq_insert_NPC(Queue pq, Node** head , int priority , NPC *npc)
-{
-	Node *temp = *head;
-	Node *new = node_new(priority);
-
-	int a = (npc + ((*head)->priority))->speed;
-	int b = (npc + priority)->speed;
-
-	if (a > b)
-	{
-		new->next = *head;
-		(*head) = new;
-	}
-	else
-	{
-		int c = (npc + (temp->next->priority))->speed;
-		int d = (npc + new->priority)->speed;
-		while (temp->next != NULL && (c < d))
-		{
-			temp = temp->next;
-		}
-
-		new->next = temp->next;
-		temp->next = new;
-	}
-
-}
-*/
 
 int pq_pop(Queue pq, Node **head)
 {

@@ -3,9 +3,17 @@
 
 # include <stdint.h>
 
+#include "dungeon.h"
+
 struct queue_node;
 
 typedef struct queue_node Node;
+
+struct queue_node
+{
+	Node *next;
+	int priority;
+};
 
 typedef struct Priority_Queue
 {

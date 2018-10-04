@@ -43,6 +43,7 @@ typedef struct Terrain
 	int hardness;
 } Terrain;
 
+/*
 typedef struct Player_Character
 {
 	//int characteristics;
@@ -52,8 +53,8 @@ typedef struct Player_Character
 	int speed;
 	bool dead;
 } PC;
-
-typedef struct Non_Player_Character
+*/
+typedef struct Character
 {
 	unsigned int characteristics;
 	int row;
@@ -63,7 +64,7 @@ typedef struct Non_Player_Character
 	int pc_row;
 	int pc_col;
 	bool dead;
-} NPC;
+} Character;
 
 typedef struct rooms
 {
@@ -79,8 +80,8 @@ typedef struct level
 	int num_room;
 	int version;
 	Room *rooms;
-	NPC *monster;
-	PC PC;
+	Character *monster;
+	Character PC;
 	Terrain map[ROW][COL];
 } Dungeon;
 

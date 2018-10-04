@@ -341,6 +341,7 @@ void move_character()
 			usleep(250000);
 			printDungeon();
 		}
+		else if ((*n).character.characteristics & NPC_TELEPATH)
 		pq_insert_NPC(pq, &character, &n);
 	}
 

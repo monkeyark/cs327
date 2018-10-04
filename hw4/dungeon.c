@@ -326,13 +326,9 @@ void generateDungeon()
 }
 
 //npc_move_func[c->npc->characteristics & 0x0000000f](d, c, next);
-
+/*
 void (*npc_move_func[])(NPC *c) =
 {
-	/* We'll have one function for each combination of bits, so the *
-	 * order is based on binary counting through the NPC_* bits.    *
-	 * It could be very easy to mess this up, so be careful.  We'll *
-	 * name them according to their hex value.                      */
 	npc_next_pos_00,
 	npc_next_pos_01,
 	npc_next_pos_02,
@@ -399,7 +395,7 @@ void npc_next_pos_0e ()
 void npc_next_pos_0f ()
 {
 }
-void
+*/
 
 void loadFile(FILE *f)
 {

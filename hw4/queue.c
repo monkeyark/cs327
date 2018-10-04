@@ -50,7 +50,7 @@ void pq_insert(Queue pq, Node **head, int priority, int *dist)
 		temp->next = new;
 	}
 }
-
+/*
 void pq_insert_NPC(Queue pq, Node** head , int priority , NPC *npc)
 {
 	Node *temp = *head;
@@ -78,6 +78,7 @@ void pq_insert_NPC(Queue pq, Node** head , int priority , NPC *npc)
 	}
 
 }
+*/
 
 int pq_pop(Queue pq, Node **head)
 {

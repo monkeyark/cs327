@@ -21,7 +21,7 @@ Node *node_new(int priority);
 
 void pq_insert(Queue pq, Node **head, int priority, int *dist);
 
-void pq_insert_NPC(Queue pq, Node** head , int priority , NPC *npc);
+//void pq_insert_NPC(Queue pq, Node** head , int priority , NPC *npc);
 
 int pq_pop(Queue pq, Node **head);
 

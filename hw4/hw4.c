@@ -8,6 +8,7 @@
 #include "dungeon.h"
 #include "queue.h"
 
+
 int main(int argc, char *argv[])
 {
 	char *home = getenv("HOME");
@@ -28,6 +29,11 @@ int main(int argc, char *argv[])
 	//generate random number of monster
 	//dungeon.num_mon = getRandom(5, 8);
 	dungeon.num_mon = 8;
+
+	int dist_nontunneling[ROW * COL];
+	memset(dist_nontunneling, 0, sizeof (dist_nontunneling));
+	int dist_tunneling[ROW * COL];
+	memset(dist_tunneling, 0, sizeof (dist_tunneling));
 
 	bool load = false;
 	bool save = false;
@@ -73,9 +79,10 @@ int main(int argc, char *argv[])
 		FILE *f = fopen(path, "w");
 		saveFile(f);
 	}
-	//dijkstra_nontunneling();
-	//dijkstra_tunneling();
+	//dijkstra_nontunneling(dist_nontunneling);
+	//dijkstra_tunneling(dist_tunneling);
 
+	move_npc();
 	free(dungeon.rooms);
 	free(dungeon.monster);
 

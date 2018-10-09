@@ -64,6 +64,7 @@ typedef struct Character
 	int pc_row;
 	int pc_col;
 	bool dead;
+	int dist[ROW * COL];
 } Character;
 
 typedef struct rooms
@@ -102,5 +103,7 @@ void saveFile(FILE *f);
 void dijkstra_tunneling();
 
 void dijkstra_nontunneling();
+
+void move_npc();
 
 #endif

@@ -626,7 +626,7 @@ void dijkstra_tunneling(int dist[ROW * COL])
 		{
 			int alt = 0;
 			int v = u + rowMove[i] + colMove[i] * COL;
-			if (0 > v || v > ROW * COL) continue;
+			if (0 > v || v > ROW * COL || dist[v] == -1) continue;
 
 			if (dist[v] >= 0)
 			{
@@ -695,7 +695,7 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 }
 
 
-void npc_next_pos_07(Character *npc)
+void npc_next_pos_07(Character *npc, int index)
 {
 	printf("\nnpc_row = %d; npc_col = %d\n", npc->row, npc->col); //TODO
 	memset(npc->dist, 0, sizeof npc->dist);
@@ -710,19 +710,29 @@ void npc_next_pos_07(Character *npc)
 
 	int min_dist = npc->dist[min_v];
 
-	int next_row = 0; int next_col = 0;
+	int next_row = npc->row; int next_col = npc->col;
 	for (int i = 0; i < 8; i++)
 	{
 		int next_v = current_v + rowMove[i] + colMove[i] * COL;
 		if (next_v < 0 || next_v > ROW * COL) continue;
 		int next_dist = npc->dist[next_v];
-
+		if (next_v/80 == 0 || next_v%80 ==0 ) continue;
 		if (next_dist < min_dist)
 		{
+			printf("Next Dis: %d\n" , next_dist);
+			printf("min_dist: %d\n" , min_dist);
 			min_v = next_v;
 			min_dist = next_dist;
 			next_row = npc->row + rowMove[i];
 			next_col = npc->col + colMove[i];
+
+//			if (isInside(next_row, next_col))
+//			{
+//				next_row = npc->row + rowMove[i];
+//				next_col = npc->col + colMove[i];
+//				printf("Next Row: %d\n" , next_row);
+//				printf("Next Col: %d\nthen:" , next_col);
+//			}
 		}
 	}
 
@@ -741,17 +751,26 @@ void npc_next_pos_07(Character *npc)
 		dungeon.map[next_row][next_col].hardness--;
 	}
 
+	printf("Next Row: %d\n" , next_row);
+	printf("Next Col: %d\n" , next_col);
+
 	//check is npc in next terrain will be dead
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
-		Character next_npc = dungeon.monster[i];
-		if (next_npc.row == next_row && next_npc.col == next_col)
+		if (i == index) continue;
+		Character *next_npc = &dungeon.monster[i];
+		if (next_npc->row == next_row && next_npc->col == next_col)
 		{
-			next_npc.dead = true;
+			next_npc->dead = true;
+			next_npc->row = -1;
+			next_npc->col = -1;
+			printf("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii = %d\n", i);
 		}
 		else if (dungeon.PC.row == next_row && dungeon.PC.col == next_col)
 		{
 			dungeon.PC.dead = true;
+			dungeon.PC.row = -1;
+			dungeon.PC.col = -1;
 		}
 	}
 	printf("\nnpc_row = %d; npc_col = %d\n", npc->row, npc->col); //TODO
@@ -831,11 +850,10 @@ void npc_next_pos_0f ()
 
 void move_npc()
 {
-
 	for (int i = 0; i < 5; i++)
 	{
 		Character *npc = &dungeon.monster[0];
-		npc_next_pos_07(npc);
+		npc_next_pos_07(npc, 0);
 		printDungeon();
 	}
 

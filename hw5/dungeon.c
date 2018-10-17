@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <endian.h>
 #include <sys/stat.h>
+#include <ncurses.h>
 
 #include "queue.h"
 #include "dungeon.h"
@@ -42,7 +43,7 @@ int isMonster(int row, int col)
 }
 void printDungeon()
 {
-	printf("\nnpc_row = %d; npc_col = %d\n", dungeon.monster[0].row, dungeon.monster[0].col);
+	//printf("\nnpc_row = %d; npc_col = %d\n", dungeon.monster[0].row, dungeon.monster[0].col);//TODO
 	printf("   ");
 	for (int i = 0; i < COL; i++)
 	{
@@ -547,7 +548,7 @@ int getHardnessCost(int hardness)
 	return 1 + (hardness / 85);
 }
 
-void print_dijkstra_path(int dist[ROW * COL], int row, int col)
+void print_dijkstra_path(int dist[ROW * COL])
 {
 	for (int i = 0; i < COL; i++)
 	{
@@ -566,6 +567,7 @@ void print_dijkstra_path(int dist[ROW * COL], int row, int col)
 	{
 		printf("%d", i % 10);
 	}
+	printf("\n");
 //TODO above
 //	putchar('\n');
 	int i, j;
@@ -573,7 +575,7 @@ void print_dijkstra_path(int dist[ROW * COL], int row, int col)
 	{
 		for (j = 0; j < COL; j++)
 		{
-			if (row == i && col == j)
+			if (dungeon.PC.row == i && dungeon.PC.col == j)
 			{
 				printf("%c", PLAYER);
 			}
@@ -596,7 +598,6 @@ void dijkstra_tunneling(int dist[ROW * COL])
 {
 	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
 	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
-	//initialization
 	int i, j;
 	Queue pq_tunel;
 	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
@@ -614,7 +615,7 @@ void dijkstra_tunneling(int dist[ROW * COL])
 				dist[i * COL + j] = ROW * COL + 1;
 				pq_insert(pq_tunel, &node, i * COL + j, dist);
 			}
-			
+
 		}
 	}
 	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
@@ -639,14 +640,13 @@ void dijkstra_tunneling(int dist[ROW * COL])
 			}
 		}
 	}
-	print_dijkstra_path(dist, dungeon.PC.row, dungeon.PC.col);
+	//print_dijkstra_path(dist);
 }
 
 void dijkstra_nontunneling(int dist[ROW * COL])
 {
 	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
 	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
-	//initialization
 	int i, j;
 	Queue pq_nontunel;;
 	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
@@ -658,7 +658,6 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 			if (dungeon.map[i][j].space == ROOM ||
 					dungeon.map[i][j].space == CORRIDOR ||
 					dungeon.map[i][j].space == MONSTER)
-			//if (dungeon.map[i][j].space == ROOM || dungeon.map[i][j].space == CORRIDOR)
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				pq_insert(pq_nontunel, &node, i * COL + j, dist);
@@ -691,14 +690,12 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 			}
 		}
 	}
-	//print_dijkstra_path(dist, dungeon.PC.row, dungeon.PC.col);
+	//print_dijkstra_path(dist);
 }
-
 
 void npc_next_pos_07(Character *npc, int index)
 {
-	printf("\nnpc_row = %d; npc_col = %d\n", npc->row, npc->col); //TODO
-	memset(npc->dist, 0, sizeof npc->dist);
+	memset(npc->dist, 0, sizeof (npc->dist));
 
 	dijkstra_tunneling(npc->dist);
 
@@ -707,37 +704,33 @@ void npc_next_pos_07(Character *npc, int index)
 
 	int current_v = npc->col + npc->row * COL;
 	int min_v = current_v;
-
 	int min_dist = npc->dist[min_v];
 
 	int next_row = npc->row; int next_col = npc->col;
 	for (int i = 0; i < 8; i++)
 	{
-		int next_v = current_v + rowMove[i] + colMove[i] * COL;
+		int next_v = current_v + rowMove[i] * COL + colMove[i];
 		if (next_v < 0 || next_v > ROW * COL) continue;
+		if (next_v / 80 == 0 || next_v % 80 == 0 ) continue;
 		int next_dist = npc->dist[next_v];
-		if (next_v/80 == 0 || next_v%80 ==0 ) continue;
+
+		if (next_dist == -1) continue;
+
 		if (next_dist < min_dist)
 		{
-			printf("Next Dis: %d\n" , next_dist);
-			printf("min_dist: %d\n" , min_dist);
 			min_v = next_v;
-			min_dist = next_dist;
+			min_dist = npc->dist[min_v];
 			next_row = npc->row + rowMove[i];
 			next_col = npc->col + colMove[i];
-
-//			if (isInside(next_row, next_col))
-//			{
-//				next_row = npc->row + rowMove[i];
-//				next_col = npc->col + colMove[i];
-//				printf("Next Row: %d\n" , next_row);
-//				printf("Next Col: %d\nthen:" , next_col);
-//			}
 		}
 	}
 
-	if (dungeon.map[next_row][next_col].hardness == 0)
+	if (dungeon.map[next_row][next_col].hardness < 85)
 	{
+		if (dungeon.map[next_row][next_col].hardness != 0)
+		{
+			dungeon.map[next_row][next_col].hardness = 0;
+		}
 		npc->row = next_row;
 		npc->col = next_col;
 		if (dungeon.map[npc->row][npc->col].hardness == 0 &&
@@ -748,11 +741,8 @@ void npc_next_pos_07(Character *npc, int index)
 	}
 	else
 	{
-		dungeon.map[next_row][next_col].hardness--;
+		dungeon.map[next_row][next_col].hardness -= 85;
 	}
-
-	printf("Next Row: %d\n" , next_row);
-	printf("Next Col: %d\n" , next_col);
 
 	//check is npc in next terrain will be dead
 	for (int i = 0; i < dungeon.num_mon; i++)
@@ -764,7 +754,6 @@ void npc_next_pos_07(Character *npc, int index)
 			next_npc->dead = true;
 			next_npc->row = -1;
 			next_npc->col = -1;
-			printf("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii = %d\n", i);
 		}
 		else if (dungeon.PC.row == next_row && dungeon.PC.col == next_col)
 		{
@@ -773,7 +762,61 @@ void npc_next_pos_07(Character *npc, int index)
 			dungeon.PC.col = -1;
 		}
 	}
-	printf("\nnpc_row = %d; npc_col = %d\n", npc->row, npc->col); //TODO
+}
+
+void npc_next_pos_05(Character *npc, int index)
+{
+	memset(npc->dist, 0, sizeof (npc->dist));
+
+	dijkstra_nontunneling(npc->dist);
+
+	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
+	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
+
+	int current_v = npc->col + npc->row * COL;
+	int min_v = current_v;
+	int min_dist = npc->dist[min_v];
+
+	int next_row = npc->row; int next_col = npc->col;
+	for (int i = 0; i < 8; i++)
+	{
+		int next_v = current_v + rowMove[i] * COL + colMove[i];
+		if (next_v < 0 || next_v > ROW * COL) continue;
+		if (next_v / 80 == 0 || next_v % 80 == 0 ) continue;
+		int next_dist = npc->dist[next_v];
+
+		if (next_dist == -1) continue;
+
+		if (next_dist < min_dist)
+		{
+			min_v = next_v;
+			min_dist = npc->dist[min_v];
+			next_row = npc->row + rowMove[i];
+			next_col = npc->col + colMove[i];
+		}
+	}
+
+	npc->row = next_row;
+	npc->col = next_col;
+
+	//check is npc in next terrain will be dead
+	for (int i = 0; i < dungeon.num_mon; i++)
+	{
+		if (i == index) continue;
+		Character *next_npc = &dungeon.monster[i];
+		if (next_npc->row == next_row && next_npc->col == next_col)
+		{
+			next_npc->dead = true;
+			next_npc->row = -1;
+			next_npc->col = -1;
+		}
+		else if (dungeon.PC.row == next_row && dungeon.PC.col == next_col)
+		{
+			dungeon.PC.dead = true;
+			dungeon.PC.row = -1;
+			dungeon.PC.col = -1;
+		}
+	}
 }
 
 //npc_move_func[c->npc->characteristics & 0x0000000f](d, c, next);
@@ -850,17 +893,27 @@ void npc_next_pos_0f ()
 
 void move_npc()
 {
-	for (int i = 0; i < 5; i++)
-	{
-		Character *npc = &dungeon.monster[0];
-		npc_next_pos_07(npc, 0);
-		printDungeon();
-	}
-
-//	while (!dungeon.PC.dead)
+//	for (int i = 0; i < 13; i++)
 //	{
-//		npc_next_pos_07(dungeon.monster[0]);
-//		usleep(250000);
+//		int npc_index = 1;
+//		Character *npc = &dungeon.monster[npc_index];
+//		npc_next_pos_07(npc, npc_index);
 //		printDungeon();
 //	}
+
+	while (!dungeon.PC.dead)
+	{
+		int i;
+		for (i = 0; i < dungeon.num_mon; i++)
+		{
+			Character *npc = &dungeon.monster[i];
+			npc_next_pos_05(npc, i);
+		}
+		printDungeon();
+	}
+}
+
+void move_pc()
+{
+
 }

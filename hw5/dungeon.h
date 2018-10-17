@@ -103,6 +103,6 @@ void dijkstra_tunneling();
 
 void dijkstra_nontunneling();
 
-void move_npc();
+void move_dungeon();
 
 #endif

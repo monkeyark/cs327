@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 	//dijkstra_nontunneling(dist_nontunneling);
 	//dijkstra_tunneling(dist_tunneling);
 
-	move_npc();
+	move_dungeon();
 	free(dungeon.rooms);
 	free(dungeon.monster);
 

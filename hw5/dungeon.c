@@ -25,7 +25,7 @@ int isMonster(int row, int col)
 	{
 		if (row == dungeon.monster[i].row && col == dungeon.monster[i].col)
 		{
-			return i+1;
+			return i + 1;
 		}
 	}
 	return 0;
@@ -70,7 +70,7 @@ void printDungeon()
 		{
 			if (isMonster(i, j))
 			{
-				printf("%x", dungeon.monster[isMonster(i, j)-1].characteristics);
+				printf("%x", dungeon.monster[isMonster(i, j) - 1].characteristics);
 			}
 			else
 			{
@@ -90,7 +90,7 @@ void printDungeon()
 bool isInside(int row, int col)
 {
 	//is room not on edge or outside of dungeon or cross dungeon
-	return row > 0 && col > 0 && row < ROW-1 && col < COL-1;
+	return row > 0 && col > 0 && row < ROW - 1 && col < COL - 1;
 }
 
 bool isValidRoom(int row, int col, int width, int height)
@@ -178,10 +178,7 @@ int distance(int aRow, int aCol, int bRow, int bCol)
 
 bool isConnected(int row, int col)
 {
-	return dungeon.map[row - 1][col].space == CORRIDOR
-		|| dungeon.map[row + 1][col].space == CORRIDOR
-		|| dungeon.map[row][col - 1].space == CORRIDOR
-		|| dungeon.map[row][col + 1].space == CORRIDOR;
+	return dungeon.map[row - 1][col].space == CORRIDOR || dungeon.map[row + 1][col].space == CORRIDOR || dungeon.map[row][col - 1].space == CORRIDOR || dungeon.map[row][col + 1].space == CORRIDOR;
 }
 
 void newCorridor(int aRow, int aCol, int bRow, int bCol)
@@ -255,7 +252,7 @@ Character new_NPC(int birth)
 		npc.characteristics = rand() & 0xf;
 		npc.speed = getRandom(20, 5);
 		npc.dead = false;
-		if (npc.characteristics & NPC_TELEPATH)//monster is telepath
+		if (npc.characteristics & NPC_TELEPATH) //monster is telepath
 		{
 			npc.pc_row = dungeon.PC.row;
 			npc.pc_col = dungeon.PC.col;
@@ -265,7 +262,6 @@ Character new_NPC(int birth)
 		//dungeon.map[npc.row][npc.col].space = MONSTER;
 
 		dungeon.map[npc.row][npc.col].hardness = 0;
-
 	}
 	else
 	{
@@ -305,7 +301,6 @@ void generateDungeon()
 	dungeon.PC.col = dungeon.rooms[0].col;
 	dungeon.map[dungeon.PC.row][dungeon.PC.col].space = '@';
 	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
-
 }
 
 void loadFile(FILE *f)
@@ -434,8 +429,10 @@ void saveFile(FILE *f)
 
 int getHardnessCost(int hardness)
 {
-	if (hardness == 255) return 3;
-	if (hardness == 0) return 1;
+	if (hardness == 255)
+		return 3;
+	if (hardness == 0)
+		return 1;
 	return 1 + (hardness / 85);
 }
 
@@ -459,8 +456,8 @@ void print_dijkstra_path(int dist[ROW * COL])
 		printf("%d", i % 10);
 	}
 	printf("\n");
-//TODO above
-//	putchar('\n');
+	//TODO above
+	//	putchar('\n');
 	int i, j;
 	for (i = 0; i < ROW; i++)
 	{
@@ -487,8 +484,8 @@ void print_dijkstra_path(int dist[ROW * COL])
 
 void dijkstra_tunneling(int dist[ROW * COL])
 {
-	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
-	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
+	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
+	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
 	int i, j;
 	Queue pq_tunel;
 	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
@@ -506,7 +503,6 @@ void dijkstra_tunneling(int dist[ROW * COL])
 				dist[i * COL + j] = ROW * COL + 1;
 				pq_insert(pq_tunel, &node, i * COL + j, dist);
 			}
-
 		}
 	}
 	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
@@ -518,7 +514,8 @@ void dijkstra_tunneling(int dist[ROW * COL])
 		{
 			int alt = 0;
 			int v = u + rowMove[i] + colMove[i] * COL;
-			if (0 > v || v > ROW * COL || dist[v] == -1) continue;
+			if (0 > v || v > ROW * COL || dist[v] == -1)
+				continue;
 
 			if (dist[v] >= 0)
 			{
@@ -536,10 +533,11 @@ void dijkstra_tunneling(int dist[ROW * COL])
 
 void dijkstra_nontunneling(int dist[ROW * COL])
 {
-	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
-	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
+	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
+	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
 	int i, j;
-	Queue pq_nontunel;;
+	Queue pq_nontunel;
+	;
 	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
 	for (i = 0; i < ROW; i++)
@@ -547,7 +545,7 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 		for (j = 0; j < COL; j++)
 		{
 			if (dungeon.map[i][j].space == ROOM ||
-					dungeon.map[i][j].space == CORRIDOR)
+				dungeon.map[i][j].space == CORRIDOR)
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				pq_insert(pq_nontunel, &node, i * COL + j, dist);
@@ -567,7 +565,8 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 		{
 			int alt = 0;
 			int v = u + rowMove[i] + colMove[i] * COL;
-			if (0 > v || v > ROW * COL) continue;
+			if (0 > v || v > ROW * COL)
+				continue;
 
 			if (dist[v] >= 0)
 			{
@@ -583,7 +582,7 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 	//print_dijkstra_path(dist);
 }
 
-void move_character()
+void move_character_turn()
 {
 	Queue pq;
 	Character pc;
@@ -607,7 +606,7 @@ void move_character()
 			printDungeon();
 		}
 		else if ((*n).character.characteristics & NPC_TELEPATH)
-		pq_insert_NPC(pq, &character, &n);
+			pq_insert_NPC(pq, &character, &n);
 	}
 }
 
@@ -659,5 +658,23 @@ void move_npc()
 
 void move_pc()
 {
+	initscr();
+	noecho();
+	cbreak();
+	WINDOW *game;
+	game = newwin(100, 100, 0, 0);
 
+	keypad(game, true);
+}
+
+void move_character()
+{
+	move_pc();
+	//move_npc();
+}
+
+void move_dungeon()
+{
+	move_character();
+	//move_character_turn();
 }

@@ -25,14 +25,25 @@ typedef struct Priority_Queue
 
 Node *node_new(int priority);
 
-//Node *node_new_NPC(int priority);
-
 void pq_insert(Queue pq, Node **head, int priority, int *dist);
-
-//void pq_insert_NPC(Queue pq, Node** head , int priority , NPC *npc);
 
 int pq_pop(Queue pq, Node **head);
 
 bool pq_isEmpty(Queue pq, Node **head);
+
+
+typedef struct Node_t
+{
+	struct Node_t *next;
+	int priority;
+	Character character;
+} Node_t;
+
+
+Node_t *node_new_NPC(int priority, Character c);
+
+void pq_insert_NPC(Queue pq, Node_t** head, Node_t** new);
+
+Node_t *pq_pop_NPC(Queue pq, Node_t **head);
 
 #endif

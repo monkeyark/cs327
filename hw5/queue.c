@@ -48,3 +48,59 @@ bool pq_isEmpty(Queue pq, Node **head)
 {
 	return (*head) == NULL;
 }
+
+
+
+Node_t *node_new_NPC(int priority, Character c)
+{
+	Node_t *temp = malloc(sizeof(Node_t));
+	temp->priority = priority;
+	temp->character = c;
+	temp->next = NULL;
+
+	return temp;
+}
+
+void pq_insert_NPC(Queue pq, Node_t** head, Node_t** new)
+{
+	Node_t *temp = *head;
+
+	int head_priority = (*head)->priority;
+	int new_priority = (*new)->priority;
+	if (head_priority == new_priority)
+	{
+		head_priority = (*head)->character.birth;
+		new_priority = (*new)->character.birth;
+	}
+
+	if (head_priority > new_priority)
+	{
+		(*new)->next = *head;
+		*head = *new;
+	}
+	else
+	{
+		int c = temp->next->priority;
+		int d = (*new)->priority;
+		while (temp->next != NULL && (c < d))
+		{
+			temp = temp->next;
+		}
+
+		(*new)->next = temp->next;
+		temp->next = (*new);
+	}
+}
+
+Node_t *pq_pop_NPC(Queue pq, Node_t **head)
+{
+	int priority = (*head)->priority;
+	Node_t *t = *head;
+	(*head) = (*head)->next;
+	free(t);
+
+	int next_turn = priority + 1000 / (*head)->character.speed;
+	Character h = (*head)->character;
+
+	return node_new_NPC(next_turn, h);
+}

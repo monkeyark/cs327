@@ -6,13 +6,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <unistd.h>
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
 #include <endian.h>
 #include <sys/stat.h>
-
-#include "queue.h"
+#include <ncurses.h>
 
 #define ROW 21
 #define COL 80

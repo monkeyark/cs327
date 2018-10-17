@@ -20,7 +20,6 @@
 #define ROOM '.'
 #define CORRIDOR '#'
 #define PLAYER '@'
-#define MONSTER 'M'
 #define ROCK_H 255
 #define ROOM_H 0
 #define CORRIDOR_H 0

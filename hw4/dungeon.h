@@ -6,11 +6,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <unistd.h>
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
 #include <endian.h>
 #include <sys/stat.h>
+#include <ncurses.h>
 
 #include "queue.h"
 

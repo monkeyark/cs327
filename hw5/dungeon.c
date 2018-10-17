@@ -176,15 +176,6 @@ int distance(int aRow, int aCol, int bRow, int bCol)
 	return row * row + col * col;
 }
 
-int minimum(int a, int b)
-{
-	if (a < b)
-	{
-		return a;
-	}
-	return b;
-}
-
 bool isConnected(int row, int col)
 {
 	return dungeon.map[row - 1][col].space == CORRIDOR
@@ -212,22 +203,22 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 	if (isInside(aRow - 1, aCol))
 	{
 		top = distance(aRow - 1, aCol, bRow, bCol);
-		min = minimum(min, top);
+		min = MIN(min, top);
 	}
 	if (isInside(aRow + 1, aCol))
 	{
 		down = distance(aRow + 1, aCol, bRow, bCol);
-		min = minimum(min, down);
+		min = MIN(min, down);
 	}
 	if (isInside(aRow, aCol - 1))
 	{
 		left = distance(aRow, aCol - 1, bRow, bCol);
-		min = minimum(min, left);
+		min = MIN(min, left);
 	}
 	if (isInside(aRow, aCol + 1))
 	{
 		right = distance(aRow, aCol + 1, bRow, bCol);
-		min = minimum(min, right);
+		min = MIN(min, right);
 	}
 
 	if (min == top)
@@ -556,8 +547,7 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 		for (j = 0; j < COL; j++)
 		{
 			if (dungeon.map[i][j].space == ROOM ||
-					dungeon.map[i][j].space == CORRIDOR ||
-					dungeon.map[i][j].space == MONSTER)
+					dungeon.map[i][j].space == CORRIDOR)
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				pq_insert(pq_nontunel, &node, i * COL + j, dist);

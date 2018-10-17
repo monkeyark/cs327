@@ -3,12 +3,12 @@ CXX = g++
 ECHO = echo
 RM = rm -f
 
-CFLAGS = -Wall -Werror -ggdb3 -funroll-loops -pg
-CXXFLAGS = -Wall -Werror -ggdb3 -funroll-loops                                           
+CFLAGS = -Wall -Werror -ggdb3 -funroll-loops -pg -lncurses
+CXXFLAGS = -Wall -Werror -ggdb3 -funroll-loops
 LDFLAGS = 
 
 BIN = hw5
-OBJS = hw5.o queue.o dungeon.o
+OBJS = hw5.o queue.o dungeon.o npcmove.o
 
 all: $(BIN) etags
 

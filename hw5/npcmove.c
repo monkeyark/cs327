@@ -1,7 +1,6 @@
 #include "npcmove.h"
 
 
-
 void npc_next_pos_00(Character *npc, int index);
 void npc_next_pos_01(Character *npc, int index);
 void npc_next_pos_02(Character *npc, int index);

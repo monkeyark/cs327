@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	//seed = 1538543175;
-	seed = 1538556186;
+	seed = 1538543175;
+	//seed = 1538556186;
 
 	printf("\nseed = %d;\n\n", seed);
 	srand(seed);

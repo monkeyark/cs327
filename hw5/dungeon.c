@@ -664,8 +664,22 @@ void move_npc()
 }
 void monsterList()
 {
-	WINDOW *list = newwin(ROW/4, COL/4, ROW/2, COL/2);
+	WINDOW *list = newwin(ROW/2, COL/2, ROW/4, COL/4);
+	bool run = true;
+	while(run)
+	{
+		int key = wgetch(list);
+		switch(key)
+		{
+			case 'q':
+				run = false;
+				break;
+		}
+	}
 
+	clrtoeol();
+	refresh();
+	endwin();
 }
 
 void printDungeon_ncurses_debug(WINDOW *game)
@@ -762,33 +776,261 @@ void move_pc()
 		int key = wgetch(game);
 		switch(key)
 		{
-			
+			case KEY_HOME:
+				if (isInside(dungeon.PC.row - 1, dungeon.PC.col - 1))
+				{
+					dungeon.PC.row--;
+					dungeon.PC.col--;
+				}
+				printDungeon_ncurses(game);
+				break;
 			case KEY_UP:
-				dungeon.PC.row--;
+				if (isInside(dungeon.PC.row - 1, dungeon.PC.col))
+				{
+					dungeon.PC.row--;
+				}
 				printDungeon_ncurses(game);
 				break;
-			case KEY_DOWN:
-				dungeon.PC.row++;
-				printDungeon_ncurses(game);
-				break;
-			case KEY_LEFT:
-				dungeon.PC.col--;
+			case KEY_PPAGE:
+				if (isInside(dungeon.PC.row - 1, dungeon.PC.col + 1))
+				{
+					dungeon.PC.row--;
+					dungeon.PC.col++;
+				}
 				printDungeon_ncurses(game);
 				break;
 			case KEY_RIGHT:
-				dungeon.PC.col++;
+				if (isInside(dungeon.PC.row, dungeon.PC.col + 1))
+				{
+					dungeon.PC.col++;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case KEY_NPAGE:
+				if (isInside(dungeon.PC.row + 1, dungeon.PC.col + 1))
+				{
+					dungeon.PC.row++;
+					dungeon.PC.col++;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case KEY_DOWN:
+				if (isInside(dungeon.PC.row + 1, dungeon.PC.col))
+				{
+					dungeon.PC.row++;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case KEY_END:
+				if (isInside(dungeon.PC.row + 1, dungeon.PC.col - 1))
+				{
+					dungeon.PC.row++;
+					dungeon.PC.col--;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case KEY_LEFT:
+				if (isInside(dungeon.PC.row, dungeon.PC.col - 1))
+				{
+					dungeon.PC.col--;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case KEY_B2:
+			//TODO
+				break;
+			case ' ':
+			//TODO
+				break;
+			case '<':
+			//TODO
+				break;
+			case '>':
+			//TODO
+				break;
+			case '.':
+			//TODO
+				break;
+			case '1':
+				if (isInside(dungeon.PC.row + 1, dungeon.PC.col - 1))
+				{
+					dungeon.PC.row++;
+					dungeon.PC.col--;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case '2':
+				if (isInside(dungeon.PC.row + 1, dungeon.PC.col))
+				{
+					dungeon.PC.row++;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case '3':
+				if (isInside(dungeon.PC.row + 1, dungeon.PC.col + 1))
+				{
+					dungeon.PC.row++;
+					dungeon.PC.col++;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case '4':
+				if (isInside(dungeon.PC.row, dungeon.PC.col - 1))
+				{
+					dungeon.PC.col--;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case '5':
+				//TODO
+				break;
+			case '6':
+				if (isInside(dungeon.PC.row, dungeon.PC.col + 1))
+				{
+					dungeon.PC.col++;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case '7':
+				if (isInside(dungeon.PC.row - 1, dungeon.PC.col - 1))
+				{
+					dungeon.PC.row--;
+					dungeon.PC.col--;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case '8':
+				if (isInside(dungeon.PC.row - 1, dungeon.PC.col))
+				{
+					dungeon.PC.row--;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case '9':
+				if (isInside(dungeon.PC.row - 1, dungeon.PC.col + 1))
+				{
+					dungeon.PC.row--;
+					dungeon.PC.col++;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case 'b':
+				if (isInside(dungeon.PC.row + 1, dungeon.PC.col - 1))
+				{
+					dungeon.PC.row++;
+					dungeon.PC.col--;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case 'c':
+			//TODO
+				break;
+			case 'd':
+			//TODO
+				break;
+			case 'e':
+			//TODO
+				break;
+			case 'f':
+			//TODO
+				break;
+			case 'g':
+			//TODO
+				break;
+			case 'h':
+				if (isInside(dungeon.PC.row, dungeon.PC.col - 1))
+				{
+					dungeon.PC.col--;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case 'i':
+			//TODO
+				break;
+			case 'j':
+				if (isInside(dungeon.PC.row + 1, dungeon.PC.col))
+				{
+					dungeon.PC.row++;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case 'k':
+				if (isInside(dungeon.PC.row - 1, dungeon.PC.col))
+				{
+					dungeon.PC.row--;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case 'l':
+				if (isInside(dungeon.PC.row, dungeon.PC.col + 1))
+				{
+					dungeon.PC.col++;
+				}
 				printDungeon_ncurses(game);
 				break;
 			case 'm':
 				monsterList();
 				break;
+			case 'n':
+				if (isInside(dungeon.PC.row + 1, dungeon.PC.col + 1))
+				{
+					dungeon.PC.row++;
+					dungeon.PC.col++;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case 's':
+			//TODO
+				break;
+			case 't':
+			//TODO
+				break;
+			case 'u':
+				if (isInside(dungeon.PC.row - 1, dungeon.PC.col + 1))
+				{
+					dungeon.PC.row--;
+					dungeon.PC.col++;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case 'w':
+			//TODO
+				break;
+			case 'x':
+			//TODO
+				break;
+			case 'y':
+				if (isInside(dungeon.PC.row - 1, dungeon.PC.col - 1))
+				{
+					dungeon.PC.row--;
+					dungeon.PC.col--;
+				}
+				printDungeon_ncurses(game);
+				break;
+			case 'D':
+			//TODO
+				break;
+			case 'E':
+			//TODO
+				break;
+			case 'H':
+			//TODO
+				break;
+			case 'I':
+			//TODO
+				break;
+			case 'L':
+			//TODO
+				break;
 			case 'Q':
 				run = false;
+				break;
+			case 'T':
+			//TODO
 				break;
 		}
 
 	}
-
 
 	clrtoeol();
 	refresh();

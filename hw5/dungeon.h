@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <time.h>
 #include <unistd.h>
 #include <math.h>
@@ -14,6 +15,8 @@
 #include <sys/stat.h>
 #include <ncurses.h>
 #include <curses.h>
+
+#include "queue.h"
 
 #define ROW 21
 #define COL 80
@@ -66,6 +69,7 @@ typedef struct Player_Character
 } PC;
 */
 
+/*
 struct queue_node;
 
 typedef struct queue_node Node;
@@ -84,7 +88,7 @@ typedef struct Priority_Queue
   int32_t (*compare)(const void *key, const void *with);
   void (*datum_delete)(void *);
 } Queue;
-
+*/
 
 typedef struct Character
 {

@@ -785,8 +785,7 @@ void print_dungeon_ncurses(WINDOW *game, char *message)
 
 void print_monster_list_ncurses(WINDOW *list, int start)
 {
-	int i, j, n;
-	char *m;
+	int i, j;
 	char str[COL];
 	for (i = 0, j = start; i < ROW && j < dungeon.num_mon - start; i++, j++)
 	{
@@ -823,9 +822,9 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 		}
 
 		sprintf(str, "%x:  %2d %s and %2d %s", npc.characteristics, abs(row_dis), row_pos, abs(col_dis), col_pos);
-		m = str;
+		char *m = str;
 
-		for (n = 0; *m; m++, n++)
+		for (int n = 0; *m; m++, n++)
 		{
 			mvwprintw(list, i, n, m);
 		}
@@ -836,6 +835,7 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 void monster_list()
 {
 	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(list, true);
 	bool run = true;
 	int index = 0;
 	while(run)
@@ -844,24 +844,25 @@ void monster_list()
 		int key = wgetch(list);
 		switch(key)
 		{
+			case 27:
+				run = false;
+				break;
 			case KEY_UP:
 				index++;
 				index = MIN(index, dungeon.num_mon);
+				//print_monster_list_ncurses(list, index);
 				break;
 			case KEY_DOWN:
 				index--;
 				index = MAX(index, 0);
+				//print_monster_list_ncurses(list, index);
 				break;
-			case 27:
-				run = false;
-				break;
-
 		}
 	}
 
-	clrtoeol();
-	refresh();
-	endwin();
+	wclrtoeol(list);
+	wrefresh(list);
+	delwin(list);
 }
 
 void move_npc()
@@ -960,8 +961,8 @@ void dungeon_ncurses()
 			case '<':
 				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_UP)
 				{
-					// pq_delete(dungeon.pq_nontunel);
-					// pq_delete(dungeon.pq_tunel);
+					//pq_delete(dungeon.pq_nontunel);
+					//pq_delete(dungeon.pq_tunel);
 					//TODO BUGFIX clean monster queue
 					free(dungeon.rooms);
 					free(dungeon.monster);
@@ -996,7 +997,7 @@ void dungeon_ncurses()
 				message = move_pc(1, -1);//move down-left
 				break;
 			case '2':
-				message = move_pc(-1, 0);//move up
+				message = move_pc(1, 0);//move down
 				break;
 			case '3':
 				message = move_pc(1, 1);//move down-right
@@ -1054,6 +1055,7 @@ void dungeon_ncurses()
 				break;
 			case 'm':
 				monster_list();
+				refresh();
 				break;
 			case 'n':
 				message = move_pc(1, 1);//move down-right
@@ -1074,7 +1076,7 @@ void dungeon_ncurses()
 			//TODO
 				break;
 			case 'y':
-
+				message = move_pc(-1, -1);//move up-left
 				break;
 			case 'D':
 			//TODO

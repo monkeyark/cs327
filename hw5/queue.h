@@ -1,11 +1,10 @@
 #ifndef QUEUE_H
 # define QUEUE_H
 
-# include <stdint.h>
+#include <stdbool.h>
+#include <stdint.h>
 
-#include "dungeon.h"
 
-/*
 struct queue_node;
 
 typedef struct queue_node Node;
@@ -23,7 +22,7 @@ typedef struct Priority_Queue
   int32_t (*compare)(const void *key, const void *with);
   void (*datum_delete)(void *);
 } Queue;
-*/
+
 
 Node *node_new(int priority);
 

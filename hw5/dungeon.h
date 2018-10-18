@@ -58,6 +58,27 @@ typedef struct Player_Character
 	bool dead;
 } PC;
 */
+
+struct queue_node;
+
+typedef struct queue_node Node;
+
+struct queue_node
+{
+	Node *next;
+	int priority;
+};
+
+typedef struct Priority_Queue
+{
+  //Node **head = malloc(sizeof(Node));
+  Node **head;
+  uint32_t size;
+  int32_t (*compare)(const void *key, const void *with);
+  void (*datum_delete)(void *);
+} Queue;
+
+
 typedef struct Character
 {
 	unsigned int characteristics;
@@ -88,6 +109,8 @@ typedef struct level
 	Character *monster;
 	Character PC;
 	Terrain map[ROW][COL];
+	Queue pq_tunel;
+	Queue pq_nontunel;
 } Dungeon;
 
 Dungeon dungeon;

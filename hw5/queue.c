@@ -49,8 +49,17 @@ bool pq_isEmpty(Queue pq, Node **head)
 	return (*head) == NULL;
 }
 
+void pq_delete(Queue pq)
+{
+	while (!pq_isEmpty(pq, pq.head))
+	{
+		pq_pop(pq, pq.head);
+	}
 
+	pq.head = NULL;
+}
 
+/*
 Node_t *node_new_NPC(int priority, Character c)
 {
 	Node_t *temp = malloc(sizeof(Node_t));
@@ -61,7 +70,7 @@ Node_t *node_new_NPC(int priority, Character c)
 	return temp;
 }
 
-void pq_insert_NPC(Queue pq, Node_t** head, Node_t** new)
+void pq_insert_NPC(Queue_npc pq, Node_t** head, Node_t** new)
 {
 	Node_t *temp = *head;
 
@@ -77,6 +86,7 @@ void pq_insert_NPC(Queue pq, Node_t** head, Node_t** new)
 	{
 		(*new)->next = *head;
 		*head = *new;
+		*pq.head = *head;
 	}
 	else
 	{
@@ -92,11 +102,12 @@ void pq_insert_NPC(Queue pq, Node_t** head, Node_t** new)
 	}
 }
 
-Node_t *pq_pop_NPC(Queue pq, Node_t **head)
+Node_t *pq_pop_NPC(Queue_npc pq, Node_t **head)
 {
 	int priority = (*head)->priority;
 	Node_t *t = *head;
 	(*head) = (*head)->next;
+	(*pq.head) = (*head);
 	free(t);
 
 	int next_turn = priority + 1000 / (*head)->character.speed;
@@ -104,3 +115,18 @@ Node_t *pq_pop_NPC(Queue pq, Node_t **head)
 
 	return node_new_NPC(next_turn, h);
 }
+
+bool pq_isEmpty_NPC(Queue_npc pq, Node_t *head)
+{
+	return head == NULL;
+}
+
+void pq_delete_NPC(Queue_npc pq)
+{
+
+	while (!pq_isEmpty_NPC(pq, pq.head))
+	{
+		pq_pop_NPC(pq, pq.head);
+	}
+}
+*/

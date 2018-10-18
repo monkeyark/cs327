@@ -127,7 +127,7 @@ bool is_valid_room(int row, int col, int width, int height)
 	return true;
 }
 
-Room new_room()
+Room new_room_random()
 {
 	Room r;
 	r.row = get_random(ROW, 0);
@@ -150,13 +150,13 @@ Room new_room()
 	}
 	else
 	{
-		return new_room();
+		return new_room_random();
 	}
 
 	return r;
 }
 
-void add_room(int row, int col, int width, int height)
+void new_room(int row, int col, int width, int height)
 {
 	for (int i = row; i < row + height; i++)
 	{
@@ -383,7 +383,7 @@ void generate_dungeon()
 	int i = 0;
 	for (i = 0; i < dungeon.num_room; i++)
 	{
-		dungeon.rooms[i] = new_room();
+		dungeon.rooms[i] = new_room_random();
 	}
 
 	for (i = 0; i < dungeon.num_room - 1; i++)
@@ -470,7 +470,7 @@ void load_file(FILE *f)
 		dungeon.rooms[i].width = roomRead[n++];
 		dungeon.rooms[i].height = roomRead[n++];
 
-		add_room(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i].width, dungeon.rooms[i].height);
+		new_room(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i].width, dungeon.rooms[i].height);
 	}
 
 	//add PC

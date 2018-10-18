@@ -93,7 +93,7 @@ bool is_valid_room(int row, int col, int width, int height)
 	return true;
 }
 
-Room new_room()
+Room new_room_random()
 {
 	Room r;
 	r.row = get_random(ROW, 0);
@@ -114,7 +114,7 @@ Room new_room()
 	}
 	else
 	{
-		return new_room();
+		return new_room_random();
 	}
 
 	return r;
@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
 	Room rooms[n];
 	for (int i=0; i<n; i++)
 	{
-		rooms[i] = new_room();
+		rooms[i] = new_room_random();
 	}
 
 	for (int i=0; i<n-1; i++)

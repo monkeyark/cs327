@@ -2,9 +2,9 @@ Sep 2
 	start algorithm design
 	
 Sep 3
-	add and test new_room method with builds a new room in dungeon
-	new_room unit test pass
-	using generate new_room to build all rooms in dungeon
+	add and test new_room_random method with builds a new room in dungeon
+	new_room_random unit test pass
+	using generate new_room_random to build all rooms in dungeon
 	fix issue on rooms are touching each other
 	create a random room array, by returning Room struct pointer in generateRoom method
 	

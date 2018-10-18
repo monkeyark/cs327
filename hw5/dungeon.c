@@ -23,7 +23,9 @@ int is_monster(int row, int col)
 {
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
-		if (row == dungeon.monster[i].row && col == dungeon.monster[i].col)
+		if (row == dungeon.monster[i].row &&
+			col == dungeon.monster[i].col &&
+			!dungeon.monster[i].dead)
 		{
 			return i;
 		}
@@ -95,6 +97,17 @@ bool is_inside(int row, int col)
 {
 	//is room not on edge or outside of dungeon or cross dungeon
 	return row > 0 && col > 0 && row < ROW - 1 && col < COL - 1;
+}
+
+bool is_room(int row, int col)
+{
+	return dungeon.map[row][col].space == ROOM;
+}
+
+bool is_room_corridor(int row, int col)
+{
+	return dungeon.map[row][col].space == ROOM
+		|| dungeon.map[row][col].space == CORRIDOR;
 }
 
 bool is_valid_room(int row, int col, int width, int height)
@@ -243,14 +256,36 @@ void new_corridor(int aRow, int aCol, int bRow, int bCol)
 	}
 }
 
+void new_stair()
+{
+	int stair_up_row = get_random(ROW, 0);
+	int stair_up_col = get_random(COL, 0);
+	int stair_down_row = get_random(ROW, 0);
+	int stair_down_col = get_random(COL, 0);
+
+	if (is_room(stair_up_row, stair_up_col) &&
+		is_room(stair_down_row, stair_down_col))
+	{
+		dungeon.map[stair_up_row][stair_up_col].space = STAIR_UP;
+		dungeon.map[stair_up_row][stair_up_col].hardness = 0;
+		dungeon.map[stair_down_row][stair_down_col].space = STAIR_DOWN;
+		dungeon.map[stair_down_row][stair_down_col].hardness = 0;
+	}
+	else
+	{
+		new_stair();
+	}
+	
+}
+
 Character new_NPC(int birth)
 {
 	Character npc;
 	int row = get_random(ROW, 0);
 	int col = get_random(COL, 0);
 	//add monster into map
-	if (dungeon.map[row][col].space == ROOM)
-	//if (dungeon.map[npc.row][npc.col].hardness == 0)
+	if (dungeon.map[row][col].space == ROOM ||
+		dungeon.map[row][col].space == CORRIDOR)
 	{
 		npc.row = row;
 		npc.col = col;
@@ -264,8 +299,6 @@ Character new_NPC(int birth)
 			npc.pc_row = dungeon.PC.row;
 			npc.pc_col = dungeon.PC.col;
 		}
-
-		//printf("npc.characteristics = %d in hex: %x\n", npc.characteristics, npc.characteristics);
 
 		dungeon.map[npc.row][npc.col].hardness = 0;
 	}
@@ -295,21 +328,29 @@ void generate_dungeon()
 	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
 	dungeon.monster = malloc(dungeon.num_mon * sizeof(Character));
 	int i;
+
+	//add rooms
 	for (i = 0; i < dungeon.num_room; i++)
 	{
 		dungeon.rooms[i] = new_room_random();
 	}
 
+	//add corridors
 	for (i = 0; i < dungeon.num_room - 1; i++)
 	{
 		new_corridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
 	}
 
+	//add stair
+	new_stair();
+
+	//add npc
 	for (i = 0; i < dungeon.num_mon; i++)
 	{
 		dungeon.monster[i] = new_NPC(i);
 	}
 	
+	//add pc
 	new_PC();
 }
 
@@ -721,7 +762,9 @@ void print_dungeon_ncurses_debug(WINDOW *game)
 
 void print_dungeon_ncurses(WINDOW *game)
 {
-	for (int i = 0; i < ROW; i++)
+	wprintw(game, "dungeon game\n");
+
+	for (int i = 1; i < ROW + 1; i++)
 	{
 		for (int j = 0; j < COL; j++)
 		{
@@ -740,6 +783,7 @@ void print_dungeon_ncurses(WINDOW *game)
 		}
 		mvwprintw(game, i, COL, "\n");
 	}
+
 }
 
 void move_npc()
@@ -750,7 +794,10 @@ void move_npc()
 		for (i = 0; i < dungeon.num_mon; i++)
 		{
 			Character *npc = &dungeon.monster[i];
-			npc_next_pos_05(npc, i);
+			if (!npc->dead)
+			{
+				npc_next_pos_05(npc, i);
+			}
 		}
 	}
 }
@@ -760,7 +807,7 @@ void move_pc()
 	initscr();
 	noecho();
 	cbreak();
-	WINDOW *game = newwin(ROW, COL, 0, 0);
+	WINDOW *game = newwin(ROW + 3, COL + 5, 0, 0);
 
 	keypad(game, true);
 	bool run = true;
@@ -771,72 +818,128 @@ void move_pc()
 		switch(key)
 		{
 			case KEY_HOME:
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col - 1) &&
+					is_room_corridor(dungeon.PC.row - 1, dungeon.PC.col - 1))
 				{
-					move_npc();
 					dungeon.PC.row--;
 					dungeon.PC.col--;
+					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+					{
+						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+						dungeon.monster[i].dead = true;
+						dungeon.monster[i].row = -1;
+						dungeon.monster[i].col = -1;
+					}
+					move_npc();
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case KEY_UP:
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col) &&
+					is_room_corridor(dungeon.PC.row - 1, dungeon.PC.col))
 				{
-					move_npc();
 					dungeon.PC.row--;
+					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+					{
+						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+						dungeon.monster[i].dead = true;
+						dungeon.monster[i].row = -1;
+						dungeon.monster[i].col = -1;
+					}
+					move_npc();
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case KEY_PPAGE:
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col + 1) &&
+					is_room_corridor(dungeon.PC.row - 1, dungeon.PC.col + 1))
 				{
-					move_npc();
 					dungeon.PC.row--;
 					dungeon.PC.col++;
+					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+					{
+						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+						dungeon.monster[i].dead = true;
+						dungeon.monster[i].row = -1;
+						dungeon.monster[i].col = -1;
+					}
+					move_npc();
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case KEY_RIGHT:
-				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1) &&
+					is_room_corridor(dungeon.PC.row, dungeon.PC.col + 1))
 				{
-					move_npc();
 					dungeon.PC.col++;
+					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+					{
+						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+						dungeon.monster[i].dead = true;
+						dungeon.monster[i].row = -1;
+						dungeon.monster[i].col = -1;
+					}
+					move_npc();
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case KEY_NPAGE:
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col + 1) &&
+					is_room_corridor(dungeon.PC.row + 1, dungeon.PC.col + 1))
 				{
-					move_npc();
 					dungeon.PC.row++;
 					dungeon.PC.col++;
+					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+					{
+						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+						dungeon.monster[i].dead = true;
+						dungeon.monster[i].row = -1;
+						dungeon.monster[i].col = -1;
+					}
+					move_npc();
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case KEY_DOWN:
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col) &&
+					is_room_corridor(dungeon.PC.row + 1, dungeon.PC.col))
 				{
-					move_npc();
 					dungeon.PC.row++;
+					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+					{
+						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+						dungeon.monster[i].dead = true;
+						dungeon.monster[i].row = -1;
+						dungeon.monster[i].col = -1;
+					}
+					move_npc();
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case KEY_END:
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col - 1) &&
+					is_room_corridor(dungeon.PC.row + 1, dungeon.PC.col - 1))
 				{
-					move_npc();
 					dungeon.PC.row++;
 					dungeon.PC.col--;
+					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+					{
+						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+						dungeon.monster[i].dead = true;
+						dungeon.monster[i].row = -1;
+						dungeon.monster[i].col = -1;
+					}
+					move_npc();
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case KEY_LEFT:
-				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1) &&
+					is_room_corridor(dungeon.PC.row, dungeon.PC.col - 1))
 				{
-					move_npc();
 					dungeon.PC.col--;
+					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+					{
+						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+						dungeon.monster[i].dead = true;
+						dungeon.monster[i].row = -1;
+						dungeon.monster[i].col = -1;
+					}
+					move_npc();
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case KEY_B2:
 			//TODO

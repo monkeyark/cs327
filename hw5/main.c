@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
 
 	//set up random seed
 	int seed = time(NULL);
-	seed = 1538543175;
-	//seed = 1538556186;
+	//seed = 1538543175;
+	seed = 1538556186;
 
 	printf("\nseed = %d;\n\n", seed);
 	srand(seed);
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	dungeon.num_room = get_random(7, 5);
 	//generate random number of monster
 	//dungeon.num_mon = get_random(5, 8);
-	dungeon.num_mon = 8;
+	dungeon.num_mon = 5;
 
 	int dist_nontunneling[ROW * COL];
 	memset(dist_nontunneling, 0, sizeof (dist_nontunneling));

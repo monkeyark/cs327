@@ -100,6 +100,8 @@ void load_file(FILE *f);
 
 void save_file(FILE *f);
 
+int is_monster(int row, int col);
+
 void dijkstra_tunneling();
 
 void dijkstra_nontunneling();

@@ -596,7 +596,9 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 		for (j = 0; j < COL; j++)
 		{
 			if (dungeon.map[i][j].space == ROOM ||
-				dungeon.map[i][j].space == CORRIDOR)
+				dungeon.map[i][j].space == CORRIDOR ||
+				dungeon.map[i][j].space == STAIR_UP ||
+				dungeon.map[i][j].space == STAIR_DOWN)
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				pq_insert(pq_nontunel, &node, i * COL + j, dist);
@@ -760,15 +762,14 @@ void print_dungeon_ncurses_debug(WINDOW *game)
 	wprintw(game, "\n");
 }
 
-void print_dungeon_ncurses(WINDOW *game, char *info)
+void print_dungeon_ncurses(WINDOW *game, char *message)
 {
-	char *message = info;
+	char *m = message;
 	int i, j;
-	for (i = 0, j = 0; *message; message++, j++)
+	for (i = 0, j = 0; *m; m++, j++)
 	{
-		mvwprintw(game, i, j, message);
+		mvwprintw(game, i, j, m);
 	}
-	//wprintw(game, "dungeon game\n");
 
 	for (i = 1; i < ROW + 1; i++)
 	{

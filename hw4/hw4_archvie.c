@@ -93,12 +93,12 @@ void initDungeon()
 	}
 }
 
-int getRandom(int modulus, int min)
+int get_random(int modulus, int min)
 {
 	return rand() % modulus + min;
 }
 
-void printDungeon()
+void print_dungeon()
 {
 	printf("   ");
 	for (int i = 0; i < COL; i++)
@@ -146,18 +146,18 @@ void printDungeon()
 	printf("\n");
 }
 
-bool isInside(int row, int col)
+bool is_inside(int row, int col)
 {
 	//is room not on edge or outside of dungeon or cross dungeon
 	return row > 0 && col > 0 && row < ROW-1 && col < COL-1;
 }
 
-bool isValidRoom(int row, int col, int width, int height)
+bool is_valid_room(int row, int col, int width, int height)
 {
 	//is current space free
 	if (dungeon.map[row][col].space != ROCK)
 		return false;
-	if (!isInside(row, col) || !isInside(row + height, col + width))
+	if (!is_inside(row, col) || !is_inside(row + height, col + width))
 		return false;
 	//touch or overlap another room
 	for (int i = row - 1; i < row + height + 2; i++)
@@ -186,15 +186,15 @@ bool isValidRoom(int row, int col, int width, int height)
 	return true;
 }
 
-Room newRoom()
+Room new_room()
 {
 	Room r;
-	r.row = getRandom(ROW, 0);
-	r.col = getRandom(COL, 0);
-	r.width = getRandom(7, 3);
-	r.height = getRandom(6, 2);
+	r.row = get_random(ROW, 0);
+	r.col = get_random(COL, 0);
+	r.width = get_random(7, 3);
+	r.height = get_random(6, 2);
 
-	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
+	bool validRoom = is_valid_room(r.row, r.col, r.width, r.height);
 
 	if (validRoom)
 	{
@@ -209,13 +209,13 @@ Room newRoom()
 	}
 	else
 	{
-		return newRoom();
+		return new_room();
 	}
 
 	return r;
 }
 
-void addRoom(int row, int col, int width, int height)
+void add_room(int row, int col, int width, int height)
 {
 	for (int i = row; i < row + height; i++)
 	{
@@ -268,22 +268,22 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 	int left = max;
 	int right = max;
 
-	if (isInside(aRow - 1, aCol))
+	if (is_inside(aRow - 1, aCol))
 	{
 		top = distance(aRow - 1, aCol, bRow, bCol);
 		min = minimum(min, top);
 	}
-	if (isInside(aRow + 1, aCol))
+	if (is_inside(aRow + 1, aCol))
 	{
 		down = distance(aRow + 1, aCol, bRow, bCol);
 		min = minimum(min, down);
 	}
-	if (isInside(aRow, aCol - 1))
+	if (is_inside(aRow, aCol - 1))
 	{
 		left = distance(aRow, aCol - 1, bRow, bCol);
 		min = minimum(min, left);
 	}
-	if (isInside(aRow, aCol + 1))
+	if (is_inside(aRow, aCol + 1))
 	{
 		right = distance(aRow, aCol + 1, bRow, bCol);
 		min = minimum(min, right);
@@ -313,10 +313,10 @@ NPC newMonster(int birth)
 	//creating NPC with all four characteristics having 1/2 probability, clean unused bits
 	npc.characteristics = rand() & 0xf;
 	npc.birth = birth;
-	npc.speed = getRandom(20, 5);
+	npc.speed = get_random(20, 5);
 
-	npc.row = getRandom(ROW, 0);
-	npc.col = getRandom(COL, 0);
+	npc.row = get_random(ROW, 0);
+	npc.col = get_random(COL, 0);
 
 	if (npc.characteristics & NPC_TELEPATH)  //monster is
 	{
@@ -367,7 +367,7 @@ NPC newMonster(int birth)
 	return npc;
 }
 
-void generateDungeon()
+void generate_dungeon()
 {
 	//initialize dungeon
 	initDungeon();
@@ -376,7 +376,7 @@ void generateDungeon()
 	int i = 0;
 	for (i = 0; i < dungeon.num_room; i++)
 	{
-		dungeon.rooms[i] = newRoom();
+		dungeon.rooms[i] = new_room();
 	}
 
 	for (i = 0; i < dungeon.num_room - 1; i++)
@@ -400,7 +400,7 @@ void generateDungeon()
 	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
 }
 
-void loadFile(FILE *f)
+void load_file(FILE *f)
 {
 	if (!f)
 	{
@@ -463,7 +463,7 @@ void loadFile(FILE *f)
 		dungeon.rooms[i].width = roomRead[n++];
 		dungeon.rooms[i].height = roomRead[n++];
 
-		addRoom(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i].width, dungeon.rooms[i].height);
+		add_room(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i].width, dungeon.rooms[i].height);
 	}
 
 	//add PC
@@ -473,7 +473,7 @@ void loadFile(FILE *f)
 	fclose(f);
 }
 
-void saveFile(FILE *f)
+void save_file(FILE *f)
 {
 	if (!f)
 	{
@@ -575,7 +575,7 @@ bool pq_isEmpty(Node **head)
 	return (*head) == NULL;
 }
 
-int getHardnessCost(int hardness)
+int get_hardness_cost(int hardness)
 {
 	if (hardness == 255) return 3;
 	if (hardness == 0) return 1;
@@ -623,7 +623,7 @@ void dijkstra_tunneling()
 	{
 		for (j = 0; j < COL; j++)
 		{
-			if (!isInside(i, j))
+			if (!is_inside(i, j))
 			{
 				dist[i * COL + j] = -1;
 			}
@@ -650,7 +650,7 @@ void dijkstra_tunneling()
 
 			if (dist[v] >= 0)
 			{
-				alt = dist[u] + getHardnessCost(dungeon.map[u / COL][u % COL].hardness);
+				alt = dist[u] + get_hardness_cost(dungeon.map[u / COL][u % COL].hardness);
 				if (alt < dist[v])
 				{
 					dist[v] = alt;
@@ -735,9 +735,9 @@ int main(int argc, char *argv[])
 	srand(seed);
 
 	//generate random number of rooms
-	dungeon.num_room = getRandom(7, 5);
+	dungeon.num_room = get_random(7, 5);
 	//generate random number of monster
-	//dungeon.num_mon = getRandom(5, 8);
+	//dungeon.num_mon = get_random(5, 8);
 	dungeon.num_mon = 8;
 
 	bool load = false;
@@ -767,18 +767,18 @@ int main(int argc, char *argv[])
 	if (load)
 	{
 		FILE *f = fopen(path, "r");
-		loadFile(f);
+		load_file(f);
 	}
 	else
 	{
-		generateDungeon();
+		generate_dungeon();
 	}
-	printDungeon();
+	print_dungeon();
 
 	if (save)
 	{
 		FILE *f = fopen(path, "w");
-		saveFile(f);
+		save_file(f);
 	}
 	dijkstra_nontunneling();
 	dijkstra_tunneling();

@@ -21,6 +21,8 @@
 #define ROOM '.'
 #define CORRIDOR '#'
 #define PLAYER '@'
+#define STAIR_UP '<'
+#define STAIR_DOWN '>'
 #define ROCK_H 255
 #define ROOM_H 0
 #define CORRIDOR_H 0
@@ -88,17 +90,15 @@ typedef struct level
 
 Dungeon dungeon;
 
-void initDungeon();
+int get_random(int modulus, int min);
 
-int getRandom(int modulus, int min);
+void print_dungeon();
 
-void printDungeon();
+void generate_dungeon();
 
-void generateDungeon();
+void load_file(FILE *f);
 
-void loadFile(FILE *f);
-
-void saveFile(FILE *f);
+void save_file(FILE *f);
 
 void dijkstra_tunneling();
 

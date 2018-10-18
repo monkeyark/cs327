@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
 	srand(seed);
 
 	//generate random number of rooms
-	dungeon.num_room = getRandom(7, 5);
+	dungeon.num_room = get_random(7, 5);
 	//generate random number of monster
-	//dungeon.num_mon = getRandom(5, 8);
+	//dungeon.num_mon = get_random(5, 8);
 	dungeon.num_mon = 8;
 
 	int dist_nontunneling[ROW * COL];
@@ -66,18 +66,18 @@ int main(int argc, char *argv[])
 	if (load)
 	{
 		FILE *f = fopen(path, "r");
-		loadFile(f);
+		load_file(f);
 	}
 	else
 	{
-		generateDungeon();
+		generate_dungeon();
 	}
-	printDungeon();
+	print_dungeon();
 
 	if (save)
 	{
 		FILE *f = fopen(path, "w");
-		saveFile(f);
+		save_file(f);
 	}
 	//dijkstra_nontunneling(dist_nontunneling);
 	//dijkstra_tunneling(dist_tunneling);

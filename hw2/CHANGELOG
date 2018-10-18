@@ -6,7 +6,7 @@ Sep 7
 
 Sep 10
 	add dungeon hardness
-	moving dungeon generation into generateDungeon method
+	moving dungeon generation into generate_dungeon method
 	add idea of reading command line
 	finish command line and switch logic in main
 	add defalut player loaction

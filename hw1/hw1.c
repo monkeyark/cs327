@@ -33,12 +33,12 @@ void initDungeon()
 }
 
 
-int getRandom(int modulus, int min)
+int get_random(int modulus, int min)
 {
 	return rand() % modulus + min;
 }
 
-void printDungeon()
+void print_dungeon()
 {
 	for (int i=0; i<COL+2; i++)
 	{
@@ -63,17 +63,17 @@ void printDungeon()
 	printf("\n");
 }
 
-bool isInside (int row, int col)
+bool is_inside (int row, int col)
 {
 	//is room not on edge or outside of dungeon
 	return row > 0 && col > 0 && row < ROW-1 && col < COL-1;
 }
 
-bool isValidRoom(int row, int col, int width, int height)
+bool is_valid_room(int row, int col, int width, int height)
 {
 	//is current space free
 	if (dungeon[row][col] != ROCK) return false;
-	if (!isInside(row, col) || !isInside(row+height, col+width)) return false;
+	if (!is_inside(row, col) || !is_inside(row+height, col+width)) return false;
 	//touch or overlap another room
 	for (int i=row-1; i<row+height+2; i++)
 	{
@@ -93,15 +93,15 @@ bool isValidRoom(int row, int col, int width, int height)
 	return true;
 }
 
-Room newRoom()
+Room new_room()
 {
 	Room r;
-	r.row = getRandom(ROW, 0);
-	r.col = getRandom(COL, 0);
-	r.width = getRandom(7, 3);
-	r.height = getRandom(6, 2);
+	r.row = get_random(ROW, 0);
+	r.col = get_random(COL, 0);
+	r.width = get_random(7, 3);
+	r.height = get_random(6, 2);
 
-	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
+	bool validRoom = is_valid_room(r.row, r.col, r.width, r.height);
 	if (validRoom)
 	{
 		for (int i=r.row; i<r.row+r.height; i++)
@@ -114,7 +114,7 @@ Room newRoom()
 	}
 	else
 	{
-		return newRoom();
+		return new_room();
 	}
 
 	return r;
@@ -158,22 +158,22 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 	int left = max;
 	int right = max;
 
-	if (isInside(aRow-1, aCol))
+	if (is_inside(aRow-1, aCol))
 	{
 		top = distance(aRow-1, aCol, bRow, bCol);
 		min = minimum(min, top);
 	}
-	if (isInside(aRow+1, aCol))
+	if (is_inside(aRow+1, aCol))
 	{
 		down = distance(aRow+1, aCol, bRow, bCol);
 		min = minimum(min, down);
 	}
-	if (isInside(aRow, aCol-1))
+	if (is_inside(aRow, aCol-1))
 	{
 		left = distance(aRow, aCol-1, bRow, bCol);
 		min = minimum(min, left);
 	}
-	if (isInside(aRow, aCol+1))
+	if (is_inside(aRow, aCol+1))
 	{
 		right = distance(aRow, aCol+1, bRow, bCol);
 		min = minimum(min, right);
@@ -213,11 +213,11 @@ int main(int argc, char *argv[])
 	srand(seed);
 
 	//generate random number of rooms
-	int n = getRandom(7, 5);
+	int n = get_random(7, 5);
 	Room rooms[n];
 	for (int i=0; i<n; i++)
 	{
-		rooms[i] = newRoom();
+		rooms[i] = new_room();
 	}
 
 	for (int i=0; i<n-1; i++)
@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
 		newCorridor(rooms[i].row, rooms[i].col, rooms[i+1].row, rooms[i+1].col);
 	}
 
-	printDungeon();
+	print_dungeon();
 
 	return 0;
 }

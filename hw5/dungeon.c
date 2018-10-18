@@ -2,7 +2,7 @@
 #include "dungeon.h"
 #include "npcmove.h"
 
-void initDungeon()
+void init_dungeon()
 {
 	for (int i = 0; i < ROW; i++)
 	{
@@ -14,12 +14,12 @@ void initDungeon()
 	}
 }
 
-int getRandom(int modulus, int min)
+int get_random(int modulus, int min)
 {
 	return rand() % modulus + min;
 }
 
-int isMonster(int row, int col)
+int is_monster(int row, int col)
 {
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
@@ -31,7 +31,7 @@ int isMonster(int row, int col)
 	return -1;
 }
 
-void printDungeon()
+void print_dungeon()
 {
 	//printf("\nnpc_row = %d; npc_col = %d\n", dungeon.monster[0].row, dungeon.monster[0].col);//TODO
 	printf("   ");
@@ -72,9 +72,9 @@ void printDungeon()
 			{
 				printf("@");
 			}
-			else if (!(isMonster(i, j) < 0))
+			else if (!(is_monster(i, j) < 0))
 			{
-				printf("%x", dungeon.monster[isMonster(i, j)].characteristics);
+				printf("%x", dungeon.monster[is_monster(i, j)].characteristics);
 			}
 			else
 			{
@@ -91,18 +91,18 @@ void printDungeon()
 	printf("\n");
 }
 
-bool isInside(int row, int col)
+bool is_inside(int row, int col)
 {
 	//is room not on edge or outside of dungeon or cross dungeon
 	return row > 0 && col > 0 && row < ROW - 1 && col < COL - 1;
 }
 
-bool isValidRoom(int row, int col, int width, int height)
+bool is_valid_room(int row, int col, int width, int height)
 {
 	//is current space free
 	if (dungeon.map[row][col].space != ROCK)
 		return false;
-	if (!isInside(row, col) || !isInside(row + height, col + width))
+	if (!is_inside(row, col) || !is_inside(row + height, col + width))
 		return false;
 	//touch or overlap another room
 	for (int i = row - 1; i < row + height + 2; i++)
@@ -131,15 +131,15 @@ bool isValidRoom(int row, int col, int width, int height)
 	return true;
 }
 
-Room newRoom()
+Room new_room()
 {
 	Room r;
-	r.row = getRandom(ROW, 0);
-	r.col = getRandom(COL, 0);
-	r.width = getRandom(7, 3);
-	r.height = getRandom(6, 2);
+	r.row = get_random(ROW, 0);
+	r.col = get_random(COL, 0);
+	r.width = get_random(7, 3);
+	r.height = get_random(6, 2);
 
-	bool validRoom = isValidRoom(r.row, r.col, r.width, r.height);
+	bool validRoom = is_valid_room(r.row, r.col, r.width, r.height);
 
 	if (validRoom)
 	{
@@ -154,13 +154,13 @@ Room newRoom()
 	}
 	else
 	{
-		return newRoom();
+		return new_room();
 	}
 
 	return r;
 }
 
-void addRoom(int row, int col, int width, int height)
+void add_room(int row, int col, int width, int height)
 {
 	for (int i = row; i < row + height; i++)
 	{
@@ -180,12 +180,12 @@ int distance(int aRow, int aCol, int bRow, int bCol)
 	return row * row + col * col;
 }
 
-bool isConnected(int row, int col)
+bool is_connected(int row, int col)
 {
 	return dungeon.map[row - 1][col].space == CORRIDOR || dungeon.map[row + 1][col].space == CORRIDOR || dungeon.map[row][col - 1].space == CORRIDOR || dungeon.map[row][col + 1].space == CORRIDOR;
 }
 
-void newCorridor(int aRow, int aCol, int bRow, int bCol)
+void new_corridor(int aRow, int aCol, int bRow, int bCol)
 {
 	if (distance(aRow, aCol, bRow, bCol) == 0)
 		return;
@@ -201,22 +201,22 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 	int left = max;
 	int right = max;
 
-	if (isInside(aRow - 1, aCol))
+	if (is_inside(aRow - 1, aCol))
 	{
 		top = distance(aRow - 1, aCol, bRow, bCol);
 		min = MIN(min, top);
 	}
-	if (isInside(aRow + 1, aCol))
+	if (is_inside(aRow + 1, aCol))
 	{
 		down = distance(aRow + 1, aCol, bRow, bCol);
 		min = MIN(min, down);
 	}
-	if (isInside(aRow, aCol - 1))
+	if (is_inside(aRow, aCol - 1))
 	{
 		left = distance(aRow, aCol - 1, bRow, bCol);
 		min = MIN(min, left);
 	}
-	if (isInside(aRow, aCol + 1))
+	if (is_inside(aRow, aCol + 1))
 	{
 		right = distance(aRow, aCol + 1, bRow, bCol);
 		min = MIN(min, right);
@@ -243,8 +243,8 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 Character new_NPC(int birth)
 {
 	Character npc;
-	int row = getRandom(ROW, 0);
-	int col = getRandom(COL, 0);
+	int row = get_random(ROW, 0);
+	int col = get_random(COL, 0);
 	//add monster into map
 	if (dungeon.map[row][col].space == ROOM)
 	//if (dungeon.map[npc.row][npc.col].hardness == 0)
@@ -254,7 +254,7 @@ Character new_NPC(int birth)
 		npc.birth = birth;
 		//creating NPC with all four characteristics having 1/2 probability, clean unused bits
 		npc.characteristics = rand() & 0xf;
-		npc.speed = getRandom(20, 5);
+		npc.speed = get_random(20, 5);
 		npc.dead = false;
 		if (npc.characteristics & NPC_TELEPATH) //monster is telepath
 		{
@@ -285,16 +285,16 @@ void new_PC()
 	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
 }
 
-void generateDungeon()
+void generate_dungeon()
 {
 	//initialize dungeon
-	initDungeon();
+	init_dungeon();
 	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
 	dungeon.monster = malloc(dungeon.num_mon * sizeof(Character));
-	int i = 0;
+	int i;
 	for (i = 0; i < dungeon.num_room; i++)
 	{
-		dungeon.rooms[i] = newRoom();
+		dungeon.rooms[i] = new_room();
 	}
 
 	for (i = 0; i < dungeon.num_room - 1; i++)
@@ -302,7 +302,7 @@ void generateDungeon()
 		newCorridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
 	}
 
-	for (int i = 0; i < dungeon.num_mon; i++)
+	for (i = 0; i < dungeon.num_mon; i++)
 	{
 		dungeon.monster[i] = new_NPC(i);
 	}
@@ -310,7 +310,7 @@ void generateDungeon()
 	new_PC();
 }
 
-void loadFile(FILE *f)
+void load_file(FILE *f)
 {
 	if (!f)
 	{
@@ -318,7 +318,7 @@ void loadFile(FILE *f)
 		return;
 	}
 
-	initDungeon();
+	init_dungeon();
 
 	char marker[12];
 	fread(&marker, 1, 12, f);
@@ -373,7 +373,7 @@ void loadFile(FILE *f)
 		dungeon.rooms[i].width = roomRead[n++];
 		dungeon.rooms[i].height = roomRead[n++];
 
-		addRoom(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i].width, dungeon.rooms[i].height);
+		add_room(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i].width, dungeon.rooms[i].height);
 	}
 
 	//add PC
@@ -383,7 +383,7 @@ void loadFile(FILE *f)
 	fclose(f);
 }
 
-void saveFile(FILE *f)
+void save_file(FILE *f)
 {
 	if (!f)
 	{
@@ -434,7 +434,7 @@ void saveFile(FILE *f)
 	fclose(f);
 }
 
-int getHardnessCost(int hardness)
+int get_hardness_cost(int hardness)
 {
 	if (hardness == 255)
 		return 3;
@@ -501,7 +501,7 @@ void dijkstra_tunneling(int dist[ROW * COL])
 	{
 		for (j = 0; j < COL; j++)
 		{
-			if (!isInside(i, j))
+			if (!is_inside(i, j))
 			{
 				dist[i * COL + j] = -1;
 			}
@@ -526,7 +526,7 @@ void dijkstra_tunneling(int dist[ROW * COL])
 
 			if (dist[v] >= 0)
 			{
-				alt = dist[u] + getHardnessCost(dungeon.map[u / COL][u % COL].hardness);
+				alt = dist[u] + get_hardness_cost(dungeon.map[u / COL][u % COL].hardness);
 				if (alt < dist[v])
 				{
 					dist[v] = alt;
@@ -610,7 +610,7 @@ void move_character_turn()
 		if ((*n).character.row == dungeon.PC.row && (*n).character.col == dungeon.PC.col)
 		{
 			usleep(250000);
-			printDungeon();
+			print_dungeon();
 		}
 		else if ((*n).character.characteristics & NPC_TELEPATH)
 			pq_insert_NPC(pq, &character, &n);
@@ -641,28 +641,7 @@ void (*npc_move_func[])(NPC *c) =
 };
 */
 
-void move_npc()
-{
-	// for (int i = 0; i < 13; i++)
-	// {
-	// 	int npc_index = 0;
-	// 	Character *npc = &dungeon.monster[npc_index];
-	// 	npc_next_pos_07(npc, npc_index);
-	// 	printDungeon();
-	// }
-
-	while (!dungeon.PC.dead)
-	{
-		int i;
-		for (i = 0; i < dungeon.num_mon; i++)
-		{
-			Character *npc = &dungeon.monster[i];
-			npc_next_pos_05(npc, i);
-		}
-		printDungeon();
-	}
-}
-void monsterList()
+void monster_list()
 {
 	WINDOW *list = newwin(ROW/2, COL/2, ROW/4, COL/4);
 	bool run = true;
@@ -682,7 +661,7 @@ void monsterList()
 	endwin();
 }
 
-void printDungeon_ncurses_debug(WINDOW *game)
+void print_dungeon_ncurses_debug(WINDOW *game)
 {
 	//printf("\nnpc_row = %d; npc_col = %d\n", dungeon.monster[0].row, dungeon.monster[0].col);//TODO
 	wprintw(game, "   ");
@@ -718,9 +697,9 @@ void printDungeon_ncurses_debug(WINDOW *game)
 		wprintw(game, "%2d|", i);
 		for (int j = 0; j < COL; j++)
 		{
-			if (isMonster(i, j))
+			if (is_monster(i, j))
 			{
-				wprintw(game, "%x", dungeon.monster[isMonster(i, j) - 1].characteristics);
+				wprintw(game, "%x", dungeon.monster[is_monster(i, j) - 1].characteristics);
 			}
 			else
 			{
@@ -737,7 +716,7 @@ void printDungeon_ncurses_debug(WINDOW *game)
 	wprintw(game, "\n");
 }
 
-void printDungeon_ncurses(WINDOW *game)
+void print_dungeon_ncurses(WINDOW *game)
 {
 	for (int i = 0; i < ROW; i++)
 	{
@@ -747,9 +726,9 @@ void printDungeon_ncurses(WINDOW *game)
 			{
 				mvwprintw(game, i, j, "@");
 			}
-			else if (!(isMonster(i, j) < 0))
+			else if (!(is_monster(i, j) < 0))
 			{
-				mvwprintw(game, i, j, "%x", dungeon.monster[isMonster(i, j)].characteristics);
+				mvwprintw(game, i, j, "%x", dungeon.monster[is_monster(i, j)].characteristics);
 			}
 			else
 			{
@@ -760,81 +739,101 @@ void printDungeon_ncurses(WINDOW *game)
 	}
 }
 
+void move_npc()
+{
+	if (!dungeon.PC.dead)
+	{
+		int i;
+		for (i = 0; i < dungeon.num_mon; i++)
+		{
+			Character *npc = &dungeon.monster[i];
+			npc_next_pos_05(npc, i);
+		}
+	}
+}
+
 void move_pc()
 {
 	initscr();
 	noecho();
 	cbreak();
 	WINDOW *game = newwin(ROW, COL, 0, 0);
-	//game = newwin(ROW, COL, 0, 0);
 
 	keypad(game, true);
 	bool run = true;
 	while(run)
 	{
-		printDungeon_ncurses(game);
+		print_dungeon_ncurses(game);
 		int key = wgetch(game);
 		switch(key)
 		{
 			case KEY_HOME:
-				if (isInside(dungeon.PC.row - 1, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col - 1))
 				{
+					move_npc();
 					dungeon.PC.row--;
 					dungeon.PC.col--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case KEY_UP:
-				if (isInside(dungeon.PC.row - 1, dungeon.PC.col))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col))
 				{
+					move_npc();
 					dungeon.PC.row--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case KEY_PPAGE:
-				if (isInside(dungeon.PC.row - 1, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col + 1))
 				{
+					move_npc();
 					dungeon.PC.row--;
 					dungeon.PC.col++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case KEY_RIGHT:
-				if (isInside(dungeon.PC.row, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1))
 				{
+					move_npc();
 					dungeon.PC.col++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case KEY_NPAGE:
-				if (isInside(dungeon.PC.row + 1, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col + 1))
 				{
+					move_npc();
 					dungeon.PC.row++;
 					dungeon.PC.col++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case KEY_DOWN:
-				if (isInside(dungeon.PC.row + 1, dungeon.PC.col))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col))
 				{
+					move_npc();
 					dungeon.PC.row++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case KEY_END:
-				if (isInside(dungeon.PC.row + 1, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col - 1))
 				{
+					move_npc();
 					dungeon.PC.row++;
 					dungeon.PC.col--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case KEY_LEFT:
-				if (isInside(dungeon.PC.row, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1))
 				{
+					move_npc();
 					dungeon.PC.col--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case KEY_B2:
 			//TODO
@@ -852,75 +851,84 @@ void move_pc()
 			//TODO
 				break;
 			case '1':
-				if (isInside(dungeon.PC.row + 1, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col - 1))
 				{
+					move_npc();
 					dungeon.PC.row++;
 					dungeon.PC.col--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case '2':
-				if (isInside(dungeon.PC.row + 1, dungeon.PC.col))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col))
 				{
+					move_npc();
 					dungeon.PC.row++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case '3':
-				if (isInside(dungeon.PC.row + 1, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col + 1))
 				{
+					move_npc();
 					dungeon.PC.row++;
 					dungeon.PC.col++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case '4':
-				if (isInside(dungeon.PC.row, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1))
 				{
+					move_npc();
 					dungeon.PC.col--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case '5':
 				//TODO
 				break;
 			case '6':
-				if (isInside(dungeon.PC.row, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1))
 				{
+					move_npc();
 					dungeon.PC.col++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case '7':
-				if (isInside(dungeon.PC.row - 1, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col - 1))
 				{
+					move_npc();
 					dungeon.PC.row--;
 					dungeon.PC.col--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case '8':
-				if (isInside(dungeon.PC.row - 1, dungeon.PC.col))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col))
 				{
+					move_npc();
 					dungeon.PC.row--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case '9':
-				if (isInside(dungeon.PC.row - 1, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col + 1))
 				{
+					move_npc();
 					dungeon.PC.row--;
 					dungeon.PC.col++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case 'b':
-				if (isInside(dungeon.PC.row + 1, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col - 1))
 				{
+					move_npc();
 					dungeon.PC.row++;
 					dungeon.PC.col--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case 'c':
 			//TODO
@@ -938,46 +946,51 @@ void move_pc()
 			//TODO
 				break;
 			case 'h':
-				if (isInside(dungeon.PC.row, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1))
 				{
+					move_npc();
 					dungeon.PC.col--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case 'i':
 			//TODO
 				break;
 			case 'j':
-				if (isInside(dungeon.PC.row + 1, dungeon.PC.col))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col))
 				{
+					move_npc();
 					dungeon.PC.row++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case 'k':
-				if (isInside(dungeon.PC.row - 1, dungeon.PC.col))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col))
 				{
+					move_npc();
 					dungeon.PC.row--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case 'l':
-				if (isInside(dungeon.PC.row, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1))
 				{
+					move_npc();
 					dungeon.PC.col++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case 'm':
-				monsterList();
+				monster_list();
 				break;
 			case 'n':
-				if (isInside(dungeon.PC.row + 1, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col + 1))
 				{
+					move_npc();
 					dungeon.PC.row++;
 					dungeon.PC.col++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case 's':
 			//TODO
@@ -986,12 +999,13 @@ void move_pc()
 			//TODO
 				break;
 			case 'u':
-				if (isInside(dungeon.PC.row - 1, dungeon.PC.col + 1))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col + 1))
 				{
+					move_npc();
 					dungeon.PC.row--;
 					dungeon.PC.col++;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case 'w':
 			//TODO
@@ -1000,12 +1014,13 @@ void move_pc()
 			//TODO
 				break;
 			case 'y':
-				if (isInside(dungeon.PC.row - 1, dungeon.PC.col - 1))
+				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col - 1))
 				{
+					move_npc();
 					dungeon.PC.row--;
 					dungeon.PC.col--;
 				}
-				printDungeon_ncurses(game);
+				print_dungeon_ncurses(game);
 				break;
 			case 'D':
 			//TODO

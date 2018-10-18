@@ -92,15 +92,15 @@ Dungeon dungeon;
 
 void initDungeon();
 
-int getRandom(int modulus, int min);
+int get_random(int modulus, int min);
 
-void printDungeon();
+void print_dungeon();
 
-void generateDungeon();
+void generate_dungeon();
 
-void loadFile(FILE *f);
+void load_file(FILE *f);
 
-void saveFile(FILE *f);
+void save_file(FILE *f);
 
 void dijkstra_tunneling();
 

@@ -10,3 +10,4 @@ Oct 17
 	monster and PC both move after key function
 	add up and down stair to different dungeon level
 	PC kill monster
+	fix monster moving issue when on stair

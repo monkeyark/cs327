@@ -689,26 +689,6 @@ void (*npc_move_func[])(NPC *c) =
 };
 */
 
-void monster_list()
-{
-	WINDOW *list = newwin(ROW/2, COL/2, ROW/4, COL/4);
-	bool run = true;
-	while(run)
-	{
-		int key = wgetch(list);
-		switch(key)
-		{
-			case 'q':
-				run = false;
-				break;
-		}
-	}
-
-	clrtoeol();
-	refresh();
-	endwin();
-}
-
 void print_dungeon_ncurses_debug(WINDOW *game)
 {
 	//printf("\nnpc_row = %d; npc_col = %d\n", dungeon.monster[0].row, dungeon.monster[0].col);//TODO
@@ -802,6 +782,60 @@ void print_dungeon_ncurses(WINDOW *game, char *message)
 	}
 }
 
+void print_monster_list_ncurses(WINDOW *list)
+{
+	//int i, j;
+
+	//print dungeon
+	// for (i = 1; i < ROW + 1; i++)
+	// {
+	// 	for (j = 0; j < COL; j++)
+	// 	{
+	// 		if (i == dungeon.PC.row && j == dungeon.PC.col)
+	// 		{
+	// 			mvwprintw(list, i, j, "@");
+	// 		}
+	// 		else if (!(is_monster(i, j) < 0))
+	// 		{
+	// 			mvwprintw(list, i, j, "%x", dungeon.monster[is_monster(i, j)].characteristics);
+	// 		}
+	// 		else
+	// 		{
+	// 			mvwprintw(list, i, j, "%c", dungeon.map[i][j].space);
+	// 		}
+	// 	}
+	// 	mvwprintw(list, i, COL, "\n");
+	// }
+}
+
+void monster_list()
+{
+	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	bool run = true;
+	while(run)
+	{
+		print_monster_list_ncurses(list);
+		int key = wgetch(list);
+		switch(key)
+		{
+			case KEY_UP:
+				
+				break;
+			case KEY_DOWN:
+				
+				break;
+			case 27:
+				run = false;
+				break;
+
+		}
+	}
+
+	clrtoeol();
+	refresh();
+	endwin();
+}
+
 void move_npc()
 {
 	if (!dungeon.PC.dead)
@@ -818,9 +852,35 @@ void move_npc()
 	}
 }
 
-void move_pc(int rowMove, int colMove)
+char *move_pc(int row_move, int col_move)
 {
+	char *message;
+	if (row_move == 0 && col_move == 0)
+	{
+		move_npc();
+		message = "PC is resting!";
+	}
+	else if (is_inside(dungeon.PC.row + row_move, dungeon.PC.col + col_move) &&
+		is_room_corridor_stair(dungeon.PC.row + row_move, dungeon.PC.col + col_move))
+	{
+		dungeon.PC.row += row_move;
+		dungeon.PC.col += col_move;
+		if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+		{
+			int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+			dungeon.monster[i].dead = true;
+			dungeon.monster[i].row = -1;
+			dungeon.monster[i].col = -1;
+		}
+		move_npc();
+		message = "";
+	}
+	else
+	{
+		message = "There's wall in the way!";
+	}
 
+	return message;
 }
 
 void dungeon_ncurses()
@@ -840,175 +900,34 @@ void dungeon_ncurses()
 		switch(key)
 		{
 			case KEY_HOME:
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col - 1) &&
-					is_room_corridor_stair(dungeon.PC.row - 1, dungeon.PC.col - 1))
-				{
-					dungeon.PC.row--;
-					dungeon.PC.col--;
-					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
-					{
-						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
-						dungeon.monster[i].dead = true;
-						dungeon.monster[i].row = -1;
-						dungeon.monster[i].col = -1;
-					}
-					move_npc();
-					message = " ";
-				}
-				else
-				{
-					message = "There's wall in the way!\n";
-				}
+				message = move_pc(-1, -1);
 				break;
 			case KEY_UP:
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col) &&
-					is_room_corridor_stair(dungeon.PC.row - 1, dungeon.PC.col))
-				{
-					dungeon.PC.row--;
-					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
-					{
-						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
-						dungeon.monster[i].dead = true;
-						dungeon.monster[i].row = -1;
-						dungeon.monster[i].col = -1;
-					}
-					move_npc();
-					
-					message = " ";
-				}
-				else
-				{
-					message = "There's wall in the way!\n";
-				}
+				message = move_pc(-1, 0);
 				break;
 			case KEY_PPAGE:
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col + 1) &&
-					is_room_corridor_stair(dungeon.PC.row - 1, dungeon.PC.col + 1))
-				{
-					dungeon.PC.row--;
-					dungeon.PC.col++;
-					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
-					{
-						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
-						dungeon.monster[i].dead = true;
-						dungeon.monster[i].row = -1;
-						dungeon.monster[i].col = -1;
-					}
-					move_npc();
-					message = " ";
-				}
-				else
-				{
-					message = "There's wall in the way!\n";
-				}
+				message = move_pc(-1, 1);
 				break;
 			case KEY_RIGHT:
-				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1) &&
-					is_room_corridor_stair(dungeon.PC.row, dungeon.PC.col + 1))
-				{
-					dungeon.PC.col++;
-					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
-					{
-						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
-						dungeon.monster[i].dead = true;
-						dungeon.monster[i].row = -1;
-						dungeon.monster[i].col = -1;
-					}
-					move_npc();
-					message = " ";
-				}
-				else
-				{
-					message = "There's wall in the way!\n";
-				}
+				message = move_pc(0, 1);
 				break;
 			case KEY_NPAGE:
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col + 1) &&
-					is_room_corridor_stair(dungeon.PC.row + 1, dungeon.PC.col + 1))
-				{
-					dungeon.PC.row++;
-					dungeon.PC.col++;
-					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
-					{
-						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
-						dungeon.monster[i].dead = true;
-						dungeon.monster[i].row = -1;
-						dungeon.monster[i].col = -1;
-					}
-					move_npc();
-					message = " ";
-				}
-				else
-				{
-					message = "There's wall in the way!\n";
-				}
+				message = move_pc(1, 1);
 				break;
 			case KEY_DOWN:
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col) &&
-					is_room_corridor_stair(dungeon.PC.row + 1, dungeon.PC.col))
-				{
-					dungeon.PC.row++;
-					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
-					{
-						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
-						dungeon.monster[i].dead = true;
-						dungeon.monster[i].row = -1;
-						dungeon.monster[i].col = -1;
-					}
-					move_npc();
-					message = " ";
-				}
-				else
-				{
-					message = "There's wall in the way!\n";
-				}
+				message = move_pc(1, 0);
 				break;
 			case KEY_END:
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col - 1) &&
-					is_room_corridor_stair(dungeon.PC.row + 1, dungeon.PC.col - 1))
-				{
-					dungeon.PC.row++;
-					dungeon.PC.col--;
-					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
-					{
-						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
-						dungeon.monster[i].dead = true;
-						dungeon.monster[i].row = -1;
-						dungeon.monster[i].col = -1;
-					}
-					move_npc();
-					message = "";
-				}
-				else
-				{
-					message = "There's wall in the way!\n";
-				}
+				message = move_pc(1, -1);
 				break;
 			case KEY_LEFT:
-				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1) &&
-					is_room_corridor_stair(dungeon.PC.row, dungeon.PC.col - 1))
-				{
-					dungeon.PC.col--;
-					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
-					{
-						int i = is_monster(dungeon.PC.row, dungeon.PC.col);
-						dungeon.monster[i].dead = true;
-						dungeon.monster[i].row = -1;
-						dungeon.monster[i].col = -1;
-					}
-					move_npc();
-					message = " ";
-				}
-				else
-				{
-					message = "There's wall in the way!\n";
-				}
+				message = move_pc(0, -1);
 				break;
 			case KEY_B2:
 			//TODO
 				break;
 			case ' ':
-			//TODO
+				message = move_pc(0, 0);
 				break;
 			case '<':
 				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_UP)
@@ -1018,7 +937,7 @@ void dungeon_ncurses()
 				}
 				else
 				{
-					message = "You are not on up stair";
+					message = "You are not standing on up stair";
 				}
 				break;
 			case '>':
@@ -1029,7 +948,7 @@ void dungeon_ncurses()
 				}
 				else
 				{
-					message = "You are not on down stair";
+					message = "You are not standing on down stair";
 				}
 				break;
 			case '.':
@@ -1066,7 +985,7 @@ void dungeon_ncurses()
 				}
 				break;
 			case '5':
-				//TODO
+				message = move_pc(0, 0);
 				break;
 			case '6':
 				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1))

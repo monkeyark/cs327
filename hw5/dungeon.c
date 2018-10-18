@@ -839,6 +839,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+					message = "";
 				}
 				else
 				{
@@ -858,6 +859,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+					message = "";
 				}
 				else
 				{
@@ -878,6 +880,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+					message = "";
 				}
 				else
 				{
@@ -897,6 +900,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+					message = "";
 				}
 				else
 				{
@@ -917,6 +921,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+					message = "";
 				}
 				else
 				{
@@ -936,6 +941,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+					message = "";
 				}
 				else
 				{
@@ -956,6 +962,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+					message = "";
 				}
 				else
 				{
@@ -975,6 +982,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+					message = "";
 				}
 				else
 				{
@@ -1173,6 +1181,11 @@ void dungeon_ncurses()
 			case 'T':
 			//TODO
 				break;
+		}
+
+		if (dungeon.PC.dead)
+		{
+			message = "Player is dead!";
 		}
 
 	}

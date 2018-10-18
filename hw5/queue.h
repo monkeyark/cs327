@@ -1,17 +1,19 @@
 #ifndef QUEUE_H
 # define QUEUE_H
 
+#include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
 
 
-struct queue_node;
+struct Queue_Node;
 
-typedef struct queue_node Node;
+typedef struct Queue_Node Node;
 
-struct queue_node
+struct Queue_Node
 {
 	Node *next;
+  Node *prev;
 	int priority;
 };
 
@@ -30,9 +32,9 @@ void pq_insert(Queue pq, Node **head, int priority, int *dist);
 
 int pq_pop(Queue pq, Node **head);
 
-bool pq_isEmpty(Queue pq, Node **head);
+bool pq_is_empty(Queue pq, Node **head);
 
-void pq_delete();
+void pq_delete(Queue pq);
 
 
 /*

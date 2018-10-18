@@ -560,7 +560,7 @@ void dijkstra_tunneling(int dist[ROW * COL])
 	}
 	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
 
-	while (!pq_isEmpty(dungeon.pq_tunel, &node))
+	while (!pq_is_empty(dungeon.pq_tunel, &node))
 	{
 		int u = pq_pop(dungeon.pq_tunel, &node);
 		for (i = 0; i < 8; i++)
@@ -612,7 +612,7 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 	}
 	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
 
-	while (!pq_isEmpty(dungeon.pq_nontunel, &node))
+	while (!pq_is_empty(dungeon.pq_nontunel, &node))
 	{
 		int u = pq_pop(dungeon.pq_nontunel, &node);
 		for (i = 0; i < 8; i++)
@@ -779,7 +779,6 @@ void print_dungeon_ncurses(WINDOW *game, char *message)
 				mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
 			}
 		}
-		//mvwprintw(game, i, COL, "\n");
 	}
 }
 
@@ -961,8 +960,8 @@ void dungeon_ncurses()
 			case '<':
 				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_UP)
 				{
-					//pq_delete(dungeon.pq_nontunel);
-					//pq_delete(dungeon.pq_tunel);
+					pq_delete(dungeon.pq_nontunel);
+					pq_delete(dungeon.pq_tunel);
 					//TODO BUGFIX clean monster queue
 					free(dungeon.rooms);
 					free(dungeon.monster);

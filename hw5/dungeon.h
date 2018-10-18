@@ -57,39 +57,6 @@ typedef struct Terrain
 	int hardness;
 } Terrain;
 
-/*
-typedef struct Player_Character
-{
-	//int characteristics;
-	int row;
-	int col;
-	int birth;
-	int speed;
-	bool dead;
-} PC;
-*/
-
-/*
-struct queue_node;
-
-typedef struct queue_node Node;
-
-struct queue_node
-{
-	Node *next;
-	int priority;
-};
-
-typedef struct Priority_Queue
-{
-  //Node **head = malloc(sizeof(Node));
-  Node **head;
-  uint32_t size;
-  int32_t (*compare)(const void *key, const void *with);
-  void (*datum_delete)(void *);
-} Queue;
-*/
-
 typedef struct Character
 {
 	unsigned int characteristics;
@@ -103,7 +70,7 @@ typedef struct Character
 	int dist[ROW * COL];
 } Character;
 
-typedef struct rooms
+typedef struct Room
 {
 	int row;
 	int col;
@@ -111,7 +78,7 @@ typedef struct rooms
 	int height;
 } Room;
 
-typedef struct level
+typedef struct Dungeon
 {
 	int num_mon;
 	int num_room;

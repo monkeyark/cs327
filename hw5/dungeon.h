@@ -17,6 +17,8 @@
 
 #define ROW 21
 #define COL 80
+#define TERMINAL_ROW 24
+#define TERMINAL_COL 85
 #define ROCK ' '
 #define ROOM '.'
 #define CORRIDOR '#'

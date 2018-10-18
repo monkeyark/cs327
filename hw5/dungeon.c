@@ -779,55 +779,78 @@ void print_dungeon_ncurses(WINDOW *game, char *message)
 				mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
 			}
 		}
-		mvwprintw(game, i, COL, "\n");
+		//mvwprintw(game, i, COL, "\n");
 	}
 }
 
-void print_monster_list_ncurses(WINDOW *list)
+void print_monster_list_ncurses(WINDOW *list, int start)
 {
-	int i, j;
-
-	for (i = 0; i < dungeon.num_mon; i++)
+	int i, j, n;
+	char *m;
+	char str[COL];
+	for (i = 0, j = start; i < ROW && j < dungeon.num_mon - start; i++, j++)
 	{
 
+		Character npc = dungeon.monster[j];
+		int row_dis = npc.row - dungeon.PC.row;
+		int col_dis = npc.col - dungeon.PC.col;
+		char *row_pos, *col_pos;
+
+		if (row_dis > 0)
+		{
+			row_pos = "South";
+		}
+		else if (row_dis < 0)
+		{
+			row_pos = "North";
+		}
+		else
+		{
+			row_pos = "     ";
+		}
+
+		if (col_dis > 0)
+		{
+			col_pos = " East";
+		}
+		else if (col_dis < 0)
+		{
+			col_pos = " West";
+		}
+		else
+		{
+			col_pos = "     ";
+		}
+
+		sprintf(str, "%x:  %2d %s and %2d %s", npc.characteristics, abs(row_dis), row_pos, abs(col_dis), col_pos);
+		m = str;
+
+		for (n = 0; *m; m++, n++)
+		{
+			mvwprintw(list, i, n, m);
+		}
 	}
-	//print dungeon
-	// for (i = 1; i < ROW + 1; i++)
-	// {
-	// 	for (j = 0; j < COL; j++)
-	// 	{
-	// 		if (i == dungeon.PC.row && j == dungeon.PC.col)
-	// 		{
-	// 			mvwprintw(list, i, j, "@");
-	// 		}
-	// 		else if (!(is_monster(i, j) < 0))
-	// 		{
-	// 			mvwprintw(list, i, j, "%x", dungeon.monster[is_monster(i, j)].characteristics);
-	// 		}
-	// 		else
-	// 		{
-	// 			mvwprintw(list, i, j, "%c", dungeon.map[i][j].space);
-	// 		}
-	// 	}
-	// 	mvwprintw(list, i, COL, "\n");
-	// }
+
 }
 
 void monster_list()
 {
 	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 	bool run = true;
+	int index = 0;
 	while(run)
 	{
-		print_monster_list_ncurses(list);
+		print_monster_list_ncurses(list, index);
 		int key = wgetch(list);
 		switch(key)
 		{
 			case KEY_UP:
-				
+				index++;
+				index = MIN(index, dungeon.num_mon);
 				break;
 			case KEY_DOWN:
-				
+				index--;
+				index = MAX(index, 0);
 				break;
 			case 27:
 				run = false;

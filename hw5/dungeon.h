@@ -36,6 +36,13 @@
     (void) (&_x == &_y);    \
     _x < _y ? _x : _y;})
 
+#define MAX(x,y)			\
+({							\
+    typeof(x) _x = (x);     \
+    typeof(y) _y = (y);     \
+    (void) (&_x == &_y);    \
+    _x > _y ? _x : _y;})
+
 #define NPC_SMART         0x00000001
 #define NPC_TELEPATH      0x00000002
 #define NPC_TUNNEL        0x00000004

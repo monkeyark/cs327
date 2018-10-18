@@ -13,3 +13,6 @@ Oct 17
 	fix monster moving issue when on stair
 	add PC dead case
 	add monster list
+
+Oct 18
+	add monster list printing

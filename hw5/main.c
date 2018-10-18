@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	dungeon.num_room = get_random(7, 5);
 	//generate random number of monster
 	//dungeon.num_mon = get_random(5, 8);
-	dungeon.num_mon = 1;
+	dungeon.num_mon = 30;
 
 	int dist_nontunneling[ROW * COL];
 	memset(dist_nontunneling, 0, sizeof (dist_nontunneling));

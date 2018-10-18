@@ -785,8 +785,12 @@ void print_dungeon_ncurses(WINDOW *game, char *message)
 
 void print_monster_list_ncurses(WINDOW *list)
 {
-	//int i, j;
+	int i, j;
 
+	for (i = 0; i < dungeon.num_mon; i++)
+	{
+
+	}
 	//print dungeon
 	// for (i = 1; i < ROW + 1; i++)
 	// {
@@ -901,34 +905,34 @@ void dungeon_ncurses()
 		switch(key)
 		{
 			case KEY_HOME:
-				message = move_pc(-1, -1);
+				message = move_pc(-1, -1);//move up-left
 				break;
 			case KEY_UP:
-				message = move_pc(-1, 0);
+				message = move_pc(-1, 0);//move up
 				break;
 			case KEY_PPAGE:
-				message = move_pc(-1, 1);
+				message = move_pc(-1, 1);//move up-right
 				break;
 			case KEY_RIGHT:
-				message = move_pc(0, 1);
+				message = move_pc(0, 1);//move right
 				break;
 			case KEY_NPAGE:
-				message = move_pc(1, 1);
+				message = move_pc(1, 1);//move down-right
 				break;
 			case KEY_DOWN:
-				message = move_pc(1, 0);
+				message = move_pc(1, 0);//move down
 				break;
 			case KEY_END:
-				message = move_pc(1, -1);
+				message = move_pc(1, -1);//move down-left
 				break;
 			case KEY_LEFT:
-				message = move_pc(0, -1);
+				message = move_pc(0, -1);//move left
 				break;
 			case KEY_B2:
-			//TODO
+				message = move_pc(0, 0);//rest
 				break;
 			case ' ':
-				message = move_pc(0, 0);
+				message = move_pc(0, 0);//rest
 				break;
 			case '<':
 				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_UP)
@@ -963,78 +967,37 @@ void dungeon_ncurses()
 				}
 				break;
 			case '.':
-			//TODO
+				message = move_pc(0, 0);//rest
 				break;
 			case '1':
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col - 1))
-				{
-					move_npc();
-					dungeon.PC.row++;
-					dungeon.PC.col--;
-				}
+				message = move_pc(1, -1);//move down-left
 				break;
 			case '2':
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col))
-				{
-					move_npc();
-					dungeon.PC.row++;
-				}
+				message = move_pc(-1, 0);//move up
 				break;
 			case '3':
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col + 1))
-				{
-					move_npc();
-					dungeon.PC.row++;
-					dungeon.PC.col++;
-				}
+				message = move_pc(1, 1);//move down-right
 				break;
 			case '4':
-				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1))
-				{
-					move_npc();
-					dungeon.PC.col--;
-				}
+				message = move_pc(0, -1);//move left
 				break;
 			case '5':
-				message = move_pc(0, 0);
+				message = move_pc(0, 0);//rest
 				break;
 			case '6':
-				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1))
-				{
-					move_npc();
-					dungeon.PC.col++;
-				}
+				message = move_pc(0, 1);//move right
 				break;
 			case '7':
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col - 1))
-				{
-					move_npc();
-					dungeon.PC.row--;
-					dungeon.PC.col--;
-				}
+				message = move_pc(-1, -1);//move up-left
 				break;
 			case '8':
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col))
-				{
-					move_npc();
-					dungeon.PC.row--;
-				}
+				message = move_pc(-1, 0);//move up
 				break;
 			case '9':
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col + 1))
-				{
-					move_npc();
-					dungeon.PC.row--;
-					dungeon.PC.col++;
-				}
+				message = move_pc(-1, 1);//move up-right
 				break;
 			case 'b':
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col - 1))
-				{
-					move_npc();
-					dungeon.PC.row++;
-					dungeon.PC.col--;
-				}
+				message = move_pc(1, -1);//move down-left
 				break;
 			case 'c':
 			//TODO
@@ -1052,46 +1015,25 @@ void dungeon_ncurses()
 			//TODO
 				break;
 			case 'h':
-				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1))
-				{
-					move_npc();
-					dungeon.PC.col--;
-				}
+				message = move_pc(0, -1);//move left
 				break;
 			case 'i':
 			//TODO
 				break;
 			case 'j':
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col))
-				{
-					move_npc();
-					dungeon.PC.row++;
-				}
+				message = move_pc(1, 0);//move down
 				break;
 			case 'k':
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col))
-				{
-					move_npc();
-					dungeon.PC.row--;
-				}
+				message = move_pc(-1, 0);//move up
 				break;
 			case 'l':
-				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1))
-				{
-					move_npc();
-					dungeon.PC.col++;
-				}
+				message = move_pc(0, 1);//move right
 				break;
 			case 'm':
 				monster_list();
 				break;
 			case 'n':
-				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col + 1))
-				{
-					move_npc();
-					dungeon.PC.row++;
-					dungeon.PC.col++;
-				}
+				message = move_pc(1, 1);//move down-right
 				break;
 			case 's':
 			//TODO
@@ -1100,12 +1042,7 @@ void dungeon_ncurses()
 			//TODO
 				break;
 			case 'u':
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col + 1))
-				{
-					move_npc();
-					dungeon.PC.row--;
-					dungeon.PC.col++;
-				}
+				message = move_pc(-1, 1);//move up-right
 				break;
 			case 'w':
 			//TODO
@@ -1114,12 +1051,7 @@ void dungeon_ncurses()
 			//TODO
 				break;
 			case 'y':
-				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col - 1))
-				{
-					move_npc();
-					dungeon.PC.row--;
-					dungeon.PC.col--;
-				}
+
 				break;
 			case 'D':
 			//TODO

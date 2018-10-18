@@ -189,7 +189,7 @@ void new_corridor(int aRow, int aCol, int bRow, int bCol)
 {
 	if (distance(aRow, aCol, bRow, bCol) == 0)
 		return;
-	if (dungeon.map[aRow][aCol].space == CORRIDOR && isConnected(bRow, bCol))
+	if (dungeon.map[aRow][aCol].space == CORRIDOR && is_connected(bRow, bCol))
 		return;
 	if (dungeon.map[aRow][aCol].space == ROCK)
 		dungeon.map[aRow][aCol].space = CORRIDOR;
@@ -224,19 +224,19 @@ void new_corridor(int aRow, int aCol, int bRow, int bCol)
 
 	if (min == top)
 	{
-		newCorridor(aRow - 1, aCol, bRow, bCol);
+		new_corridor(aRow - 1, aCol, bRow, bCol);
 	}
 	else if (min == down)
 	{
-		newCorridor(aRow + 1, aCol, bRow, bCol);
+		new_corridor(aRow + 1, aCol, bRow, bCol);
 	}
 	else if (min == left)
 	{
-		newCorridor(aRow, aCol - 1, bRow, bCol);
+		new_corridor(aRow, aCol - 1, bRow, bCol);
 	}
 	else if (min == right)
 	{
-		newCorridor(aRow, aCol + 1, bRow, bCol);
+		new_corridor(aRow, aCol + 1, bRow, bCol);
 	}
 }
 
@@ -299,7 +299,7 @@ void generate_dungeon()
 
 	for (i = 0; i < dungeon.num_room - 1; i++)
 	{
-		newCorridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
+		new_corridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
 	}
 
 	for (i = 0; i < dungeon.num_mon; i++)

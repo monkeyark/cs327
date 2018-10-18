@@ -215,7 +215,7 @@ int minimum(int a, int b)
 	return b;
 }
 
-bool isConnected(int row, int col)
+bool is_connected(int row, int col)
 {
 	return dungeon[row-1][col].space == CORRIDOR
 		|| dungeon[row+1][col].space == CORRIDOR
@@ -223,10 +223,10 @@ bool isConnected(int row, int col)
 		|| dungeon[row][col+1].space == CORRIDOR;
 }
 
-void newCorridor(int aRow, int aCol, int bRow, int bCol)
+void new_corridor(int aRow, int aCol, int bRow, int bCol)
 {
 	if (distance(aRow, aCol, bRow, bCol) == 0) return;
-	if (dungeon[aRow][aCol].space == CORRIDOR && isConnected(bRow, bCol)) return;
+	if (dungeon[aRow][aCol].space == CORRIDOR && is_connected(bRow, bCol)) return;
 	if (dungeon[aRow][aCol].space == ROCK) dungeon[aRow][aCol].space = CORRIDOR;
 
 	int max = distance(0, 0, ROW, COL);
@@ -259,21 +259,21 @@ void newCorridor(int aRow, int aCol, int bRow, int bCol)
 
 	if (min == top)
 	{
-		newCorridor(aRow-1, aCol, bRow, bCol);
+		new_corridor(aRow-1, aCol, bRow, bCol);
 
 	}
 	else if (min == down)
 	{
-		newCorridor(aRow+1, aCol, bRow, bCol);
+		new_corridor(aRow+1, aCol, bRow, bCol);
 
 	}
 	else if (min == left)
 	{
-		newCorridor(aRow, aCol-1, bRow, bCol);
+		new_corridor(aRow, aCol-1, bRow, bCol);
 	}
 	else if (min == right)
 	{
-		newCorridor(aRow, aCol+1, bRow, bCol);
+		new_corridor(aRow, aCol+1, bRow, bCol);
 	}
 
 /*
@@ -360,7 +360,7 @@ void generate_dungeon(int n)
 
 	for (int i=0; i<n-1; i++)
 	{
-		newCorridor(dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i+1].row, dungeonRoom[i+1].col);
+		new_corridor(dungeonRoom[i].row, dungeonRoom[i].col, dungeonRoom[i+1].row, dungeonRoom[i+1].col);
 	}
 	
 	//add initial player loaction

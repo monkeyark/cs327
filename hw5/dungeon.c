@@ -760,13 +760,19 @@ void print_dungeon_ncurses_debug(WINDOW *game)
 	wprintw(game, "\n");
 }
 
-void print_dungeon_ncurses(WINDOW *game)
+void print_dungeon_ncurses(WINDOW *game, char *info)
 {
-	wprintw(game, "dungeon game\n");
-
-	for (int i = 1; i < ROW + 1; i++)
+	char *message = info;
+	int i, j;
+	for (i = 0, j = 0; *message; message++, j++)
 	{
-		for (int j = 0; j < COL; j++)
+		mvwprintw(game, i, j, message);
+	}
+	//wprintw(game, "dungeon game\n");
+
+	for (i = 1; i < ROW + 1; i++)
+	{
+		for (j = 0; j < COL; j++)
 		{
 			if (i == dungeon.PC.row && j == dungeon.PC.col)
 			{
@@ -802,7 +808,7 @@ void move_npc()
 	}
 }
 
-void move_pc()
+void dungeon_ncurses()
 {
 	initscr();
 	noecho();
@@ -811,9 +817,10 @@ void move_pc()
 
 	keypad(game, true);
 	bool run = true;
+	char *message = "Dungeon";
 	while(run)
 	{
-		print_dungeon_ncurses(game);
+		print_dungeon_ncurses(game, message);
 		int key = wgetch(game);
 		switch(key)
 		{
@@ -832,6 +839,10 @@ void move_pc()
 					}
 					move_npc();
 				}
+				else
+				{
+					message = "There's wall in the way!\n";
+				}
 				break;
 			case KEY_UP:
 				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col) &&
@@ -846,6 +857,10 @@ void move_pc()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+				}
+				else
+				{
+					message = "There's wall in the way!\n";
 				}
 				break;
 			case KEY_PPAGE:
@@ -863,6 +878,10 @@ void move_pc()
 					}
 					move_npc();
 				}
+				else
+				{
+					message = "There's wall in the way!\n";
+				}
 				break;
 			case KEY_RIGHT:
 				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1) &&
@@ -877,6 +896,10 @@ void move_pc()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+				}
+				else
+				{
+					message = "There's wall in the way!\n";
 				}
 				break;
 			case KEY_NPAGE:
@@ -894,6 +917,10 @@ void move_pc()
 					}
 					move_npc();
 				}
+				else
+				{
+					message = "There's wall in the way!\n";
+				}
 				break;
 			case KEY_DOWN:
 				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col) &&
@@ -908,6 +935,10 @@ void move_pc()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+				}
+				else
+				{
+					message = "There's wall in the way!\n";
 				}
 				break;
 			case KEY_END:
@@ -925,6 +956,10 @@ void move_pc()
 					}
 					move_npc();
 				}
+				else
+				{
+					message = "There's wall in the way!\n";
+				}
 				break;
 			case KEY_LEFT:
 				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1) &&
@@ -939,6 +974,10 @@ void move_pc()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
+				}
+				else
+				{
+					message = "There's wall in the way!\n";
 				}
 				break;
 			case KEY_B2:
@@ -963,7 +1002,6 @@ void move_pc()
 					dungeon.PC.row++;
 					dungeon.PC.col--;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case '2':
 				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col))
@@ -971,7 +1009,6 @@ void move_pc()
 					move_npc();
 					dungeon.PC.row++;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case '3':
 				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col + 1))
@@ -980,7 +1017,6 @@ void move_pc()
 					dungeon.PC.row++;
 					dungeon.PC.col++;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case '4':
 				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1))
@@ -988,7 +1024,6 @@ void move_pc()
 					move_npc();
 					dungeon.PC.col--;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case '5':
 				//TODO
@@ -999,7 +1034,6 @@ void move_pc()
 					move_npc();
 					dungeon.PC.col++;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case '7':
 				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col - 1))
@@ -1008,7 +1042,6 @@ void move_pc()
 					dungeon.PC.row--;
 					dungeon.PC.col--;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case '8':
 				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col))
@@ -1016,7 +1049,6 @@ void move_pc()
 					move_npc();
 					dungeon.PC.row--;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case '9':
 				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col + 1))
@@ -1025,7 +1057,6 @@ void move_pc()
 					dungeon.PC.row--;
 					dungeon.PC.col++;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case 'b':
 				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col - 1))
@@ -1034,7 +1065,6 @@ void move_pc()
 					dungeon.PC.row++;
 					dungeon.PC.col--;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case 'c':
 			//TODO
@@ -1057,7 +1087,6 @@ void move_pc()
 					move_npc();
 					dungeon.PC.col--;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case 'i':
 			//TODO
@@ -1068,7 +1097,6 @@ void move_pc()
 					move_npc();
 					dungeon.PC.row++;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case 'k':
 				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col))
@@ -1076,7 +1104,6 @@ void move_pc()
 					move_npc();
 					dungeon.PC.row--;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case 'l':
 				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1))
@@ -1084,7 +1111,6 @@ void move_pc()
 					move_npc();
 					dungeon.PC.col++;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case 'm':
 				monster_list();
@@ -1096,7 +1122,6 @@ void move_pc()
 					dungeon.PC.row++;
 					dungeon.PC.col++;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case 's':
 			//TODO
@@ -1111,7 +1136,6 @@ void move_pc()
 					dungeon.PC.row--;
 					dungeon.PC.col++;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case 'w':
 			//TODO
@@ -1126,7 +1150,6 @@ void move_pc()
 					dungeon.PC.row--;
 					dungeon.PC.col--;
 				}
-				print_dungeon_ncurses(game);
 				break;
 			case 'D':
 			//TODO
@@ -1160,7 +1183,7 @@ void move_pc()
 
 void move_character()
 {
-	move_pc();
+	dungeon_ncurses();
 	//move_npc();
 }
 

@@ -705,7 +705,7 @@ void move_npc()
 	}
 }
 
-void move_pc()
+void dungeon_ncurses()
 {
 
 }

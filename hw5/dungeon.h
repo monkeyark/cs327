@@ -13,6 +13,7 @@
 #include <endian.h>
 #include <sys/stat.h>
 #include <ncurses.h>
+#include <curses.h>
 
 #define ROW 21
 #define COL 80

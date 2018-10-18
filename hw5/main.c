@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 	{
 		generateDungeon();
 	}
-	printDungeon();
+	//printDungeon();
 
 	if (save)
 	{

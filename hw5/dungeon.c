@@ -25,10 +25,10 @@ int isMonster(int row, int col)
 	{
 		if (row == dungeon.monster[i].row && col == dungeon.monster[i].col)
 		{
-			return i + 1;
+			return i;
 		}
 	}
-	return 0;
+	return -1;
 }
 
 void printDungeon()
@@ -68,9 +68,13 @@ void printDungeon()
 		printf("%2d|", i);
 		for (int j = 0; j < COL; j++)
 		{
-			if (isMonster(i, j))
+			if (i == dungeon.PC.row && j == dungeon.PC.col)
 			{
-				printf("%x", dungeon.monster[isMonster(i, j) - 1].characteristics);
+				printf("@");
+			}
+			else if (!(isMonster(i, j) < 0))
+			{
+				printf("%x", dungeon.monster[isMonster(i, j)].characteristics);
 			}
 			else
 			{
@@ -259,7 +263,6 @@ Character new_NPC(int birth)
 		}
 
 		//printf("npc.characteristics = %d in hex: %x\n", npc.characteristics, npc.characteristics);
-		//dungeon.map[npc.row][npc.col].space = MONSTER;
 
 		dungeon.map[npc.row][npc.col].hardness = 0;
 	}
@@ -269,6 +272,17 @@ Character new_NPC(int birth)
 	}
 
 	return npc;
+}
+
+void new_PC()
+{
+	//add initial player location
+	dungeon.PC.birth = -1;
+	dungeon.PC.speed = 10;
+	dungeon.PC.dead = false;
+	dungeon.PC.row = dungeon.rooms[0].row;
+	dungeon.PC.col = dungeon.rooms[0].col;
+	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
 }
 
 void generateDungeon()
@@ -292,15 +306,8 @@ void generateDungeon()
 	{
 		dungeon.monster[i] = new_NPC(i);
 	}
-
-	//add initial player location
-	dungeon.PC.birth = -1;
-	dungeon.PC.speed = 10;
-	dungeon.PC.dead = false;
-	dungeon.PC.row = dungeon.rooms[0].row;
-	dungeon.PC.col = dungeon.rooms[0].col;
-	dungeon.map[dungeon.PC.row][dungeon.PC.col].space = '@';
-	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
+	
+	new_PC();
 }
 
 void loadFile(FILE *f)
@@ -655,16 +662,137 @@ void move_npc()
 		printDungeon();
 	}
 }
+void monsterList()
+{
+	WINDOW *list = newwin(ROW/4, COL/4, ROW/2, COL/2);
+
+}
+
+void printDungeon_ncurses_debug(WINDOW *game)
+{
+	//printf("\nnpc_row = %d; npc_col = %d\n", dungeon.monster[0].row, dungeon.monster[0].col);//TODO
+	wprintw(game, "   ");
+	for (int i = 0; i < COL; i++)
+	{
+		int row = (i - i % 10) / 10;
+		if (i % 10 == 0)
+		{
+			wprintw(game, "%d", row);
+		}
+		else
+		{
+			wprintw(game, " ");
+		}
+	}
+	wprintw(game, "\n");
+
+	wprintw(game, "   ");
+	for (int i = 0; i < COL; i++)
+	{
+		wprintw(game, "%d", i % 10);
+	}
+	wprintw(game, "\n ");
+
+	for (int i = 0; i < COL + 2; i++)
+	{
+		wprintw(game, "-");
+	}
+	wprintw(game, "\n");
+
+	for (int i = 0; i < ROW; i++)
+	{
+		wprintw(game, "%2d|", i);
+		for (int j = 0; j < COL; j++)
+		{
+			if (isMonster(i, j))
+			{
+				wprintw(game, "%x", dungeon.monster[isMonster(i, j) - 1].characteristics);
+			}
+			else
+			{
+				wprintw(game, "%c", dungeon.map[i][j].space);
+			}
+		}
+		wprintw(game, "|\n");
+	}
+	wprintw(game, "  ");
+	for (int i = 0; i < COL + 2; i++)
+	{
+		wprintw(game, "-");
+	}
+	wprintw(game, "\n");
+}
+
+void printDungeon_ncurses(WINDOW *game)
+{
+	for (int i = 0; i < ROW; i++)
+	{
+		for (int j = 0; j < COL; j++)
+		{
+			if (i == dungeon.PC.row && j == dungeon.PC.col)
+			{
+				mvwprintw(game, i, j, "@");
+			}
+			else if (!(isMonster(i, j) < 0))
+			{
+				mvwprintw(game, i, j, "%x", dungeon.monster[isMonster(i, j)].characteristics);
+			}
+			else
+			{
+				mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
+			}
+		}
+		mvwprintw(game, i, COL, "\n");
+	}
+}
 
 void move_pc()
 {
 	initscr();
 	noecho();
 	cbreak();
-	WINDOW *game;
-	game = newwin(100, 100, 0, 0);
+	WINDOW *game = newwin(ROW, COL, 0, 0);
+	//game = newwin(ROW, COL, 0, 0);
 
 	keypad(game, true);
+	bool run = true;
+	while(run)
+	{
+		printDungeon_ncurses(game);
+		int key = wgetch(game);
+		switch(key)
+		{
+			
+			case KEY_UP:
+				dungeon.PC.row--;
+				printDungeon_ncurses(game);
+				break;
+			case KEY_DOWN:
+				dungeon.PC.row++;
+				printDungeon_ncurses(game);
+				break;
+			case KEY_LEFT:
+				dungeon.PC.col--;
+				printDungeon_ncurses(game);
+				break;
+			case KEY_RIGHT:
+				dungeon.PC.col++;
+				printDungeon_ncurses(game);
+				break;
+			case 'm':
+				monsterList();
+				break;
+			case 'Q':
+				run = false;
+				break;
+		}
+
+	}
+
+
+	clrtoeol();
+	refresh();
+	endwin();
 }
 
 void move_character()

@@ -104,10 +104,12 @@ bool is_room(int row, int col)
 	return dungeon.map[row][col].space == ROOM;
 }
 
-bool is_room_corridor(int row, int col)
+bool is_room_corridor_stair(int row, int col)
 {
 	return dungeon.map[row][col].space == ROOM
-		|| dungeon.map[row][col].space == CORRIDOR;
+		|| dungeon.map[row][col].space == CORRIDOR
+		|| dungeon.map[row][col].space == STAIR_UP
+		|| dungeon.map[row][col].space == STAIR_DOWN;
 }
 
 bool is_valid_room(int row, int col, int width, int height)
@@ -764,13 +766,21 @@ void print_dungeon_ncurses_debug(WINDOW *game)
 
 void print_dungeon_ncurses(WINDOW *game, char *message)
 {
-	char *m = message;
 	int i, j;
+	//clean previous message
+	for (i = 0, j = 0; j < TERMINAL_COL; j++)
+	{
+		mvwprintw(game, i, j, " ");
+	}
+
+	//print current message
+	char *m = message;
 	for (i = 0, j = 0; *m; m++, j++)
 	{
 		mvwprintw(game, i, j, m);
 	}
 
+	//print dungeon
 	for (i = 1; i < ROW + 1; i++)
 	{
 		for (j = 0; j < COL; j++)
@@ -790,7 +800,6 @@ void print_dungeon_ncurses(WINDOW *game, char *message)
 		}
 		mvwprintw(game, i, COL, "\n");
 	}
-
 }
 
 void move_npc()
@@ -809,12 +818,17 @@ void move_npc()
 	}
 }
 
+void move_pc(int rowMove, int colMove)
+{
+
+}
+
 void dungeon_ncurses()
 {
 	initscr();
 	noecho();
 	cbreak();
-	WINDOW *game = newwin(ROW + 3, COL + 5, 0, 0);
+	WINDOW *game = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 
 	keypad(game, true);
 	bool run = true;
@@ -827,7 +841,7 @@ void dungeon_ncurses()
 		{
 			case KEY_HOME:
 				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col - 1) &&
-					is_room_corridor(dungeon.PC.row - 1, dungeon.PC.col - 1))
+					is_room_corridor_stair(dungeon.PC.row - 1, dungeon.PC.col - 1))
 				{
 					dungeon.PC.row--;
 					dungeon.PC.col--;
@@ -839,7 +853,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
-					message = "";
+					message = " ";
 				}
 				else
 				{
@@ -848,7 +862,7 @@ void dungeon_ncurses()
 				break;
 			case KEY_UP:
 				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col) &&
-					is_room_corridor(dungeon.PC.row - 1, dungeon.PC.col))
+					is_room_corridor_stair(dungeon.PC.row - 1, dungeon.PC.col))
 				{
 					dungeon.PC.row--;
 					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
@@ -859,7 +873,8 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
-					message = "";
+					
+					message = " ";
 				}
 				else
 				{
@@ -868,7 +883,7 @@ void dungeon_ncurses()
 				break;
 			case KEY_PPAGE:
 				if (is_inside(dungeon.PC.row - 1, dungeon.PC.col + 1) &&
-					is_room_corridor(dungeon.PC.row - 1, dungeon.PC.col + 1))
+					is_room_corridor_stair(dungeon.PC.row - 1, dungeon.PC.col + 1))
 				{
 					dungeon.PC.row--;
 					dungeon.PC.col++;
@@ -880,7 +895,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
-					message = "";
+					message = " ";
 				}
 				else
 				{
@@ -889,7 +904,7 @@ void dungeon_ncurses()
 				break;
 			case KEY_RIGHT:
 				if (is_inside(dungeon.PC.row, dungeon.PC.col + 1) &&
-					is_room_corridor(dungeon.PC.row, dungeon.PC.col + 1))
+					is_room_corridor_stair(dungeon.PC.row, dungeon.PC.col + 1))
 				{
 					dungeon.PC.col++;
 					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
@@ -900,7 +915,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
-					message = "";
+					message = " ";
 				}
 				else
 				{
@@ -909,7 +924,7 @@ void dungeon_ncurses()
 				break;
 			case KEY_NPAGE:
 				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col + 1) &&
-					is_room_corridor(dungeon.PC.row + 1, dungeon.PC.col + 1))
+					is_room_corridor_stair(dungeon.PC.row + 1, dungeon.PC.col + 1))
 				{
 					dungeon.PC.row++;
 					dungeon.PC.col++;
@@ -921,7 +936,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
-					message = "";
+					message = " ";
 				}
 				else
 				{
@@ -930,7 +945,7 @@ void dungeon_ncurses()
 				break;
 			case KEY_DOWN:
 				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col) &&
-					is_room_corridor(dungeon.PC.row + 1, dungeon.PC.col))
+					is_room_corridor_stair(dungeon.PC.row + 1, dungeon.PC.col))
 				{
 					dungeon.PC.row++;
 					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
@@ -941,7 +956,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
-					message = "";
+					message = " ";
 				}
 				else
 				{
@@ -950,7 +965,7 @@ void dungeon_ncurses()
 				break;
 			case KEY_END:
 				if (is_inside(dungeon.PC.row + 1, dungeon.PC.col - 1) &&
-					is_room_corridor(dungeon.PC.row + 1, dungeon.PC.col - 1))
+					is_room_corridor_stair(dungeon.PC.row + 1, dungeon.PC.col - 1))
 				{
 					dungeon.PC.row++;
 					dungeon.PC.col--;
@@ -971,7 +986,7 @@ void dungeon_ncurses()
 				break;
 			case KEY_LEFT:
 				if (is_inside(dungeon.PC.row, dungeon.PC.col - 1) &&
-					is_room_corridor(dungeon.PC.row, dungeon.PC.col - 1))
+					is_room_corridor_stair(dungeon.PC.row, dungeon.PC.col - 1))
 				{
 					dungeon.PC.col--;
 					if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
@@ -982,7 +997,7 @@ void dungeon_ncurses()
 						dungeon.monster[i].col = -1;
 					}
 					move_npc();
-					message = "";
+					message = " ";
 				}
 				else
 				{
@@ -996,10 +1011,26 @@ void dungeon_ncurses()
 			//TODO
 				break;
 			case '<':
-			//TODO
+				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_UP)
+				{
+					generate_dungeon();
+					message = "You went up stair";
+				}
+				else
+				{
+					message = "You are not on up stair";
+				}
 				break;
 			case '>':
-			//TODO
+				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_DOWN)
+				{
+					generate_dungeon();
+					message = "You went down stair";
+				}
+				else
+				{
+					message = "You are not on down stair";
+				}
 				break;
 			case '.':
 			//TODO
@@ -1187,7 +1218,6 @@ void dungeon_ncurses()
 		{
 			message = "Player is dead!";
 		}
-
 	}
 
 	clrtoeol();

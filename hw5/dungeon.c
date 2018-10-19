@@ -35,7 +35,6 @@ int is_monster(int row, int col)
 
 void print_dungeon()
 {
-	//printf("\nnpc_row = %d; npc_col = %d\n", dungeon.monster[0].row, dungeon.monster[0].col);//TODO
 	printf("   ");
 	for (int i = 0; i < COL; i++)
 	{
@@ -541,7 +540,7 @@ void dijkstra_tunneling(int dist[ROW * COL])
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
 	int i, j;
 	//Queue pq_tunel;
-	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
+	queue_node_t *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
 	for (i = 0; i < ROW; i++)
 	{
@@ -590,7 +589,7 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
 	int i, j;
 	//Queue pq_nontunel;
-	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
+	queue_node_t *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
 	for (i = 0; i < ROW; i++)
 	{
@@ -849,12 +848,10 @@ void monster_list()
 			case KEY_UP:
 				index++;
 				index = MIN(index, dungeon.num_mon);
-				//print_monster_list_ncurses(list, index);
 				break;
 			case KEY_DOWN:
 				index--;
 				index = MAX(index, 0);
-				//print_monster_list_ncurses(list, index);
 				break;
 		}
 	}

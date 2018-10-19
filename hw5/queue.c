@@ -1,63 +1,45 @@
 #include "queue.h"
 
-
-Node *node_new(int priority)
+struct queue_node
 {
-	Node *temp = malloc(sizeof(Node));
-	temp->priority = priority;
-	temp->next = NULL;
-	temp->prev = NULL;
+	queue_node_t *next;
+	queue_node_t *prev;
+	void *datum;
+};
 
-	return temp;
+void pq_init(Queue *pq, int32_t (*compare)(const void *key, const void *with), void (*datum_delete)(void *))
+{
+	pq->head = NULL;
+	pq->size = 0;
+	pq->compare = compare;
+	pq->datum_delete = datum_delete;
+
 }
-
-void pq_insert(Queue pq, Node **head, int priority, int *dist)
+void pq_delete(Queue *pq)
 {
-	Node *temp = *head;
-	Node *new = node_new(priority);
-
-	if (dist[(*head)->priority] >= dist[new->priority])
+	if (pq->head)
 	{
-		new->next = (*head);
-		(*head) = new;
+		queue_node_delete(pq, pq->head);
 	}
-	else
-	{
-		while (temp->next != NULL && dist[temp->next->priority] < dist[new->priority])
-		{
-			temp = temp->next;
-		}
-
-		new->next = temp->next;
-		temp->next = new;
-	}
+	pq->head = NULL;
+	pq->size = 0;
+	pq->compare = NULL;
+	pq->datum_delete = NULL;
 }
-
-int pq_pop(Queue pq, Node **head)
+void queue_node_delete(Queue *pq, queue_node_t *node)
 {
-	int n = (*head)->priority;
-	Node *t = *head;
-	(*head) = (*head)->next;
-	free(t);
-	return n;
+	queue_node_t *next;
 }
-
-bool pq_is_empty(Queue pq, Node **head)
+void pq_insert(Queue *pq, void *v)
 {
-	printf();
-	//return (*head) == NULL;
-	return pq.head == NULL;
 }
-
-void pq_delete(Queue pq)
+void *pq_peak(Queue *pq)
 {
-	while (!pq_is_empty(pq, pq.head))
-	{
-		pq_pop(pq, pq.head);
-	}
-
-	pq.head = NULL;
 }
+void *pq_pop(Queue *pq)
+{
+}
+
 
 
 /*
@@ -114,86 +96,5 @@ void pq_delete(Queue pq)
 	}
 
 	pq.head = NULL;
-}
-*/
-
-
-
-
-
-
-
-
-
-
-/*
-Node_t *node_new_NPC(int priority, Character c)
-{
-	Node_t *temp = malloc(sizeof(Node_t));
-	temp->priority = priority;
-	temp->character = c;
-	temp->next = NULL;
-
-	return temp;
-}
-
-void pq_insert_NPC(Queue_npc pq, Node_t** head, Node_t** new)
-{
-	Node_t *temp = *head;
-
-	int head_priority = (*head)->priority;
-	int new_priority = (*new)->priority;
-	if (head_priority == new_priority)
-	{
-		head_priority = (*head)->character.birth;
-		new_priority = (*new)->character.birth;
-	}
-
-	if (head_priority > new_priority)
-	{
-		(*new)->next = *head;
-		*head = *new;
-		*pq.head = *head;
-	}
-	else
-	{
-		int c = temp->next->priority;
-		int d = (*new)->priority;
-		while (temp->next != NULL && (c < d))
-		{
-			temp = temp->next;
-		}
-
-		(*new)->next = temp->next;
-		temp->next = (*new);
-	}
-}
-
-Node_t *pq_pop_NPC(Queue_npc pq, Node_t **head)
-{
-	int priority = (*head)->priority;
-	Node_t *t = *head;
-	(*head) = (*head)->next;
-	(*pq.head) = (*head);
-	free(t);
-
-	int next_turn = priority + 1000 / (*head)->character.speed;
-	Character h = (*head)->character;
-
-	return node_new_NPC(next_turn, h);
-}
-
-bool pq_isEmpty_NPC(Queue_npc pq, Node_t *head)
-{
-	return head == NULL;
-}
-
-void pq_delete_NPC(Queue_npc pq)
-{
-
-	while (!pq_isEmpty_NPC(pq, pq.head))
-	{
-		pq_pop_NPC(pq, pq.head);
-	}
 }
 */

@@ -1,17 +1,42 @@
-main: main.o dungeon.o queue.o npcmove.o
-	gcc dungeon.o queue.o npcmove.o main.o -o main -lncurses 
+CC = gcc
+CXX = g++
+ECHO = echo
+RM = rm -f
 
-dungeon.o: dungeon.c dungeon.h queue.h npcmove.h
-	gcc -c dungeon.c -Wall -Werror -ggdb -o dungeon.o -lncurses 
+CFLAGS = -Wall -Werror -ggdb3 -funroll-loops
+CXXFLAGS = -Wall -Werror -ggdb3 -funroll-loops
+LDFLAGS = -lncurses
 
-queue.o: queue.c queue.h
-	gcc -c queue.c -Wall -Werror -ggdb -o queue.o
+BIN = hw5
+OBJS = main.o queue.o dungeon.o \
+		npcmove.o
 
-npcmove.o: npcmove.c npcmove.h
-	gcc -c npcmove.c -Wall -Werror -ggdb -o npcmove.o
+all: $(BIN) etags
 
-main.o: main.c dungeon.h queue.h
-	gcc -c main.c -Wall -Werror -ggdb -o main.o
+$(BIN): $(OBJS)
+	@$(ECHO) Linking $@
+	@$(CC) $^ -o $@ $(LDFLAGS)
+
+-include $(OBJS:.o=.d)
+
+%.o: %.c
+	@$(ECHO) Compiling $<
+	@$(CC) $(CFLAGS) -MMD -MF $*.d -c $<
+
+%.o: %.cpp
+	@$(ECHO) Compiling $<
+	@$(CXX) $(CXXFLAGS) -MMD -MF $*.d -c $<
+
+.PHONY: all clean clobber etags
 
 clean:
-	rm -f dungeon.o queue.o npcmove.o main.o main *~
+	@$(ECHO) Removing all generated files
+	@$(RM) *.o $(BIN) *.d TAGS core vgcore.* gmon.out
+
+clobber: clean
+	@$(ECHO) Removing backup files
+	@$(RM) *~ \#* *pgm
+
+etags:
+	@$(ECHO) Updating TAGS
+	@etags *.[ch]

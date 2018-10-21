@@ -1,8 +1,6 @@
 #ifndef DUNGEON_H
 # define DUNGEON_H
 
-#include <iostream>
-#include <string>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +9,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <math.h>
+#include <string.h>
 #include <stdint.h>
 #include <endian.h>
 #include <sys/stat.h>
@@ -52,13 +51,46 @@
 #define NPC_TUNNEL        0x00000004
 #define NPC_ERRATIC       0x00000008
 
-class Terrain
+typedef struct Terrain
 {
 	char space;
 	int hardness;
+} Terrain;
+
+/*
+typedef struct Player_Character
+{
+	//int characteristics;
+	int row;
+	int col;
+	int birth;
+	int speed;
+	bool dead;
+} PC;
+*/
+
+/*
+struct queue_node;
+
+typedef struct queue_node Node;
+
+struct queue_node
+{
+	Node *next;
+	int priority;
 };
 
-class Character
+typedef struct Priority_Queue
+{
+  //Node **head = malloc(sizeof(Node));
+  Node **head;
+  uint32_t size;
+  int32_t (*compare)(const void *key, const void *with);
+  void (*datum_delete)(void *);
+} Queue;
+*/
+
+typedef struct Character
 {
 	unsigned int characteristics;
 	int row;
@@ -69,17 +101,17 @@ class Character
 	int pc_col;
 	bool dead;
 	int dist[ROW * COL];
-};
+} Character;
 
-class Room
+typedef struct rooms
 {
 	int row;
 	int col;
 	int width;
 	int height;
-};
+} Room;
 
-class Dungeon
+typedef struct level
 {
 	int num_mon;
 	int num_room;
@@ -90,7 +122,7 @@ class Dungeon
 	Terrain map[ROW][COL];
 	Queue pq_tunel;
 	Queue pq_nontunel;
-};
+} Dungeon;
 
 Dungeon dungeon;
 

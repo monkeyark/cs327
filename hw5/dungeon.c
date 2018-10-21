@@ -327,10 +327,8 @@ void generate_dungeon()
 {
 	//initialize dungeon
 	init_dungeon();
-	dungeon.rooms = new(dungeon.num_room * sizeof(Room));
-	dungeon.monster = new(dungeon.num_mon * sizeof(Character));
-//	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
-//	dungeon.monster = malloc(dungeon.num_mon * sizeof(Character));
+	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
+	dungeon.monster = malloc(dungeon.num_mon * sizeof(Character));
 	int i;
 
 	//add rooms

@@ -1,6 +1,8 @@
 #ifndef DUNGEON_H
 # define DUNGEON_H
 
+#include <iostream>
+#include <string>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,7 +11,6 @@
 #include <time.h>
 #include <unistd.h>
 #include <math.h>
-#include <string.h>
 #include <stdint.h>
 #include <endian.h>
 #include <sys/stat.h>
@@ -51,13 +52,13 @@
 #define NPC_TUNNEL        0x00000004
 #define NPC_ERRATIC       0x00000008
 
-typedef struct Terrain
+class Terrain
 {
 	char space;
 	int hardness;
-} Terrain;
+};
 
-typedef struct Character
+class Character
 {
 	unsigned int characteristics;
 	int row;
@@ -68,17 +69,17 @@ typedef struct Character
 	int pc_col;
 	bool dead;
 	int dist[ROW * COL];
-} Character;
+};
 
-typedef struct Room
+class Room
 {
 	int row;
 	int col;
 	int width;
 	int height;
-} Room;
+};
 
-typedef struct Dungeon
+class Dungeon
 {
 	int num_mon;
 	int num_room;
@@ -89,7 +90,7 @@ typedef struct Dungeon
 	Terrain map[ROW][COL];
 	Queue pq_tunel;
 	Queue pq_nontunel;
-} Dungeon;
+};
 
 Dungeon dungeon;
 

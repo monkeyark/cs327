@@ -35,6 +35,7 @@ int is_monster(int row, int col)
 
 void print_dungeon()
 {
+	//printf("\nnpc_row = %d; npc_col = %d\n", dungeon.monster[0].row, dungeon.monster[0].col);//TODO
 	printf("   ");
 	for (int i = 0; i < COL; i++)
 	{
@@ -326,8 +327,10 @@ void generate_dungeon()
 {
 	//initialize dungeon
 	init_dungeon();
-	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
-	dungeon.monster = malloc(dungeon.num_mon * sizeof(Character));
+	dungeon.rooms = new(dungeon.num_room * sizeof(Room));
+	dungeon.monster = new(dungeon.num_mon * sizeof(Character));
+//	dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
+//	dungeon.monster = malloc(dungeon.num_mon * sizeof(Character));
 	int i;
 
 	//add rooms
@@ -540,7 +543,7 @@ void dijkstra_tunneling(int dist[ROW * COL])
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
 	int i, j;
 	//Queue pq_tunel;
-	queue_node_t *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
+	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
 	for (i = 0; i < ROW; i++)
 	{
@@ -559,7 +562,7 @@ void dijkstra_tunneling(int dist[ROW * COL])
 	}
 	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
 
-	while (!pq_is_empty(dungeon.pq_tunel, &node))
+	while (!pq_isEmpty(dungeon.pq_tunel, &node))
 	{
 		int u = pq_pop(dungeon.pq_tunel, &node);
 		for (i = 0; i < 8; i++)
@@ -589,7 +592,7 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
 	int i, j;
 	//Queue pq_nontunel;
-	queue_node_t *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
+	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
 	for (i = 0; i < ROW; i++)
 	{
@@ -611,7 +614,7 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 	}
 	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
 
-	while (!pq_is_empty(dungeon.pq_nontunel, &node))
+	while (!pq_isEmpty(dungeon.pq_nontunel, &node))
 	{
 		int u = pq_pop(dungeon.pq_nontunel, &node);
 		for (i = 0; i < 8; i++)
@@ -778,6 +781,7 @@ void print_dungeon_ncurses(WINDOW *game, char *message)
 				mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
 			}
 		}
+		//mvwprintw(game, i, COL, "\n");
 	}
 }
 
@@ -848,10 +852,12 @@ void monster_list()
 			case KEY_UP:
 				index++;
 				index = MIN(index, dungeon.num_mon);
+				//print_monster_list_ncurses(list, index);
 				break;
 			case KEY_DOWN:
 				index--;
 				index = MAX(index, 0);
+				//print_monster_list_ncurses(list, index);
 				break;
 		}
 	}
@@ -957,8 +963,8 @@ void dungeon_ncurses()
 			case '<':
 				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_UP)
 				{
-					pq_delete(dungeon.pq_nontunel);
-					pq_delete(dungeon.pq_tunel);
+					//pq_delete(dungeon.pq_nontunel);
+					//pq_delete(dungeon.pq_tunel);
 					//TODO BUGFIX clean monster queue
 					free(dungeon.rooms);
 					free(dungeon.monster);

@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 			{
 				load = true;
 			}
-			if (strcmp(argv[i], "--nummon") == 0)
+			if (strcmp(argv[i], "--nummon") == 0 && argv[i+1])
 			{
 				dungeon.num_mon = atoi(argv[i+1]);
 			}

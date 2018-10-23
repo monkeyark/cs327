@@ -1,0 +1,18 @@
+Oct 16
+	start project on unfinished hw4
+	add ncurses function
+	create new window
+	quit window with key
+
+Oct 17
+	add movement of PC
+	implement all key function
+	monster and PC both move after key function
+	add up and down stair to different dungeon level
+	PC kill monster
+	fix monster moving issue when on stair
+	add PC dead case
+	add monster list
+
+Oct 18
+	print monster list

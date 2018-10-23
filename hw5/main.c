@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	//TODO
 	//seed = 1538543175;
 	//seed = 1538556186;
-	seed = 1539851602;
+//	seed = 1539851602;
 
 	printf("\nseed = %d;\n\n", seed);
 	srand(seed);
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 			{
 				load = true;
 			}
-			if (strcmp(argv[i], "--nummon") == 0 && argv[i+1])
+			if (strcmp(argv[i], "--nummon") == 0)
 			{
 				dungeon.num_mon = atoi(argv[i+1]);
 			}

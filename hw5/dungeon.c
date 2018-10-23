@@ -911,8 +911,6 @@ void dungeon_ncurses()
 			case '<':
 				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_UP)
 				{
-					//pq_delete(dungeon.pq_nontunel);
-					//pq_delete(dungeon.pq_tunel);
 					//TODO BUGFIX clean monster queue
                     delete_dungeon();
 					generate_dungeon();
@@ -926,8 +924,6 @@ void dungeon_ncurses()
 			case '>':
 				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_DOWN)
 				{
-					// pq_delete(dungeon.pq_nontunel);
-					// pq_delete(dungeon.pq_tunel);
 					//TODO BUGFIX clean monster queue
                     delete_dungeon();
 					generate_dungeon();

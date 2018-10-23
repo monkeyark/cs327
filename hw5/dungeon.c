@@ -356,6 +356,12 @@ void generate_dungeon()
 	new_PC();
 }
 
+void delete_dungeon()
+{
+    free(dungeon.rooms);
+	free(dungeon.monster);
+}
+
 void load_file(FILE *f)
 {
 	if (!f)
@@ -540,7 +546,7 @@ void dijkstra_tunneling(int dist[ROW * COL])
 	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
 	int i, j;
-	//Queue pq_tunel;
+	
 	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
 	for (i = 0; i < ROW; i++)
@@ -589,7 +595,7 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
 	int i, j;
-	//Queue pq_nontunel;
+	
 	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
 
 	for (i = 0; i < ROW; i++)
@@ -689,62 +695,6 @@ void (*npc_move_func[])(NPC *c) =
 };
 */
 
-/*
-void print_dungeon_ncurses_debug(WINDOW *game)
-{
-	//printf("\nnpc_row = %d; npc_col = %d\n", dungeon.monster[0].row, dungeon.monster[0].col);//TODO
-	wprintw(game, "   ");
-	for (int i = 0; i < COL; i++)
-	{
-		int row = (i - i % 10) / 10;
-		if (i % 10 == 0)
-		{
-			wprintw(game, "%d", row);
-		}
-		else
-		{
-			wprintw(game, " ");
-		}
-	}
-	wprintw(game, "\n");
-
-	wprintw(game, "   ");
-	for (int i = 0; i < COL; i++)
-	{
-		wprintw(game, "%d", i % 10);
-	}
-	wprintw(game, "\n ");
-
-	for (int i = 0; i < COL + 2; i++)
-	{
-		wprintw(game, "-");
-	}
-	wprintw(game, "\n");
-
-	for (int i = 0; i < ROW; i++)
-	{
-		wprintw(game, "%2d|", i);
-		for (int j = 0; j < COL; j++)
-		{
-			if (is_monster(i, j))
-			{
-				wprintw(game, "%x", dungeon.monster[is_monster(i, j) - 1].characteristics);
-			}
-			else
-			{
-				wprintw(game, "%c", dungeon.map[i][j].space);
-			}
-		}
-		wprintw(game, "|\n");
-	}
-	wprintw(game, "  ");
-	for (int i = 0; i < COL + 2; i++)
-	{
-		wprintw(game, "-");
-	}
-	wprintw(game, "\n");
-}
-*/
 void print_dungeon_ncurses(WINDOW *game, char *message)
 {
 	int i, j;
@@ -964,8 +914,7 @@ void dungeon_ncurses()
 					//pq_delete(dungeon.pq_nontunel);
 					//pq_delete(dungeon.pq_tunel);
 					//TODO BUGFIX clean monster queue
-					free(dungeon.rooms);
-					free(dungeon.monster);
+                    delete_dungeon();
 					generate_dungeon();
 					message = "You went up stair";
 				}
@@ -980,8 +929,7 @@ void dungeon_ncurses()
 					// pq_delete(dungeon.pq_nontunel);
 					// pq_delete(dungeon.pq_tunel);
 					//TODO BUGFIX clean monster queue
-					free(dungeon.rooms);
-					free(dungeon.monster);
+                    delete_dungeon();
 					generate_dungeon();
 					message = "You went down stair";
 				}

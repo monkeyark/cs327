@@ -69,27 +69,6 @@ typedef struct Player_Character
 } PC;
 */
 
-/*
-struct queue_node;
-
-typedef struct queue_node Node;
-
-struct queue_node
-{
-	Node *next;
-	int priority;
-};
-
-typedef struct Priority_Queue
-{
-  //Node **head = malloc(sizeof(Node));
-  Node **head;
-  uint32_t size;
-  int32_t (*compare)(const void *key, const void *with);
-  void (*datum_delete)(void *);
-} Queue;
-*/
-
 typedef struct Character
 {
 	unsigned int characteristics;
@@ -131,6 +110,8 @@ int get_random(int modulus, int min);
 void print_dungeon();
 
 void generate_dungeon();
+
+void delete_dungeon();
 
 void load_file(FILE *f);
 

@@ -31,11 +31,6 @@ int main(int argc, char *argv[])
 	//generate random number of monster
 	dungeon.num_mon = get_random(5, 8);
 
-	int dist_nontunneling[ROW * COL];
-	memset(dist_nontunneling, 0, sizeof (dist_nontunneling));
-	int dist_tunneling[ROW * COL];
-	memset(dist_tunneling, 0, sizeof (dist_tunneling));
-
 	bool load = false;
 	bool save = false;
 
@@ -80,12 +75,18 @@ int main(int argc, char *argv[])
 		FILE *f = fopen(path, "w");
 		save_file(f);
 	}
+
+/*
+	int dist_nontunneling[ROW * COL];
+	memset(dist_nontunneling, 0, sizeof (dist_nontunneling));
+	int dist_tunneling[ROW * COL];
+	memset(dist_tunneling, 0, sizeof (dist_tunneling));
 	//dijkstra_nontunneling(dist_nontunneling);
 	//dijkstra_tunneling(dist_tunneling);
+*/
 
 	move_dungeon();
-	free(dungeon.rooms);
-	free(dungeon.monster);
+    delete_dungeon();
 
 	return 0;
 }

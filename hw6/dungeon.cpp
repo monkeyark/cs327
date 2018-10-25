@@ -1032,6 +1032,16 @@ void teleport()
 				run = false;
 				break;
 			case 'r':
+                do
+                {
+                    dungeon.teleport_row = get_random(ROW, 0);
+                    dungeon.teleport_col = get_random(COL, 0);
+                }
+                while (!is_inside(dungeon.teleport_row, dungeon.teleport_col));
+
+                row_move = dungeon.teleport_row - dungeon.PC.row;
+                col_move = dungeon.teleport_col - dungeon.PC.col;
+                message = move_pc_teleport(row_move, col_move);
                 run = false;
 				break;
 		}

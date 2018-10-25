@@ -1,0 +1,10 @@
+This project is written in C++ and it is built on previous C project.
+
+In preious project, the monster move is not fully implemented
+so that in this project monsters have only one movement parttern.
+Monster movement will be fully implemented in future project.
+
+Teleport into immutable rock is impossible, because the teleport
+pointer can not even move to the out most layer of the dungeon.
+
+Press key f to toggle the fog of war on and off.

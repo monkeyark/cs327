@@ -788,86 +788,6 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 	}
 }
 
-void print_monster_list_ncurses(WINDOW *list, int start)
-{
-	int i, j;
-	char str[COL];
-	for (i = 0, j = start; i < ROW && j < dungeon.num_mon - start; i++, j++)
-	{
-
-		Character npc = dungeon.monster[j];
-		int row_dis = npc.row - dungeon.PC.row;
-		int col_dis = npc.col - dungeon.PC.col;
-		const char *row_pos, *col_pos;
-
-		if (row_dis > 0)
-		{
-			row_pos = "South";
-		}
-		else if (row_dis < 0)
-		{
-			row_pos = "North";
-		}
-		else
-		{
-			row_pos = "     ";
-		}
-
-		if (col_dis > 0)
-		{
-			col_pos = " East";
-		}
-		else if (col_dis < 0)
-		{
-			col_pos = " West";
-		}
-		else
-		{
-			col_pos = "     ";
-		}
-
-		sprintf(str, "%x:  %2d %s and %2d %s", npc.characteristics, abs(row_dis), row_pos, abs(col_dis), col_pos);
-		char *m = str;
-
-		for (int n = 0; *m; m++, n++)
-		{
-			mvwprintw(list, i, n, m);
-		}
-	}
-
-}
-
-void monster_list()
-{
-	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
-	keypad(list, true);
-	bool run = true;
-	int index = 0;
-	while(run)
-	{
-		print_monster_list_ncurses(list, index);
-		int key = wgetch(list);
-		switch(key)
-		{
-			case 27:
-				run = false;
-				break;
-			case KEY_UP:
-				index++;
-				index = MIN(index, dungeon.num_mon);
-				break;
-			case KEY_DOWN:
-				index--;
-				index = MAX(index, 0);
-				break;
-		}
-	}
-
-	wclrtoeol(list);
-	wrefresh(list);
-	delwin(list);
-}
-
 void move_npc()
 {
 	if (!dungeon.PC.dead)
@@ -914,6 +834,243 @@ const char *move_pc(int row_move, int col_move)
 	}
 
 	return message;
+}
+
+void print_monster_list_ncurses(WINDOW *list, int start)
+{
+	int i, j;
+	char str[COL];
+	for (i = 0, j = start; i < ROW && j < dungeon.num_mon - start; i++, j++)
+	{
+
+		Character npc = dungeon.monster[j];
+		int row_dis = npc.row - dungeon.PC.row;
+		int col_dis = npc.col - dungeon.PC.col;
+		const char *row_pos, *col_pos;
+
+		if (row_dis > 0)
+		{
+			row_pos = "South";
+		}
+		else if (row_dis < 0)
+		{
+			row_pos = "North";
+		}
+		else
+		{
+			row_pos = "     ";
+		}
+		if (col_dis > 0)
+		{
+			col_pos = " East";
+		}
+		else if (col_dis < 0)
+		{
+			col_pos = " West";
+		}
+		else
+		{
+			col_pos = "     ";
+		}
+
+		sprintf(str, "%x:  %2d %s and %2d %s", npc.characteristics, abs(row_dis), row_pos, abs(col_dis), col_pos);
+		char *m = str;
+
+		for (int n = 0; *m; m++, n++)
+		{
+			mvwprintw(list, i, n, m);
+		}
+	}
+
+}
+
+void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
+{
+	int i, j;
+	//clean previous message
+	for (i = 0, j = 0; j < TERMINAL_COL; j++)
+	{
+		mvwprintw(game, i, j, " ");
+	}
+
+	//print current message
+	const char *m = message;
+	for (i = 0, j = 0; *m; m++, j++)
+	{
+		mvwprintw(game, i, j, m);
+	}
+
+	//print dungeon
+	for (i = 1; i < ROW + 1; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+            if (i == dungeon.teleport_row && j == dungeon.teleport_col)
+            {
+                mvwprintw(game, i, j, "*");
+            }
+			else if (i == dungeon.PC.row && j == dungeon.PC.col)
+			{
+				mvwprintw(game, i, j, "@");
+			}
+			else if (!(is_monster(i, j) < 0))
+			{
+				mvwprintw(game, i, j, "%x", dungeon.monster[is_monster(i, j)].characteristics);
+			}
+			else
+			{
+				mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
+			}
+		}
+	}
+}
+
+const char *move_tp_pointer(int row_move, int col_move)
+{
+	const char *message = "teleporting";
+    if (is_inside(dungeon.teleport_row + row_move, dungeon.teleport_col + col_move))
+	{
+        dungeon.teleport_row += row_move;
+        dungeon.teleport_col += col_move;
+	}
+	else
+	{
+		message = "Your are out of the dungeon!";
+	}
+
+	return message;
+}
+
+const char *move_pc_teleport(int row_move, int col_move)
+{
+	const char *message;
+	if (row_move == 0 && col_move == 0)
+	{
+		move_npc();
+		message = "PC is resting!";
+	}
+	else
+	{
+		dungeon.PC.row += row_move;
+		dungeon.PC.col += col_move;
+		if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+		{
+			int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+			dungeon.monster[i].dead = true;
+			dungeon.monster[i].row = -1;
+			dungeon.monster[i].col = -1;
+		}
+        if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == ROCK)
+        {
+            dungeon.map[dungeon.PC.row][dungeon.PC.col].space = CORRIDOR;
+            dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = CORRIDOR_H;
+        }
+		move_npc();
+        get_vision_PC();
+		message = "";
+	}
+
+	return message;
+}
+
+void teleport()
+{
+    WINDOW *teleport = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(teleport, true);
+	bool run = true;
+    dungeon.teleport_row = dungeon.PC.row;
+    dungeon.teleport_col = dungeon.PC.col;
+
+    char random_seed[10];
+    sprintf(random_seed, "%d", dungeon.seed);
+    char seed_message[20] = "seed = ";
+    strcat(seed_message, random_seed);
+    char seed_message_suffix[2] = ";";
+    strcat(seed_message, seed_message_suffix);
+    const char *message = seed_message;
+
+	while(run)
+	{
+        print_dungeon_teleport_ncurses(teleport, message);
+        int row_move = dungeon.teleport_row - dungeon.PC.row;
+        int col_move = dungeon.teleport_col - dungeon.PC.col;
+		int key = wgetch(teleport);
+		switch(key)
+		{
+            case KEY_HOME:
+				message = move_tp_pointer(-1, -1);//move up-left
+				break;
+			case KEY_UP:
+				message = move_tp_pointer(-1, 0);//move up
+				break;
+			case KEY_PPAGE:
+				message = move_tp_pointer(-1, 1);//move up-right
+				break;
+			case KEY_RIGHT:
+				message = move_tp_pointer(0, 1);//move right
+				break;
+			case KEY_NPAGE:
+				message = move_tp_pointer(1, 1);//move down-right
+				break;
+			case KEY_DOWN:
+				message = move_tp_pointer(1, 0);//move down
+				break;
+			case KEY_END:
+				message = move_tp_pointer(1, -1);//move down-left
+				break;
+			case KEY_LEFT:
+				message = move_tp_pointer(0, -1);//move left
+				break;
+			case KEY_B2:
+				message = move_tp_pointer(0, 0);//rest
+				break;
+			case ' ':
+				message = move_tp_pointer(0, 0);//rest
+				break;
+			case 'g':
+                message = move_pc_teleport(row_move, col_move);
+				run = false;
+				break;
+			case 'r':
+                run = false;
+				break;
+		}
+	}
+
+	wclrtoeol(teleport);
+	wrefresh(teleport);
+	delwin(teleport);
+}
+
+void monster_list()
+{
+	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(list, true);
+	bool run = true;
+	int index = 0;
+	while(run)
+	{
+		print_monster_list_ncurses(list, index);
+		int key = wgetch(list);
+		switch(key)
+		{
+			case 27:
+				run = false;
+				break;
+			case KEY_UP:
+				index++;
+				index = MIN(index, dungeon.num_mon);
+				break;
+			case KEY_DOWN:
+				index--;
+				index = MAX(index, 0);
+				break;
+		}
+	}
+
+	wclrtoeol(list);
+	wrefresh(list);
+	delwin(list);
 }
 
 void dungeon_ncurses()
@@ -1052,7 +1209,8 @@ void dungeon_ncurses()
                 fog = !fog;
 				break;
 			case 'g':
-			//TODO
+				teleport();
+				refresh();
 				break;
 			case 'h':
 				message = move_pc(0, -1);//move left

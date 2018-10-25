@@ -112,6 +112,8 @@ class Dungeon
         Room *rooms;
         Character *monster;
         Character PC;
+        int teleport_row;
+        int teleport_col;
         Terrain map[ROW][COL];
         Queue pq_tunel;
         Queue pq_nontunel;

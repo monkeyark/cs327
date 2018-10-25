@@ -1021,15 +1021,51 @@ void teleport()
 			case KEY_LEFT:
 				message = move_tp_pointer(0, -1);//move left
 				break;
-			case KEY_B2:
-				message = move_tp_pointer(0, 0);//rest
+            case '1':
+				message = move_tp_pointer(1, -1);//move down-left
 				break;
-			case ' ':
-				message = move_tp_pointer(0, 0);//rest
+			case '2':
+				message = move_tp_pointer(1, 0);//move down
+				break;
+			case '3':
+				message = move_tp_pointer(1, 1);//move down-right
+				break;
+			case '4':
+				message = move_tp_pointer(0, -1);//move left
+				break;
+			case '6':
+				message = move_tp_pointer(0, 1);//move right
+				break;
+			case '7':
+				message = move_tp_pointer(-1, -1);//move up-left
+				break;
+			case '8':
+				message = move_tp_pointer(-1, 0);//move up
+				break;
+			case '9':
+				message = move_tp_pointer(-1, 1);//move up-right
+				break;
+			case 'b':
+				message = move_tp_pointer(1, -1);//move down-left
 				break;
 			case 'g':
                 message = move_pc_teleport(row_move, col_move);
 				run = false;
+				break;
+			case 'h':
+				message = move_tp_pointer(0, -1);//move left
+				break;
+			case 'j':
+				message = move_tp_pointer(1, 0);//move down
+				break;
+			case 'k':
+				message = move_tp_pointer(-1, 0);//move up
+				break;
+			case 'l':
+				message = move_tp_pointer(0, 1);//move right
+				break;
+			case 'n':
+				message = move_tp_pointer(1, 1);//move down-right
 				break;
 			case 'r':
                 do
@@ -1043,6 +1079,12 @@ void teleport()
                 col_move = dungeon.teleport_col - dungeon.PC.col;
                 message = move_pc_teleport(row_move, col_move);
                 run = false;
+				break;
+			case 'u':
+				message = move_tp_pointer(-1, 1);//move up-right
+				break;
+			case 'y':
+				message = move_tp_pointer(-1, -1);//move up-left
 				break;
 		}
 	}

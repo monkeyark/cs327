@@ -34,12 +34,12 @@ int main(int argc, char *argv[])
 	{
 		for (int i = 1; i < argc; i++)
 		{
-//			if (strcmp(argv[i], "--save") != 0 && strcmp(argv[i], "--load") != 0 &&
-//					strcmp(argv[i], "--nummon") != 0)
-//			{
-//				fprintf(stderr, "Bad argument\n");
-//				return -1;
-//			}
+			if (strcmp(argv[i], "--save") != 0 && strcmp(argv[i], "--load") != 0 &&
+                strcmp(argv[i], "--nummon") != 0 && !atoi(argv[i]))
+			{
+				fprintf(stderr, "Bad argument\n");
+				return -1;
+			}
 			if (strcmp(argv[i], "--save") == 0)
 			{
 				save = true;

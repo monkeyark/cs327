@@ -1209,7 +1209,6 @@ void dungeon_ncurses()
 			case '<':
 				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain == STAIR_UP)
 				{
-					//TODO BUGFIX clean monster queue
                     delete_dungeon();
 					generate_dungeon();
 					message = "You went up stair";
@@ -1222,7 +1221,6 @@ void dungeon_ncurses()
 			case '>':
 				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain == STAIR_DOWN)
 				{
-					//TODO BUGFIX clean monster queue
                     delete_dungeon();
 					generate_dungeon();
 					message = "You went down stair";

@@ -925,8 +925,10 @@ void dungeon_ncurses()
 
 	keypad(game, true);
 	bool run = true;
+    bool fog = true;
+
+
     char random_seed[10];
-    
     sprintf(random_seed, "%d", dungeon.seed);
     char seed_message[20] = "seed = ";
     strcat(seed_message, random_seed);
@@ -936,8 +938,14 @@ void dungeon_ncurses()
     const char *message = seed_message;
 	while(run)
 	{
-		print_dungeon_ncurses(game, message);
-        //print_dungeon_fog_ncurses(game, message);
+        if (fog)
+        {
+            print_dungeon_fog_ncurses(game, message);
+        }
+        else
+        {
+            print_dungeon_ncurses(game, message);
+        }
 
 		int key = wgetch(game);
 		switch(key)
@@ -1041,7 +1049,7 @@ void dungeon_ncurses()
 			//TODO
 				break;
 			case 'f':
-			//TODO
+                fog = !fog;
 				break;
 			case 'g':
 			//TODO

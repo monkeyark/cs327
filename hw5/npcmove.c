@@ -105,9 +105,9 @@ void npc_next_pos_07(Character *npc, int index)
 		npc->row = next_row;
 		npc->col = next_col;
 		if (dungeon.map[npc->row][npc->col].hardness == 0 &&
-				dungeon.map[npc->row][npc->col].space == ROCK)
+				dungeon.map[npc->row][npc->col].terrain == ROCK)
 		{
-			dungeon.map[npc->row][npc->col].space = CORRIDOR;
+			dungeon.map[npc->row][npc->col].terrain = CORRIDOR;
 		}
 	}
 	else

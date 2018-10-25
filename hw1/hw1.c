@@ -71,7 +71,7 @@ bool is_inside (int row, int col)
 
 bool is_valid_room(int row, int col, int width, int height)
 {
-	//is current space free
+	//is current terrain free
 	if (dungeon[row][col] != ROCK) return false;
 	if (!is_inside(row, col) || !is_inside(row+height, col+width)) return false;
 	//touch or overlap another room

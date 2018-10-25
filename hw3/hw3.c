@@ -27,7 +27,7 @@
 
 typedef struct cell
 {
-	char space;
+	char terrain;
 	int hardness;
 //	int distance;
 } Cell;
@@ -58,7 +58,7 @@ void initDungeon()
 	{
 		for (int j = 0; j < COL; j++)
 		{
-			dungeon.map[i][j].space = ROCK;
+			dungeon.map[i][j].terrain = ROCK;
 			dungeon.map[i][j].hardness = ROCK_H;
 		}
 	}
@@ -91,7 +91,7 @@ void print_dungeon()
 		printf("%2d|", i);
 		for (int j = 0; j < COL; j++)
 		{
-			printf("%c", dungeon.map[i][j].space);
+			printf("%c", dungeon.map[i][j].terrain);
 		}
 		printf("|\n");
 	}
@@ -111,32 +111,32 @@ bool is_inside(int row, int col)
 
 bool is_valid_room(int row, int col, int width, int height)
 {
-	//is current space free
-	if (dungeon.map[row][col].space != ROCK)
+	//is current terrain free
+	if (dungeon.map[row][col].terrain != ROCK)
 		return false;
 	if (!is_inside(row, col) || !is_inside(row + height, col + width))
 		return false;
 	//touch or overlap another room
 	for (int i = row - 1; i < row + height + 2; i++)
 	{
-		if (dungeon.map[i][col - 1].space != ROCK)
+		if (dungeon.map[i][col - 1].terrain != ROCK)
 			return false; //left touch
-		if (dungeon.map[i][col].space != ROCK)
+		if (dungeon.map[i][col].terrain != ROCK)
 			return false; //left overlap
-		if (dungeon.map[i][col + width + 1].space != ROCK)
+		if (dungeon.map[i][col + width + 1].terrain != ROCK)
 			return false; //right touch
-		if (dungeon.map[i][col + width].space != ROCK)
+		if (dungeon.map[i][col + width].terrain != ROCK)
 			return false; //right overlap
 	}
 	for (int j = col - 1; j < col + width + 2; j++)
 	{
-		if (dungeon.map[row - 1][j].space != ROCK)
+		if (dungeon.map[row - 1][j].terrain != ROCK)
 			return false; //top touch
-		if (dungeon.map[row][j].space != ROCK)
+		if (dungeon.map[row][j].terrain != ROCK)
 			return false; //top overlap
-		if (dungeon.map[row + height + 1][j].space != ROCK)
+		if (dungeon.map[row + height + 1][j].terrain != ROCK)
 			return false; //bottom touch
-		if (dungeon.map[row + height][j].space != ROCK)
+		if (dungeon.map[row + height][j].terrain != ROCK)
 			return false; //bottom overlap
 	}
 
@@ -159,7 +159,7 @@ Room new_room_random()
 		{
 			for (int j = r.col; j < r.col + r.width; j++)
 			{
-				dungeon.map[i][j].space = ROOM;
+				dungeon.map[i][j].terrain = ROOM;
 				dungeon.map[i][j].hardness = ROOM_H;
 			}
 		}
@@ -178,7 +178,7 @@ void new_room(int row, int col, int width, int height)
 	{
 		for (int j = col; j < col + width; j++)
 		{
-			dungeon.map[i][j].space = ROOM;
+			dungeon.map[i][j].terrain = ROOM;
 			dungeon.map[i][j].hardness = ROOM_H;
 		}
 	}
@@ -203,20 +203,20 @@ int minimum(int a, int b)
 
 bool is_connected(int row, int col)
 {
-	return dungeon.map[row - 1][col].space == CORRIDOR
-	|| dungeon.map[row + 1][col].space == CORRIDOR
-	|| dungeon.map[row][col - 1].space == CORRIDOR
-	|| dungeon.map[row][col + 1].space == CORRIDOR;
+	return dungeon.map[row - 1][col].terrain == CORRIDOR
+	|| dungeon.map[row + 1][col].terrain == CORRIDOR
+	|| dungeon.map[row][col - 1].terrain == CORRIDOR
+	|| dungeon.map[row][col + 1].terrain == CORRIDOR;
 }
 
 void new_corridor(int aRow, int aCol, int bRow, int bCol)
 {
 	if (distance(aRow, aCol, bRow, bCol) == 0)
 		return;
-	if (dungeon.map[aRow][aCol].space == CORRIDOR && is_connected(bRow, bCol))
+	if (dungeon.map[aRow][aCol].terrain == CORRIDOR && is_connected(bRow, bCol))
 		return;
-	if (dungeon.map[aRow][aCol].space == ROCK)
-		dungeon.map[aRow][aCol].space = CORRIDOR;
+	if (dungeon.map[aRow][aCol].terrain == ROCK)
+		dungeon.map[aRow][aCol].terrain = CORRIDOR;
 
 	int max = distance(0, 0, ROW, COL);
 	int min = max;
@@ -283,7 +283,7 @@ void generate_dungeon(int n)
 	//add initial player loaction
 	dungeon.pc_row = dungeon.rooms[0].row;
 	dungeon.pc_col = dungeon.rooms[0].col;
-	dungeon.map[dungeon.pc_row][dungeon.pc_col].space = '@';
+	dungeon.map[dungeon.pc_row][dungeon.pc_col].terrain = '@';
 	dungeon.map[dungeon.pc_row][dungeon.pc_col].hardness = 0;
 }
 
@@ -327,11 +327,11 @@ void load_file(FILE *f)
 			dungeon.map[row][col].hardness = h;
 			if (h == 0)
 			{
-				dungeon.map[row][col].space = CORRIDOR;
+				dungeon.map[row][col].terrain = CORRIDOR;
 			}
 			else
 			{
-				dungeon.map[row][col].space = ROCK;
+				dungeon.map[row][col].terrain = ROCK;
 			}
 		}
 	}
@@ -354,7 +354,7 @@ void load_file(FILE *f)
 	}
 
 	//add PC
-	dungeon.map[dungeon.pc_row][dungeon.pc_col].space = PC;
+	dungeon.map[dungeon.pc_row][dungeon.pc_col].terrain = PC;
 	dungeon.map[dungeon.pc_row][dungeon.pc_col].hardness = PC_H;
 
 	fclose(f);
@@ -518,7 +518,7 @@ void dijkstra_tunneling()
 			{
 				dist[i * COL + j] = -1;
 			}
-			else if (dungeon.map[i][j].space != PC)
+			else if (dungeon.map[i][j].terrain != PC)
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
@@ -567,13 +567,13 @@ void dijkstra_nontunneling()
 	{
 		for (j = 0; j < COL; j++)
 		{
-			if (dungeon.map[i][j].space == ROOM || dungeon.map[i][j].space == CORRIDOR)
+			if (dungeon.map[i][j].terrain == ROOM || dungeon.map[i][j].terrain == CORRIDOR)
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				//dungeon.map[i][j].distance = ROW*COL+1;
 				pq_insert(&node, i * COL + j, dist);
 			}
-			else if (dungeon.map[i][j].space == ROCK)
+			else if (dungeon.map[i][j].terrain == ROCK)
 			{
 				dist[i * COL + j] = -1;
 				//dungeon.map[i][j].distance = -1;

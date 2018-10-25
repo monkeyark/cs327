@@ -41,7 +41,7 @@
 
 typedef struct Terrain
 {
-	char space;
+	char terrain;
 	int hardness;
 } Terrain;
 

@@ -8,7 +8,7 @@ void init_dungeon()
 	{
 		for (int j = 0; j < COL; j++)
 		{
-			dungeon.map[i][j].space = ROCK;
+			dungeon.map[i][j].terrain = ROCK;
 			dungeon.map[i][j].hardness = ROCK_H;
 		}
 	}
@@ -80,7 +80,7 @@ void print_dungeon()
 			}
 			else
 			{
-				printf("%c", dungeon.map[i][j].space);
+				printf("%c", dungeon.map[i][j].terrain);
 			}
 		}
 		printf("|\n");
@@ -101,45 +101,45 @@ bool is_inside(int row, int col)
 
 bool is_room(int row, int col)
 {
-	return dungeon.map[row][col].space == ROOM;
+	return dungeon.map[row][col].terrain == ROOM;
 }
 
 bool is_room_corridor_stair(int row, int col)
 {
-	return dungeon.map[row][col].space == ROOM
-		|| dungeon.map[row][col].space == CORRIDOR
-		|| dungeon.map[row][col].space == STAIR_UP
-		|| dungeon.map[row][col].space == STAIR_DOWN;
+	return dungeon.map[row][col].terrain == ROOM
+		|| dungeon.map[row][col].terrain == CORRIDOR
+		|| dungeon.map[row][col].terrain == STAIR_UP
+		|| dungeon.map[row][col].terrain == STAIR_DOWN;
 }
 
 bool is_valid_room(int row, int col, int width, int height)
 {
-	//is current space free
-	if (dungeon.map[row][col].space != ROCK)
+	//is current terrain free
+	if (dungeon.map[row][col].terrain != ROCK)
 		return false;
 	if (!is_inside(row, col) || !is_inside(row + height, col + width))
 		return false;
 	//touch or overlap another room
 	for (int i = row - 1; i < row + height + 2; i++)
 	{
-		if (dungeon.map[i][col - 1].space != ROCK)
+		if (dungeon.map[i][col - 1].terrain != ROCK)
 			return false; //left touch
-		if (dungeon.map[i][col].space != ROCK)
+		if (dungeon.map[i][col].terrain != ROCK)
 			return false; //left overlap
-		if (dungeon.map[i][col + width + 1].space != ROCK)
+		if (dungeon.map[i][col + width + 1].terrain != ROCK)
 			return false; //right touch
-		if (dungeon.map[i][col + width].space != ROCK)
+		if (dungeon.map[i][col + width].terrain != ROCK)
 			return false; //right overlap
 	}
 	for (int j = col - 1; j < col + width + 2; j++)
 	{
-		if (dungeon.map[row - 1][j].space != ROCK)
+		if (dungeon.map[row - 1][j].terrain != ROCK)
 			return false; //top touch
-		if (dungeon.map[row][j].space != ROCK)
+		if (dungeon.map[row][j].terrain != ROCK)
 			return false; //top overlap
-		if (dungeon.map[row + height + 1][j].space != ROCK)
+		if (dungeon.map[row + height + 1][j].terrain != ROCK)
 			return false; //bottom touch
-		if (dungeon.map[row + height][j].space != ROCK)
+		if (dungeon.map[row + height][j].terrain != ROCK)
 			return false; //bottom overlap
 	}
 
@@ -162,7 +162,7 @@ Room new_room_random()
 		{
 			for (int j = r.col; j < r.col + r.width; j++)
 			{
-				dungeon.map[i][j].space = ROOM;
+				dungeon.map[i][j].terrain = ROOM;
 				dungeon.map[i][j].hardness = ROOM_H;
 			}
 		}
@@ -181,7 +181,7 @@ void new_room(int row, int col, int width, int height)
 	{
 		for (int j = col; j < col + width; j++)
 		{
-			dungeon.map[i][j].space = ROOM;
+			dungeon.map[i][j].terrain = ROOM;
 			dungeon.map[i][j].hardness = ROOM_H;
 		}
 	}
@@ -197,20 +197,20 @@ int distance(int aRow, int aCol, int bRow, int bCol)
 
 bool is_connected(int row, int col)
 {
-	return dungeon.map[row - 1][col].space == CORRIDOR
-		|| dungeon.map[row + 1][col].space == CORRIDOR
-		|| dungeon.map[row][col - 1].space == CORRIDOR
-		|| dungeon.map[row][col + 1].space == CORRIDOR;
+	return dungeon.map[row - 1][col].terrain == CORRIDOR
+		|| dungeon.map[row + 1][col].terrain == CORRIDOR
+		|| dungeon.map[row][col - 1].terrain == CORRIDOR
+		|| dungeon.map[row][col + 1].terrain == CORRIDOR;
 }
 
 void new_corridor(int aRow, int aCol, int bRow, int bCol)
 {
 	if (distance(aRow, aCol, bRow, bCol) == 0)
 		return;
-	if (dungeon.map[aRow][aCol].space == CORRIDOR && is_connected(bRow, bCol))
+	if (dungeon.map[aRow][aCol].terrain == CORRIDOR && is_connected(bRow, bCol))
 		return;
-	if (dungeon.map[aRow][aCol].space == ROCK)
-		dungeon.map[aRow][aCol].space = CORRIDOR;
+	if (dungeon.map[aRow][aCol].terrain == ROCK)
+		dungeon.map[aRow][aCol].terrain = CORRIDOR;
 
 	int max = distance(0, 0, ROW, COL);
 	int min = max;
@@ -268,9 +268,9 @@ void new_stair()
 	if (is_room(stair_up_row, stair_up_col) &&
 		is_room(stair_down_row, stair_down_col))
 	{
-		dungeon.map[stair_up_row][stair_up_col].space = STAIR_UP;
+		dungeon.map[stair_up_row][stair_up_col].terrain = STAIR_UP;
 		dungeon.map[stair_up_row][stair_up_col].hardness = 0;
-		dungeon.map[stair_down_row][stair_down_col].space = STAIR_DOWN;
+		dungeon.map[stair_down_row][stair_down_col].terrain = STAIR_DOWN;
 		dungeon.map[stair_down_row][stair_down_col].hardness = 0;
 	}
 	else
@@ -286,8 +286,8 @@ Character new_NPC(int birth)
 	int row = get_random(ROW, 0);
 	int col = get_random(COL, 0);
 	//add monster into map
-	if (dungeon.map[row][col].space == ROOM ||
-		dungeon.map[row][col].space == CORRIDOR)
+	if (dungeon.map[row][col].terrain == ROOM ||
+		dungeon.map[row][col].terrain == CORRIDOR)
 	{
 		npc.row = row;
 		npc.col = col;
@@ -402,11 +402,11 @@ void load_file(FILE *f)
 			dungeon.map[row][col].hardness = h;
 			if (h == 0)
 			{
-				dungeon.map[row][col].space = CORRIDOR;
+				dungeon.map[row][col].terrain = CORRIDOR;
 			}
 			else
 			{
-				dungeon.map[row][col].space = ROCK;
+				dungeon.map[row][col].terrain = ROCK;
 			}
 		}
 	}
@@ -429,7 +429,7 @@ void load_file(FILE *f)
 	}
 
 	//add PC
-	dungeon.map[dungeon.PC.row][dungeon.PC.col].space = PLAYER;
+	dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain = PLAYER;
 	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = PC_H;
 
 	fclose(f);
@@ -557,7 +557,7 @@ void dijkstra_tunneling(int dist[ROW * COL])
 			{
 				dist[i * COL + j] = -1;
 			}
-			else if (dungeon.map[i][j].space != PLAYER)
+			else if (dungeon.map[i][j].terrain != PLAYER)
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				pq_insert(dungeon.pq_tunel, &node, i * COL + j, dist);
@@ -602,15 +602,15 @@ void dijkstra_nontunneling(int dist[ROW * COL])
 	{
 		for (j = 0; j < COL; j++)
 		{
-			if (dungeon.map[i][j].space == ROOM ||
-				dungeon.map[i][j].space == CORRIDOR ||
-				dungeon.map[i][j].space == STAIR_UP ||
-				dungeon.map[i][j].space == STAIR_DOWN)
+			if (dungeon.map[i][j].terrain == ROOM ||
+				dungeon.map[i][j].terrain == CORRIDOR ||
+				dungeon.map[i][j].terrain == STAIR_UP ||
+				dungeon.map[i][j].terrain == STAIR_DOWN)
 			{
 				dist[i * COL + j] = ROW * COL + 1;
 				pq_insert(dungeon.pq_nontunel, &node, i * COL + j, dist);
 			}
-			else if (dungeon.map[i][j].space == ROCK)
+			else if (dungeon.map[i][j].terrain == ROCK)
 			{
 				dist[i * COL + j] = -1;
 			}
@@ -726,7 +726,7 @@ void print_dungeon_ncurses(WINDOW *game, char *message)
 			}
 			else
 			{
-				mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
+				mvwprintw(game, i, j, "%c", dungeon.map[i][j].terrain);
 			}
 		}
 		//mvwprintw(game, i, COL, "\n");
@@ -909,7 +909,7 @@ void dungeon_ncurses()
 				message = move_pc(0, 0);//rest
 				break;
 			case '<':
-				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_UP)
+				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain == STAIR_UP)
 				{
 					//TODO BUGFIX clean monster queue
                     delete_dungeon();
@@ -922,7 +922,7 @@ void dungeon_ncurses()
 				}
 				break;
 			case '>':
-				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].space == STAIR_DOWN)
+				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain == STAIR_DOWN)
 				{
 					//TODO BUGFIX clean monster queue
                     delete_dungeon();

@@ -11,7 +11,7 @@ void npc_next_pos_05(Character *npc, int index)
 {
 	memset(npc->dist, 0, sizeof (npc->dist));
 
-	dijkstra_nontunneling(*npc);
+	dijkstra_nontunneling(npc);
 
 	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
 	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};
@@ -68,7 +68,7 @@ void npc_next_pos_07(Character *npc, int index)
 {
 	memset(npc->dist, 0, sizeof (npc->dist));
 
-	dijkstra_tunneling(*npc);
+	dijkstra_tunneling(npc);
 
 	int rowMove[8] = {-1,  -1,  -1,   0,  +1,  +1,  +1,   0};
 	int colMove[8] = {-1,   0,  +1,  +1,  +1,   0,  -1,  -1};

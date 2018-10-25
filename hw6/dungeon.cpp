@@ -808,7 +808,7 @@ void (*npc_move_func[])(NPC *c) =
 };
 */
 
-void dijkstra_tunneling(Character npc)
+void dijkstra_tunneling(Character *npc)
 {
 	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
@@ -822,16 +822,16 @@ void dijkstra_tunneling(Character npc)
 		{
 			if (!is_inside(i, j))
 			{
-				npc.dist[i * COL + j] = -1;
+				npc->dist[i * COL + j] = -1;
 			}
 			else if (dungeon.map[i][j].space != PLAYER)
 			{
-				npc.dist[i * COL + j] = ROW * COL + 1;
-				pq_insert(dungeon.pq_tunel, &node, i * COL + j, npc.dist);
+				npc->dist[i * COL + j] = ROW * COL + 1;
+				pq_insert(dungeon.pq_tunel, &node, i * COL + j, npc->dist);
 			}
 		}
 	}
-	npc.dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
+	npc->dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
 
 	while (!pq_isEmpty(dungeon.pq_tunel, &node))
 	{
@@ -840,16 +840,16 @@ void dijkstra_tunneling(Character npc)
 		{
 			int alt = 0;
 			int v = u + rowMove[i] + colMove[i] * COL;
-			if (0 > v || v > ROW * COL || npc.dist[v] == -1)
+			if (0 > v || v > ROW * COL || npc->dist[v] == -1)
 				continue;
 
-			if (npc.dist[v] >= 0)
+			if (npc->dist[v] >= 0)
 			{
-				alt = npc.dist[u] + get_hardness_cost(dungeon.map[u / COL][u % COL].hardness);
-				if (alt < npc.dist[v])
+				alt = npc->dist[u] + get_hardness_cost(dungeon.map[u / COL][u % COL].hardness);
+				if (alt < npc->dist[v])
 				{
-					npc.dist[v] = alt;
-					pq_insert(dungeon.pq_tunel, &node, v, npc.dist);
+					npc->dist[v] = alt;
+					pq_insert(dungeon.pq_tunel, &node, v, npc->dist);
 				}
 			}
 		}
@@ -857,7 +857,7 @@ void dijkstra_tunneling(Character npc)
 	//print_dijkstra_path(dist);
 }
 
-void dijkstra_nontunneling(Character npc)
+void dijkstra_nontunneling(Character *npc)
 {
 	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
@@ -874,16 +874,16 @@ void dijkstra_nontunneling(Character npc)
 				dungeon.map[i][j].space == STAIR_UP ||
 				dungeon.map[i][j].space == STAIR_DOWN)
 			{
-				npc.dist[i * COL + j] = ROW * COL + 1;
-				pq_insert(dungeon.pq_nontunel, &node, i * COL + j, npc.dist);
+				npc->dist[i * COL + j] = ROW * COL + 1;
+				pq_insert(dungeon.pq_nontunel, &node, i * COL + j, npc->dist);
 			}
 			else if (dungeon.map[i][j].space == ROCK)
 			{
-				npc.dist[i * COL + j] = -1;
+				npc->dist[i * COL + j] = -1;
 			}
 		}
 	}
-	npc.dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
+	npc->dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
 
 	while (!pq_isEmpty(dungeon.pq_nontunel, &node))
 	{
@@ -895,13 +895,13 @@ void dijkstra_nontunneling(Character npc)
 			if (0 > v || v > ROW * COL)
 				continue;
 
-			if (npc.dist[v] >= 0)
+			if (npc->dist[v] >= 0)
 			{
-				alt = npc.dist[u] + 1;
-				if (alt < npc.dist[v])
+				alt = npc->dist[u] + 1;
+				if (alt < npc->dist[v])
 				{
-					npc.dist[v] = alt;
-					pq_insert(dungeon.pq_nontunel, &node, v, npc.dist);
+					npc->dist[v] = alt;
+					pq_insert(dungeon.pq_nontunel, &node, v, npc->dist);
 				}
 			}
 		}

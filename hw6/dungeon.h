@@ -135,9 +135,9 @@ int is_monster(int row, int col);
 
 // void dijkstra_nontunneling();
 
-void dijkstra_tunneling(Character npc);
+void dijkstra_tunneling(Character *npc);
 
-void dijkstra_nontunneling(Character npc);
+void dijkstra_nontunneling(Character *npc);
 
 void move_dungeon();
 

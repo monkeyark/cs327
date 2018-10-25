@@ -16,7 +16,12 @@
 #include <ncurses.h>
 #include <curses.h>
 
+//#include <iostream>
+//#include <cstring>
+
 #include "queue.h"
+
+using namespace std;
 
 #define ROW 21
 #define COL 80
@@ -51,11 +56,14 @@
 #define NPC_TUNNEL        0x00000004
 #define NPC_ERRATIC       0x00000008
 
-typedef struct Terrain
+using namespace std;
+
+class Terrain
 {
-	char space;
-	int hardness;
-} Terrain;
+    public:
+	    char space;
+	    int hardness;
+};
 
 /*
 typedef struct Player_Character
@@ -69,41 +77,45 @@ typedef struct Player_Character
 } PC;
 */
 
-typedef struct Character
+class Character
 {
-	unsigned int characteristics;
-	int row;
-	int col;
-	int birth;
-	int speed;
-	int pc_row;
-	int pc_col;
-	bool dead;
-	int dist[ROW * COL];
-} Character;
+    public:
+        unsigned int characteristics;
+        int row;
+        int col;
+        int birth;
+        int speed;
+        int pc_row;
+        int pc_col;
+        bool dead;
+        int dist[ROW * COL];
+        Terrain map[ROW][COL];
+};
 
-typedef struct rooms
+class Room
 {
-	int row;
-	int col;
-	int width;
-	int height;
-} Room;
+    public:
+        int row;
+        int col;
+        int width;
+        int height;
+};
 
-typedef struct level
+class Dungeon
 {
-	int num_mon;
-	int num_room;
-	int version;
-	Room *rooms;
-	Character *monster;
-	Character PC;
-	Terrain map[ROW][COL];
-	Queue pq_tunel;
-	Queue pq_nontunel;
-} Dungeon;
+    public:
+        int num_mon;
+        int num_room;
+        int version;
+        Room *rooms;
+        Character *monster;
+        Character PC;
+        Terrain map[ROW][COL];
+        Queue pq_tunel;
+        Queue pq_nontunel;
+};
 
-Dungeon dungeon;
+extern Dungeon dungeon;
 
 int get_random(int modulus, int min);
 
@@ -119,9 +131,13 @@ void save_file(FILE *f);
 
 int is_monster(int row, int col);
 
-void dijkstra_tunneling();
+// void dijkstra_tunneling();
 
-void dijkstra_nontunneling();
+// void dijkstra_nontunneling();
+
+void dijkstra_tunneling(Character npc);
+
+void dijkstra_nontunneling(Character npc);
 
 void move_dungeon();
 

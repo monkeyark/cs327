@@ -8,6 +8,7 @@
 #include "dungeon.h"
 #include "queue.h"
 
+Dungeon dungeon;
 
 int main(int argc, char *argv[])
 {
@@ -22,14 +23,9 @@ int main(int argc, char *argv[])
 	//seed = 1538543175;
 	//seed = 1538556186;
 //	seed = 1539851602;
-
+    
 	printf("\nseed = %d;\n\n", seed);
 	srand(seed);
-
-	//generate random number of rooms
-	dungeon.num_room = get_random(7, 5);
-	//generate random number of monster
-	dungeon.num_mon = get_random(5, 8);
 
 	bool load = false;
 	bool save = false;

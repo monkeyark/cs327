@@ -6,7 +6,7 @@
 
 Node *node_new(int priority)
 {
-	Node *temp = malloc(sizeof(Node));
+	Node *temp = (Node *) malloc(sizeof(Node));
 	temp->priority = priority;
 	temp->next = NULL;
 
@@ -16,22 +16,22 @@ Node *node_new(int priority)
 void pq_insert(Queue pq, Node **head, int priority, int *dist)
 {
 	Node *temp = *head;
-	Node *new = node_new(priority);
+	Node *min = node_new(priority);
 
-	if (dist[(*head)->priority] >= dist[new->priority])
+	if (dist[(*head)->priority] >= dist[min->priority])
 	{
-		new->next = (*head);
-		(*head) = new;
+		min->next = (*head);
+		(*head) = min;
 	}
 	else
 	{
-		while (temp->next != NULL && dist[temp->next->priority] < dist[new->priority])
+		while (temp->next != NULL && dist[temp->next->priority] < dist[min->priority])
 		{
 			temp = temp->next;
 		}
 
-		new->next = temp->next;
-		temp->next = new;
+		min->next = temp->next;
+		temp->next = min;
 	}
 }
 

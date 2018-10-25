@@ -75,20 +75,6 @@ void print_dungeon()
 		for (int j = 0; j < COL; j++)
 		{
             printf("%c", dungeon.map[i][j].space);
-            /*
-			if (i == dungeon.PC.row && j == dungeon.PC.col)
-			{
-				printf("@");
-			}
-			else if (!(is_monster(i, j) < 0))
-			{
-				printf("%x", dungeon.monster[is_monster(i, j)].characteristics);
-			}
-			else
-			{
-				printf("%c", dungeon.map[i][j].terrain);
-			}
-            */
 		}
 		printf("|\n");
 	}
@@ -294,8 +280,17 @@ void new_stair()
 	
 }
 
-void get_vision_PC()
+bool is_visible_PC(int i, int j)
 {
+    return i >= dungeon.PC.row - PC_VISION_RADIUS &&
+           i <= dungeon.PC.row + PC_VISION_RADIUS &&
+           j >= dungeon.PC.col - PC_VISION_RADIUS &&
+           j <= dungeon.PC.col + PC_VISION_RADIUS;
+}
+
+void remember_map_PC()
+{
+    //TODO
     int row, col;
     for (row = dungeon.PC.row - PC_VISION_RADIUS; row < dungeon.PC.row + PC_VISION_RADIUS + 1; row++)
     {
@@ -304,6 +299,15 @@ void get_vision_PC()
             if (row >= 0 && col >= 0 && row < ROW && col < COL)
             {
                 dungeon.PC.vision[row][col] = true;
+                if (is_monster(row, col) && is_visible_PC(row, col))
+                {
+                    dungeon.map[row][col].fog = dungeon.map[row][col].space;
+                }
+                else
+                {
+                    dungeon.map[row][col].fog = dungeon.map[row][col].terrain;
+                }
+                
             }
         }
     }
@@ -353,7 +357,7 @@ void new_PC()
     dungeon.map[dungeon.PC.row][dungeon.PC.col].space = PLAYER;
 	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
 
-    get_vision_PC();
+    remember_map_PC();
 }
 
 void generate_dungeon_nummon()
@@ -741,24 +745,28 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
-            if (dungeon.PC.vision[i][j])
+            // if (dungeon.PC.vision[i][j])
+            // {
+            //     if (is_visible_PC(i, j))
+            //     {
+            //         mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
+            //     }
+            //     else
+            //     {
+            //         mvwprintw(game, i, j, "%c", dungeon.map[i][j].terrain);
+            //     }
+            // }
+            // else
+            // {
+            //     mvwprintw(game, i, j, "%c", dungeon.map[i][j].fog);
+            // }
+            if (is_visible_PC(i, j))
             {
-                if (i == dungeon.PC.row && j == dungeon.PC.col)
-                {
-                    mvwprintw(game, i, j, "@");
-                }
-                else if (!(is_monster(i, j) < 0))
-                {
-                    mvwprintw(game, i, j, "%x", dungeon.monster[is_monster(i, j)].characteristics);
-                }
-                else
-                {
-                    mvwprintw(game, i, j, "%c", dungeon.map[i][j].terrain);
-                }
+                mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
             }
             else
             {
-                mvwprintw(game, i, j, " ");
+                mvwprintw(game, i, j, "%c", dungeon.map[i][j].fog);
             }
 		}
 	}
@@ -785,18 +793,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
-			if (i == dungeon.PC.row && j == dungeon.PC.col)
-			{
-				mvwprintw(game, i, j, "@");
-			}
-			else if (!(is_monster(i, j) < 0))
-			{
-				mvwprintw(game, i, j, "%x", dungeon.monster[is_monster(i, j)].characteristics);
-			}
-			else
-			{
-				mvwprintw(game, i, j, "%c", dungeon.map[i][j].terrain);
-			}
+            mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
 		}
 	}
 }
@@ -828,8 +825,11 @@ const char *move_pc(int row_move, int col_move)
 	else if (is_inside(dungeon.PC.row + row_move, dungeon.PC.col + col_move) &&
 		    is_room_corridor_stair(dungeon.PC.row + row_move, dungeon.PC.col + col_move))
 	{
+        dungeon.map[dungeon.PC.row][dungeon.PC.col].space = dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain;
 		dungeon.PC.row += row_move;
 		dungeon.PC.col += col_move;
+        dungeon.map[dungeon.PC.row][dungeon.PC.col].space = PLAYER;
+        dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
 		if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
 		{
 			int i = is_monster(dungeon.PC.row, dungeon.PC.col);
@@ -838,7 +838,7 @@ const char *move_pc(int row_move, int col_move)
 			dungeon.monster[i].col = -1;
 		}
 		move_npc();
-        get_vision_PC();
+        remember_map_PC();
 		message = "";
 	}
 	else
@@ -964,8 +964,12 @@ const char *move_pc_teleport(int row_move, int col_move)
 	}
 	else
 	{
+        dungeon.map[dungeon.PC.row][dungeon.PC.col].space = dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain;
 		dungeon.PC.row += row_move;
 		dungeon.PC.col += col_move;
+        dungeon.map[dungeon.PC.row][dungeon.PC.col].space = PLAYER;
+        dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
+
 		if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
 		{
 			int i = is_monster(dungeon.PC.row, dungeon.PC.col);
@@ -979,7 +983,7 @@ const char *move_pc_teleport(int row_move, int col_move)
             dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = CORRIDOR_H;
         }
 		move_npc();
-        get_vision_PC();
+        remember_map_PC();
 		message = "";
 	}
 
@@ -1168,7 +1172,7 @@ void dungeon_ncurses()
         {
             print_dungeon_ncurses(game, message);
         }
-
+        
 		int key = wgetch(game);
 		switch(key)
 		{

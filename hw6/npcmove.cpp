@@ -62,8 +62,11 @@ void npc_next_pos_05(Character *npc, int index)
 		}
 	}
 
+    dungeon.map[npc->row][npc->col].space = dungeon.map[npc->row][npc->col].terrain;
 	npc->row = next_row;
 	npc->col = next_col;
+    sprintf(&dungeon.map[npc->row][npc->col].space, "%x", npc->characteristics);
+	dungeon.map[npc->row][npc->col].hardness = 0;
 
 	//check is npc in next terrain will be dead
 	for (int i = 0; i < dungeon.num_mon; i++)

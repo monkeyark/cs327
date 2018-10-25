@@ -64,7 +64,6 @@ int main(int argc, char *argv[])
 	{
 		generate_dungeon();
 	}
-	//print_dungeon();
 
 	if (save)
 	{
@@ -72,17 +71,8 @@ int main(int argc, char *argv[])
 		save_file(f);
 	}
 
-/*
-	int dist_nontunneling[ROW * COL];
-	memset(dist_nontunneling, 0, sizeof (dist_nontunneling));
-	int dist_tunneling[ROW * COL];
-	memset(dist_tunneling, 0, sizeof (dist_tunneling));
-	//dijkstra_nontunneling(dist_nontunneling);
-	//dijkstra_tunneling(dist_tunneling);
-*/
-
 	move_dungeon();
-    print_dungeon();
+    //print_dungeon();
     delete_dungeon();
 
 	return 0;

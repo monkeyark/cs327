@@ -37,6 +37,7 @@ using namespace std;
 #define ROOM_H 0
 #define CORRIDOR_H 0
 #define PC_H 0
+#define PC_VISION_RADIUS 2
 #define MIN(x,y)			\
 ({							\
     typeof(x) _x = (x);     \
@@ -89,7 +90,7 @@ class Character
         int pc_col;
         bool dead;
         int dist[ROW * COL];
-        Terrain map[ROW][COL];
+        bool vision[ROW][COL];
 };
 
 class Room

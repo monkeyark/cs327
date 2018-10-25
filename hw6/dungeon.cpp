@@ -11,6 +11,7 @@ void init_dungeon()
 		{
 			dungeon.map[i][j].space = ROCK;
 			dungeon.map[i][j].hardness = ROCK_H;
+			dungeon.PC.vision[i][j] = false;
 		}
 	}
 }
@@ -281,6 +282,22 @@ void new_stair()
 	
 }
 
+void get_vision_PC()
+{
+    int row, col;
+    for (row = dungeon.PC.row - PC_VISION_RADIUS; row < dungeon.PC.row + PC_VISION_RADIUS + 1; row++)
+    {
+        for (col = dungeon.PC.col - PC_VISION_RADIUS; col < dungeon.PC.col + PC_VISION_RADIUS + 1; col++)
+        {
+            if (row >= 0 && col >= 0 && row < ROW && col < COL)
+            {
+                dungeon.PC.vision[row][col] = true;
+            }
+        }
+    }
+
+}
+
 Character new_NPC(int birth)
 {
 	Character npc;
@@ -322,6 +339,45 @@ void new_PC()
 	dungeon.PC.row = dungeon.rooms[0].row;
 	dungeon.PC.col = dungeon.rooms[0].col;
 	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
+
+    get_vision_PC();
+}
+
+void generate_dungeon_nummon()
+{ 
+	//initialize dungeon
+	init_dungeon();
+
+    //generate random number of rooms
+	dungeon.num_room = get_random(7, 5);
+   
+    dungeon.rooms = (Room *) malloc(dungeon.num_room * sizeof(Room));
+	dungeon.monster = (Character *) malloc(dungeon.num_mon * sizeof(Character));
+	int i;
+
+	//add rooms
+	for (i = 0; i < dungeon.num_room; i++)
+	{
+		dungeon.rooms[i] = new_room_random();
+	}
+
+	//add corridors
+	for (i = 0; i < dungeon.num_room - 1; i++)
+	{
+		new_corridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
+	}
+
+	//add stair
+	new_stair();
+
+	//add npc
+	for (i = 0; i < dungeon.num_mon; i++)
+	{
+		dungeon.monster[i] = new_NPC(i);
+	}
+	
+	//add pc
+	new_PC();
 }
 
 void generate_dungeon()
@@ -332,10 +388,11 @@ void generate_dungeon()
     //generate random number of rooms
 	dungeon.num_room = get_random(7, 5);
 	//generate random number of monster
-	dungeon.num_mon = get_random(5, 8);
-   
-	// dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
-	// dungeon.monster = malloc(dungeon.num_mon * sizeof(Character));
+    if (!dungeon.num_mon)
+    {
+	    dungeon.num_mon = get_random(5, 8);
+    }
+
     dungeon.rooms = (Room *) malloc(dungeon.num_room * sizeof(Room));
 	dungeon.monster = (Character *) malloc(dungeon.num_mon * sizeof(Character));
 	int i;
@@ -421,7 +478,6 @@ void load_file(FILE *f)
 	}
 
 	dungeon.num_room = (filesize - 1702) / 4;
-	// dungeon.rooms = malloc(dungeon.num_room * sizeof(Room));
     dungeon.rooms = (Room *) malloc(dungeon.num_room * sizeof(Room));
 
 	uint8_t roomRead[filesize - 1702];
@@ -552,262 +608,6 @@ void print_dijkstra_path(int dist[ROW * COL])
 	putchar('\n');
 }
 
-/*
-void dijkstra_tunneling(int dist[ROW * COL])
-{
-	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
-	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
-	int i, j;
-	
-	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
-
-	for (i = 0; i < ROW; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-			if (!is_inside(i, j))
-			{
-				dist[i * COL + j] = -1;
-			}
-			else if (dungeon.map[i][j].space != PLAYER)
-			{
-				dist[i * COL + j] = ROW * COL + 1;
-				pq_insert(dungeon.pq_tunel, &node, i * COL + j, dist);
-			}
-		}
-	}
-	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
-
-	while (!pq_isEmpty(dungeon.pq_tunel, &node))
-	{
-		int u = pq_pop(dungeon.pq_tunel, &node);
-		for (i = 0; i < 8; i++)
-		{
-			int alt = 0;
-			int v = u + rowMove[i] + colMove[i] * COL;
-			if (0 > v || v > ROW * COL || dist[v] == -1)
-				continue;
-
-			if (dist[v] >= 0)
-			{
-				alt = dist[u] + get_hardness_cost(dungeon.map[u / COL][u % COL].hardness);
-				if (alt < dist[v])
-				{
-					dist[v] = alt;
-					pq_insert(dungeon.pq_tunel, &node, v, dist);
-				}
-			}
-		}
-	}
-	//print_dijkstra_path(dist);
-}
-
-void dijkstra_nontunneling(int dist[ROW * COL])
-{
-	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
-	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
-	int i, j;
-	
-	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
-
-	for (i = 0; i < ROW; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-			if (dungeon.map[i][j].space == ROOM ||
-				dungeon.map[i][j].space == CORRIDOR ||
-				dungeon.map[i][j].space == STAIR_UP ||
-				dungeon.map[i][j].space == STAIR_DOWN)
-			{
-				dist[i * COL + j] = ROW * COL + 1;
-				pq_insert(dungeon.pq_nontunel, &node, i * COL + j, dist);
-			}
-			else if (dungeon.map[i][j].space == ROCK)
-			{
-				dist[i * COL + j] = -1;
-			}
-		}
-	}
-	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
-
-	while (!pq_isEmpty(dungeon.pq_nontunel, &node))
-	{
-		int u = pq_pop(dungeon.pq_nontunel, &node);
-		for (i = 0; i < 8; i++)
-		{
-			int alt = 0;
-			int v = u + rowMove[i] + colMove[i] * COL;
-			if (0 > v || v > ROW * COL)
-				continue;
-
-			if (dist[v] >= 0)
-			{
-				alt = dist[u] + 1;
-				if (alt < dist[v])
-				{
-					dist[v] = alt;
-					pq_insert(dungeon.pq_nontunel, &node, v, dist);
-				}
-			}
-		}
-	}
-	//print_dijkstra_path(dist);
-}
-
-void dijkstra_tunneling(int dist[ROW * COL])
-{
-	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
-	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
-	int i, j;
-	
-	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
-
-	for (i = 0; i < ROW; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-			if (!is_inside(i, j))
-			{
-				dist[i * COL + j] = -1;
-			}
-			else if (dungeon.map[i][j].space != PLAYER)
-			{
-				dist[i * COL + j] = ROW * COL + 1;
-				pq_insert(dungeon.pq_tunel, &node, i * COL + j, dist);
-			}
-		}
-	}
-	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
-
-	while (!pq_isEmpty(dungeon.pq_tunel, &node))
-	{
-		int u = pq_pop(dungeon.pq_tunel, &node);
-		for (i = 0; i < 8; i++)
-		{
-			int alt = 0;
-			int v = u + rowMove[i] + colMove[i] * COL;
-			if (0 > v || v > ROW * COL || dist[v] == -1)
-				continue;
-
-			if (dist[v] >= 0)
-			{
-				alt = dist[u] + get_hardness_cost(dungeon.map[u / COL][u % COL].hardness);
-				if (alt < dist[v])
-				{
-					dist[v] = alt;
-					pq_insert(dungeon.pq_tunel, &node, v, dist);
-				}
-			}
-		}
-	}
-	//print_dijkstra_path(dist);
-}
-
-void dijkstra_nontunneling(int dist[ROW * COL])
-{
-	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
-	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
-	int i, j;
-	
-	Node *node = node_new(dungeon.PC.row * COL + dungeon.PC.col);
-
-	for (i = 0; i < ROW; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-			if (dungeon.map[i][j].space == ROOM ||
-				dungeon.map[i][j].space == CORRIDOR ||
-				dungeon.map[i][j].space == STAIR_UP ||
-				dungeon.map[i][j].space == STAIR_DOWN)
-			{
-				dist[i * COL + j] = ROW * COL + 1;
-				pq_insert(dungeon.pq_nontunel, &node, i * COL + j, dist);
-			}
-			else if (dungeon.map[i][j].space == ROCK)
-			{
-				dist[i * COL + j] = -1;
-			}
-		}
-	}
-	dist[dungeon.PC.row * COL + dungeon.PC.col] = 0;
-
-	while (!pq_isEmpty(dungeon.pq_nontunel, &node))
-	{
-		int u = pq_pop(dungeon.pq_nontunel, &node);
-		for (i = 0; i < 8; i++)
-		{
-			int alt = 0;
-			int v = u + rowMove[i] + colMove[i] * COL;
-			if (0 > v || v > ROW * COL)
-				continue;
-
-			if (dist[v] >= 0)
-			{
-				alt = dist[u] + 1;
-				if (alt < dist[v])
-				{
-					dist[v] = alt;
-					pq_insert(dungeon.pq_nontunel, &node, v, dist);
-				}
-			}
-		}
-	}
-	//print_dijkstra_path(dist);
-}
-*/
-/*
-void move_character_turn()
-{
-	Queue_npc pq;
-	Character pc;
-	int pc_turn = 0;
-	int npc_turn = 0;
-	Node_t *character = node_new_NPC(pc_turn, pc);
-
-	for (int i = 0; i < dungeon.num_mon; i++)
-	{
-		Node_t *new = node_new_NPC(npc_turn, dungeon.monster[i]);
-		pq_insert_NPC(pq, &character, &new);
-	}
-
-	while (!dungeon.PC.dead)
-	{
-		Node_t *n = pq_pop_NPC(pq, &character);
-		//TODO
-		if ((*n).character.row == dungeon.PC.row && (*n).character.col == dungeon.PC.col)
-		{
-			usleep(250000);
-			print_dungeon();
-		}
-		else if ((*n).character.characteristics & NPC_TELEPATH)
-			pq_insert_NPC(pq, &character, &n);
-	}
-}
-*/
-/*
-npc_move_func[c->npc->characteristics & 0x0000000f](d, c, next);
-
-void (*npc_move_func[])(NPC *c) =
-{
-	npc_next_pos_00,
-	npc_next_pos_01,
-	npc_next_pos_02,
-	npc_next_pos_03,
-	npc_next_pos_04,
-	npc_next_pos_05,
-	npc_next_pos_06,
-	npc_next_pos_07,
-	npc_next_pos_08,
-	npc_next_pos_09,
-	npc_next_pos_0a,
-	npc_next_pos_0b,
-	npc_next_pos_0c,
-	npc_next_pos_0d,
-	npc_next_pos_0e,
-	npc_next_pos_0f,
-};
-*/
-
 void dijkstra_tunneling(Character *npc)
 {
 	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
@@ -854,7 +654,6 @@ void dijkstra_tunneling(Character *npc)
 			}
 		}
 	}
-	//print_dijkstra_path(dist);
 }
 
 void dijkstra_nontunneling(Character *npc)
@@ -906,7 +705,50 @@ void dijkstra_nontunneling(Character *npc)
 			}
 		}
 	}
-	//print_dijkstra_path(dist);
+}
+
+void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
+{
+	int i, j;
+	//clean previous message
+	for (i = 0, j = 0; j < TERMINAL_COL; j++)
+	{
+		mvwprintw(game, i, j, " ");
+	}
+
+	//print current message
+	const char *m = message;
+	for (i = 0, j = 0; *m; m++, j++)
+	{
+		mvwprintw(game, i, j, m);
+	}
+
+	//print dungeon
+	for (i = 1; i < ROW + 1; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+            if (dungeon.PC.vision[i][j])
+            {
+                if (i == dungeon.PC.row && j == dungeon.PC.col)
+                {
+                    mvwprintw(game, i, j, "@");
+                }
+                else if (!(is_monster(i, j) < 0))
+                {
+                    mvwprintw(game, i, j, "%x", dungeon.monster[is_monster(i, j)].characteristics);
+                }
+                else
+                {
+                    mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
+                }
+            }
+            else
+            {
+                mvwprintw(game, i, j, " ");
+            }
+		}
+	}
 }
 
 void print_dungeon_ncurses(WINDOW *game, const char *message)
@@ -943,7 +785,6 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 				mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
 			}
 		}
-		//mvwprintw(game, i, COL, "\n");
 	}
 }
 
@@ -957,7 +798,6 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 		Character npc = dungeon.monster[j];
 		int row_dis = npc.row - dungeon.PC.row;
 		int col_dis = npc.col - dungeon.PC.col;
-        //char *row_pos, *col_pos;
 		const char *row_pos, *col_pos;
 
 		if (row_dis > 0)
@@ -1015,12 +855,10 @@ void monster_list()
 			case KEY_UP:
 				index++;
 				index = MIN(index, dungeon.num_mon);
-				//print_monster_list_ncurses(list, index);
 				break;
 			case KEY_DOWN:
 				index--;
 				index = MAX(index, 0);
-				//print_monster_list_ncurses(list, index);
 				break;
 		}
 	}
@@ -1055,7 +893,7 @@ const char *move_pc(int row_move, int col_move)
 		message = "PC is resting!";
 	}
 	else if (is_inside(dungeon.PC.row + row_move, dungeon.PC.col + col_move) &&
-		is_room_corridor_stair(dungeon.PC.row + row_move, dungeon.PC.col + col_move))
+		    is_room_corridor_stair(dungeon.PC.row + row_move, dungeon.PC.col + col_move))
 	{
 		dungeon.PC.row += row_move;
 		dungeon.PC.col += col_move;
@@ -1067,6 +905,7 @@ const char *move_pc(int row_move, int col_move)
 			dungeon.monster[i].col = -1;
 		}
 		move_npc();
+        get_vision_PC();
 		message = "";
 	}
 	else
@@ -1098,6 +937,8 @@ void dungeon_ncurses()
 	while(run)
 	{
 		print_dungeon_ncurses(game, message);
+        //print_dungeon_fog_ncurses(game, message);
+
 		int key = wgetch(game);
 		switch(key)
 		{

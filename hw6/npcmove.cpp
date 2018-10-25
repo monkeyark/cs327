@@ -1,5 +1,28 @@
 #include "npcmove.h"
 
+/*
+npc_move_func[c->npc->characteristics & 0x0000000f](d, c, next);
+
+void (*npc_move_func[])(NPC *c) =
+{
+	npc_next_pos_00,
+	npc_next_pos_01,
+	npc_next_pos_02,
+	npc_next_pos_03,
+	npc_next_pos_04,
+	npc_next_pos_05,
+	npc_next_pos_06,
+	npc_next_pos_07,
+	npc_next_pos_08,
+	npc_next_pos_09,
+	npc_next_pos_0a,
+	npc_next_pos_0b,
+	npc_next_pos_0c,
+	npc_next_pos_0d,
+	npc_next_pos_0e,
+	npc_next_pos_0f,
+};
+*/
 
 void npc_next_pos_00(Character *npc, int index);
 void npc_next_pos_01(Character *npc, int index);

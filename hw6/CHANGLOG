@@ -1,2 +1,12 @@
 Oct 19
 	start project and change c to cpp
+
+Oct 22
+    change dijkstra function arguments
+    fix issue npc not moving
+
+Oct 24
+    print seed in game window
+    add a dungeon vision map for PC
+    print dungone map with fog of war
+    fix switch nummon

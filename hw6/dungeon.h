@@ -104,6 +104,7 @@ class Room
 class Dungeon
 {
     public:
+        int seed;
         int num_mon;
         int num_room;
         int version;

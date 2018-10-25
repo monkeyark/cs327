@@ -18,14 +18,11 @@ int main(int argc, char *argv[])
 	path = strcat(path, "/dungeon");
 
 	//set up random seed
-	int seed = time(NULL);
+	dungeon.seed = time(NULL);
 	//TODO
-	//seed = 1538543175;
-	//seed = 1538556186;
-//	seed = 1539851602;
-    
-	printf("\nseed = %d;\n\n", seed);
-	srand(seed);
+    //dungeon.seed = 1540445615;
+    //dungeon.seed = 1540445616;
+	srand(dungeon.seed);
 
 	bool load = false;
 	bool save = false;

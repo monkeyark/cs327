@@ -1086,8 +1086,15 @@ void dungeon_ncurses()
 
 	keypad(game, true);
 	bool run = true;
-	//char *message = "Dungeon";
-    const char *message = "Dungeon";
+    char random_seed[10];
+    
+    sprintf(random_seed, "%d", dungeon.seed);
+    char seed_message[20] = "seed = ";
+    strcat(seed_message, random_seed);
+    char seed_message_suffix[2] = ";";
+    strcat(seed_message, seed_message_suffix);
+
+    const char *message = seed_message;
 	while(run)
 	{
 		print_dungeon_ncurses(game, message);

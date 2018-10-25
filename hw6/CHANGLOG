@@ -16,3 +16,4 @@ Oct 24
 Oct 25
     add PC teleport to random position
     update key function in teleport mode
+    bugfix: null node in queue

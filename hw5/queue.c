@@ -18,21 +18,29 @@ void pq_insert(Queue pq, Node **head, int priority, int *dist)
 	Node *temp = *head;
 	Node *new = node_new(priority);
 
-	if (dist[(*head)->priority] >= dist[new->priority])
-	{
-		new->next = (*head);
-		(*head) = new;
-	}
-	else
-	{
-		while (temp->next != NULL && dist[temp->next->priority] < dist[new->priority])
-		{
-			temp = temp->next;
-		}
+    if(*head == NULL)
+    {
+        new->next = (*head);
+        (*head) = new;
+    }
+    else
+    {
+        if (dist[(*head)->priority] >= dist[new->priority])
+        {
+            new->next = (*head);
+            (*head) = new;
+        }
+        else
+        {
+            while (temp->next != NULL && dist[temp->next->priority] < dist[new->priority])
+            {
+                temp = temp->next;
+            }
 
-		new->next = temp->next;
-		temp->next = new;
-	}
+            new->next = temp->next;
+            temp->next = new;
+        }
+    }
 }
 
 int pq_pop(Queue pq, Node **head)

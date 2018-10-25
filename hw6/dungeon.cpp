@@ -745,28 +745,20 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
-            // if (dungeon.PC.vision[i][j])
-            // {
-            //     if (is_visible_PC(i, j))
-            //     {
-            //         mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
-            //     }
-            //     else
-            //     {
-            //         mvwprintw(game, i, j, "%c", dungeon.map[i][j].terrain);
-            //     }
-            // }
-            // else
-            // {
-            //     mvwprintw(game, i, j, "%c", dungeon.map[i][j].fog);
-            // }
             if (is_visible_PC(i, j))
             {
                 mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
             }
             else
             {
-                mvwprintw(game, i, j, "%c", dungeon.map[i][j].fog);
+                if (dungeon.PC.vision[i][j])
+                {
+                    mvwprintw(game, i, j, "%c", dungeon.map[i][j].terrain);
+                }
+                else
+                {
+                    mvwprintw(game, i, j, " ");
+                }
             }
 		}
 	}

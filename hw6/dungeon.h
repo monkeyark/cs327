@@ -21,8 +21,6 @@
 
 #include "queue.h"
 
-using namespace std;
-
 #define ROW 21
 #define COL 80
 #define TERMINAL_ROW 24
@@ -62,20 +60,40 @@ using namespace std;
 class Terrain
 {
     public:
-	    char space;
+	    char terrain;
+        char space;
+        char fog;
 	    int hardness;
 };
 
 /*
-typedef struct Player_Character
+class Character
 {
-	//int characteristics;
-	int row;
-	int col;
-	int birth;
-	int speed;
-	bool dead;
-} PC;
+    public:
+        unsigned int characteristics;
+        int row;
+        int col;
+        int birth;
+        int speed;
+        bool dead;
+        int dist[ROW * COL];
+        bool vision[ROW][COL];
+};
+
+class PC
+{
+    public:
+        bool vision[ROW][COL];
+};
+
+class NPC
+{
+    public:
+        unsigned int characteristics;
+        int pc_row;
+        int pc_col;
+        int dist[ROW * COL];
+}
 */
 
 class Character
@@ -134,10 +152,6 @@ void load_file(FILE *f);
 void save_file(FILE *f);
 
 int is_monster(int row, int col);
-
-// void dijkstra_tunneling();
-
-// void dijkstra_nontunneling();
 
 void dijkstra_tunneling(Character *npc);
 

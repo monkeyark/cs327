@@ -1,0 +1,18 @@
+
+I've moved all code related to the user interface into io.c, with exported function prototypes in io.h.
+
+ 
+
+The act of displaying the dungeon with curses is pretty straightforward; I expect we've all done it nearly precisely the same, so I'm not going to discuss that here.
+
+ 
+
+User input is handled primarily in io_handle_input(), which is a loop around a big switch statement. The loop ensures that erroneous input and commands that shouldn't actually use a turn (like listing monsters) actually don't use a turn. I've added a handful of fun or useful commands that weren't part of the assignment specification. Look through this function for them. In particular, I recommend that you see the 'q' command which gives you a usage example for a message queue. The message queue will allow you to do some printf()-style debugging despite the curses interface, which (if you haven't already noticed) makes that kind of difficult. Take a look at the message functions and data structures at the top of io.c to get a more complete understanding of the system.
+
+ 
+
+'m' executes the monster list routine, which lists all of the monsters in the dungeon. It sorts the monster list by distance from the PC. Take a look at that for another example usage of qsort(). Just for fun, I also add an adjective to each monster in the monster list. You can add your own simply by extending the "adjectives" array.
+
+ 
+
+Stairs requires deleting the dungeon and creating a new one. new_dungeon(), in dungeon.c, handles this.

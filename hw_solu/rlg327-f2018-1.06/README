@@ -1,0 +1,13 @@
+My changes are mostly the minimal possible to comply with the assignment specification. The only real counterexample to that is the addition of the bold in the visibility map to show what is illuminated. When I say "minimal", I mean that, while I've changed dungeon, character, pc, and npc to classes, I'm still using them like structs. The fields are public. I've accepted the C++ compiler's (no-op) default constructor, and I persist in initializing the objects with C-style functions. This misses a lot of the power that comes with an object model, and I will make changes to some of these things week to week as the semester winds down.
+
+ 
+
+"Converting" these three structures to classes was a matter of changing the data structure itself (in the respective headers), and renaming the respective source files to C++, then fixing compiler errors until it builds. I have some mutator and accessor functions, e.g., in character, that aren't needed. These are leftovers from code that was required in earlier semesters.
+
+ 
+
+To do the lighting, I modified can_see() in character.cpp, so that if the viewer is the PC, it short circuits at the light radius and it updates the PC's known terrain and visibility maps (calling pc_learn_terrain()). pc_observe_terrain() (in pc.cpp) calls can_see() every player turn for every cell in the PC's light radius. There are definitely more efficient solutions.
+
+ 
+
+The PC has changed to a pointer in the dungeon structure. This means it needs to be deleted. If you simply delete it unconditionally at the end of main(), you'll introduce a double free bug. This is because the turn queue holds an instance of the PC, and it will delete it when the heap is destroyed. The simplest solution is to test if the PC is alive before calling delete_pc().

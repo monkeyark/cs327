@@ -1,0 +1,25 @@
+My solution now has a few more files, including files for characters, PC, and NPCs, events, and movement routines.
+
+ 
+
+The main loop is in main() in rlg327.c. This continually renders the dungeon and processes the event queue (by calling do_moves()) until the PC dies. do_moves() inserts the PC, then runs until the PC is removed.
+
+ 
+
+The event queue is in the dungeon structure. Also added to the dungeon structure is a dungeon-sized matrix of character_t pointers. This allows constant time detection of characters in movement targets. A character dies whenever another character moves into it's position. Since the character is in the event queue and we have no function that allows us to remove an arbitrary node from the queue, we instead mark it as dead, then it is cleaned up when the node is removed by do_moves().
+
+ 
+
+We have a pseudo object hierarchy with character as a base and pc and npc derived from it. Observe the use of pointers to achieve this, with common fields in character and unique fields in the respective "sub-objects". Since there are only two pointers, we only waste 4 bytes (on a 64-bit system) in doing it this way (compare to using an enumerated value to indicate which pointer is valid in a union). If we had many pointers, or if we used instances instead of pointers, I would create a union within character with each necessary type within and an enumeration to indicate the actual type.
+
+ 
+
+Rendering a dungeon cell is still constant time since I can use the character map to find monsters in constant time.
+
+ 
+
+We have 16 different movement patterns, but observe that erratic movement is a coin toss: when "heads" we make a random move,  and "tails" we move as if the monster is not erratic, so that's trivial. The other's also have aspects in common. Imagine any monster that can see the PC; it moves toward the PC according to line of sight. Now consider a telepathic but unintelligent monster. It can't see the PC, but it still moves in a straight line toward the PC, same as line of sight! So these two cases can use the same routine to calculate the next position! Movement is reduced to a handful of helper functions, calling the appropriate one when needed.
+
+ 
+
+Also, rather than complicated, nested "if"s or a slightly less complicated switch statement, I've built a function jump table (an array of function pointers) indexed by the 4 ability bits. See npc_next_pos() in npc.c.

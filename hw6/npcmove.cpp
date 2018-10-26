@@ -1,5 +1,7 @@
 #include "npcmove.h"
 
+#include <cstring>
+
 /*
 npc_move_func[c->npc->characteristics & 0x0000000f](d, c, next);
 

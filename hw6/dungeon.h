@@ -5,19 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdint.h>
-#include <time.h>
-#include <unistd.h>
-#include <math.h>
-#include <string.h>
-#include <stdint.h>
-#include <endian.h>
-#include <sys/stat.h>
-#include <ncurses.h>
-#include <curses.h>
-
-//#include <iostream>
-//#include <cstring>
 
 #include "queue.h"
 
@@ -139,17 +126,17 @@ class Dungeon
 
 extern Dungeon dungeon;
 
-int get_random(int modulus, int min);
+void init_dungeon();
 
-void print_dungeon();
+void new_room(int row, int col, int width, int height);
 
 void generate_dungeon();
 
 void delete_dungeon();
 
-void load_file(FILE *f);
+void print_dungeon();
 
-void save_file(FILE *f);
+int get_random(int modulus, int min);
 
 int is_monster(int row, int col);
 

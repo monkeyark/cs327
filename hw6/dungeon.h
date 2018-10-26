@@ -8,6 +8,7 @@
 
 #include "queue.h"
 
+
 #define ROW 21
 #define COL 80
 #define TERMINAL_ROW 24
@@ -127,23 +128,13 @@ class Dungeon
 extern Dungeon dungeon;
 
 void init_dungeon();
-
 void new_room(int row, int col, int width, int height);
-
 void generate_dungeon();
-
 void delete_dungeon();
-
 void print_dungeon();
-
 int get_random(int modulus, int min);
-
 int is_monster(int row, int col);
-
-void dijkstra_tunneling(Character *npc);
-
-void dijkstra_nontunneling(Character *npc);
-
+bool is_inside(int row, int col);
 void move_dungeon();
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef NPCMOVE_H
-# define NPCMOVE_H
+#ifndef MOVE_H
+# define MOVE_H
 
 #include "dungeon.h"
 

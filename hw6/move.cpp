@@ -1,4 +1,5 @@
-#include "npcmove.h"
+#include "move.h"
+#include "path.h"
 
 #include <cstring>
 

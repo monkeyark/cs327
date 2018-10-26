@@ -10,7 +10,6 @@
 
 
 void load_file(FILE *f);
-
 void save_file(FILE *f);
 
 #endif

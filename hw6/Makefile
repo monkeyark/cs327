@@ -9,7 +9,7 @@ LDFLAGS = -lncurses
 
 BIN = hw6
 OBJS = main.o queue.o dungeon.o \
-		npcmove.o io.o
+		path.o move.o io.o
 
 all: $(BIN) etags
 

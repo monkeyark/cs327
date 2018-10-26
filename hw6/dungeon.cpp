@@ -1,6 +1,7 @@
-#include "queue.h"
 #include "dungeon.h"
-#include "npcmove.h"
+#include "move.h"
+#include "path.h"
+
 
 #include <string.h>
 #include <math.h>
@@ -449,6 +450,7 @@ void delete_dungeon()
 	free(dungeon.monster);
 }
 
+/*
 int get_hardness_cost(int hardness)
 {
 	if (hardness == 255)
@@ -602,6 +604,7 @@ void dijkstra_nontunneling(Character *npc)
 		}
 	}
 }
+*/
 
 void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 {

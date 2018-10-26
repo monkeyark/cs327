@@ -24,13 +24,9 @@ typedef struct Priority_Queue
 
 
 Node *node_new(int priority);
-
 void pq_insert(Queue pq, Node **head, int priority, int *dist);
-
 int pq_pop(Queue pq, Node **head);
-
 bool pq_isEmpty(Queue pq, Node **head);
-
 void pq_delete();
 
 

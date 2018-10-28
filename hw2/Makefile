@@ -1,7 +1,7 @@
-all: hw2
+all: main
 
-hw2: hw2.c
-	gcc -Wall -Werror -g hw2.c -o hw2
+main: main.c
+	gcc -Wall -Werror -ggdb -g main.c -o main
 
 clean:
-	rm -f hw2
+	rm -f main

@@ -7,8 +7,8 @@ CFLAGS = -Wall -Werror -ggdb3 -funroll-loops -pg
 CXXFLAGS = -Wall -Werror -ggdb3 -funroll-loops                                           
 LDFLAGS = 
 
-BIN = hw4
-OBJS = hw4.o queue.o dungeon.o npcmove.o
+BIN = main
+OBJS = main.o queue.o dungeon.o npcmove.o
 
 all: $(BIN) etags
 

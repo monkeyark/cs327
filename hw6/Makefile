@@ -7,7 +7,7 @@ CFLAGS = -Wall -Werror -ggdb3 -funroll-loops
 CXXFLAGS = -Wall -Werror -ggdb3 -funroll-loops
 LDFLAGS = -lncurses
 
-BIN = hw6
+BIN = main
 OBJS = main.o queue.o dungeon.o \
 		path.o move.o io.o
 

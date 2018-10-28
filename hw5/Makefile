@@ -7,7 +7,7 @@ CFLAGS = -Wall -Werror -ggdb3 -funroll-loops
 CXXFLAGS = -Wall -Werror -ggdb3 -funroll-loops
 LDFLAGS = -lncurses
 
-BIN = hw5
+BIN = main
 OBJS = main.o queue.o dungeon.o \
 		npcmove.o
 

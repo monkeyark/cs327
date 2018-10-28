@@ -8,8 +8,6 @@
 #include <sys/stat.h>
 
 
-
-void load_file(FILE *f);
-void save_file(FILE *f);
+void dungeon_ncurses();
 
 #endif

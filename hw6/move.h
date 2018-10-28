@@ -20,4 +20,7 @@ void npc_next_pos_0d(Character *npc, int index);
 void npc_next_pos_0e(Character *npc, int index);
 void npc_next_pos_0f(Character *npc, int index);
 
+void move_npc();
+const char *move_pc(int row_move, int col_move);
+void move_character();
 #endif

@@ -128,11 +128,15 @@ class Dungeon
 extern Dungeon dungeon;
 
 void init_dungeon();
-void new_room(int row, int col, int width, int height);
 void generate_dungeon();
-void delete_dungeon();
 void print_dungeon();
+void load_dungeon(FILE *f);
+void save_dungeon(FILE *f);
+void delete_dungeon();
 int get_random(int modulus, int min);
+bool is_visible_terrain(int i, int j);
+bool is_room_corridor_stair(int row, int col);
+void remember_map_PC();
 int is_monster(int row, int col);
 bool is_inside(int row, int col);
 void move_dungeon();

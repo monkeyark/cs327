@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	if (load)
 	{
 		FILE *f = fopen(path, "r");
-		load_file(f);
+		load_dungeon(f);
 	}
 	else
 	{
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	if (save)
 	{
 		FILE *f = fopen(path, "w");
-		save_file(f);
+		save_dungeon(f);
 	}
 
 	move_dungeon();

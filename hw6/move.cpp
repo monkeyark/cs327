@@ -1,7 +1,10 @@
+#include <cstring>
+
+#include "dungeon.h"
 #include "move.h"
 #include "path.h"
+#include "io.h"
 
-#include <cstring>
 
 /*
 npc_move_func[c->npc->characteristics & 0x0000000f](d, c, next);
@@ -173,4 +176,62 @@ void npc_next_pos_0c(Character *npc, int index);
 void npc_next_pos_0d(Character *npc, int index);
 void npc_next_pos_0e(Character *npc, int index);
 void npc_next_pos_0f(Character *npc, int index);
+
+void move_npc()
+{
+	if (!dungeon.PC.dead)
+	{
+		int i;
+		for (i = 0; i < dungeon.num_mon; i++)
+		{
+			Character *npc = &dungeon.monster[i];
+			if (!npc->dead)
+			{
+				npc_next_pos_05(npc, i);
+			}
+		}
+	}
+}
+
+const char *move_pc(int row_move, int col_move)
+{
+	const char *message;
+	if (row_move == 0 && col_move == 0)
+	{
+		move_npc();
+		message = "PC is resting!";
+	}
+	else if (is_inside(dungeon.PC.row + row_move, dungeon.PC.col + col_move) &&
+		    is_room_corridor_stair(dungeon.PC.row + row_move, dungeon.PC.col + col_move))
+	{
+        dungeon.map[dungeon.PC.row][dungeon.PC.col].space = dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain;
+		dungeon.PC.row += row_move;
+		dungeon.PC.col += col_move;
+        dungeon.map[dungeon.PC.row][dungeon.PC.col].space = PLAYER;
+        dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
+		if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+		{
+			int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+			dungeon.monster[i].dead = true;
+			dungeon.monster[i].row = -1;
+			dungeon.monster[i].col = -1;
+		}
+		move_npc();
+        remember_map_PC();
+		message = "";
+	}
+	else
+	{
+		message = "There's wall in the way!";
+	}
+
+	return message;
+}
+
+void move_character()
+{
+	dungeon_ncurses();
+	//move_npc();
+}
+
 

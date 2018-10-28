@@ -85,11 +85,11 @@ void npc_next_pos_05(Character *npc, int index)
 			next_npc->row = -1;
 			next_npc->col = -1;
 		}
-		else if (dungeon.PC.row == next_row && dungeon.PC.col == next_col)
+		else if (dungeon.pc.row == next_row && dungeon.pc.col == next_col)
 		{
-			dungeon.PC.dead = true;
-			dungeon.PC.row = -1;
-			dungeon.PC.col = -1;
+			dungeon.pc.dead = true;
+			dungeon.pc.row = -1;
+			dungeon.pc.col = -1;
 		}
 	}
 }
@@ -159,11 +159,11 @@ void npc_next_pos_07(Character *npc, int index)
 			next_npc->row = -1;
 			next_npc->col = -1;
 		}
-		else if (dungeon.PC.row == next_row && dungeon.PC.col == next_col)
+		else if (dungeon.pc.row == next_row && dungeon.pc.col == next_col)
 		{
-			dungeon.PC.dead = true;
-			dungeon.PC.row = -1;
-			dungeon.PC.col = -1;
+			dungeon.pc.dead = true;
+			dungeon.pc.row = -1;
+			dungeon.pc.col = -1;
 		}
 	}
 }
@@ -179,7 +179,7 @@ void npc_next_pos_0f(Character *npc, int index);
 
 void move_npc()
 {
-	if (!dungeon.PC.dead)
+	if (!dungeon.pc.dead)
 	{
 		int i;
 		for (i = 0; i < dungeon.num_mon; i++)
@@ -201,17 +201,17 @@ const char *move_pc(int row_move, int col_move)
 		move_npc();
 		message = "PC is resting!";
 	}
-	else if (is_inside(dungeon.PC.row + row_move, dungeon.PC.col + col_move) &&
-		    is_room_corridor_stair(dungeon.PC.row + row_move, dungeon.PC.col + col_move))
+	else if (is_inside(dungeon.pc.row + row_move, dungeon.pc.col + col_move) &&
+		    is_room_corridor_stair(dungeon.pc.row + row_move, dungeon.pc.col + col_move))
 	{
-        dungeon.map[dungeon.PC.row][dungeon.PC.col].space = dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain;
-		dungeon.PC.row += row_move;
-		dungeon.PC.col += col_move;
-        dungeon.map[dungeon.PC.row][dungeon.PC.col].space = PLAYER;
-        dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
-		if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+        dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
+		dungeon.pc.row += row_move;
+		dungeon.pc.col += col_move;
+        dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
+        dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
+		if (!(is_monster(dungeon.pc.row, dungeon.pc.col) < 0))
 		{
-			int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+			int i = is_monster(dungeon.pc.row, dungeon.pc.col);
 			dungeon.monster[i].dead = true;
 			dungeon.monster[i].row = -1;
 			dungeon.monster[i].col = -1;

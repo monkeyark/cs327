@@ -33,7 +33,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
             }
             else
             {
-                if (dungeon.PC.vision[i][j])
+                if (dungeon.pc.vision[i][j])
                 {
                     mvwprintw(game, i, j, "%c", dungeon.map[i][j].terrain);
                 }
@@ -80,8 +80,8 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 	{
 
 		Character npc = dungeon.monster[j];
-		int row_dis = npc.row - dungeon.PC.row;
-		int col_dis = npc.col - dungeon.PC.col;
+		int row_dis = npc.row - dungeon.pc.row;
+		int col_dis = npc.col - dungeon.pc.col;
 		const char *row_pos, *col_pos;
 
 		if (row_dis > 0)
@@ -145,7 +145,7 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
             {
                 mvwprintw(game, i, j, "*");
             }
-			else if (i == dungeon.PC.row && j == dungeon.PC.col)
+			else if (i == dungeon.pc.row && j == dungeon.pc.col)
 			{
 				mvwprintw(game, i, j, "@");
 			}
@@ -187,23 +187,23 @@ const char *move_pc_teleport(int row_move, int col_move)
 	}
 	else
 	{
-        dungeon.map[dungeon.PC.row][dungeon.PC.col].space = dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain;
-		dungeon.PC.row += row_move;
-		dungeon.PC.col += col_move;
-        dungeon.map[dungeon.PC.row][dungeon.PC.col].space = PLAYER;
-        dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
+        dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
+		dungeon.pc.row += row_move;
+		dungeon.pc.col += col_move;
+        dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
+        dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
 
-		if (!(is_monster(dungeon.PC.row, dungeon.PC.col) < 0))
+		if (!(is_monster(dungeon.pc.row, dungeon.pc.col) < 0))
 		{
-			int i = is_monster(dungeon.PC.row, dungeon.PC.col);
+			int i = is_monster(dungeon.pc.row, dungeon.pc.col);
 			dungeon.monster[i].dead = true;
 			dungeon.monster[i].row = -1;
 			dungeon.monster[i].col = -1;
 		}
-        if (dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain == ROCK)
+        if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == ROCK)
         {
-            dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain = CORRIDOR;
-            dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = CORRIDOR_H;
+            dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain = CORRIDOR;
+            dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = CORRIDOR_H;
         }
 		move_npc();
         remember_map_PC();
@@ -218,8 +218,8 @@ void teleport()
     WINDOW *teleport = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 	keypad(teleport, true);
 	bool run = true;
-    dungeon.teleport_row = dungeon.PC.row;
-    dungeon.teleport_col = dungeon.PC.col;
+    dungeon.teleport_row = dungeon.pc.row;
+    dungeon.teleport_col = dungeon.pc.col;
 
     char random_seed[10];
     sprintf(random_seed, "%d", dungeon.seed);
@@ -232,8 +232,8 @@ void teleport()
 	while(run)
 	{
         print_dungeon_teleport_ncurses(teleport, message);
-        int row_move = dungeon.teleport_row - dungeon.PC.row;
-        int col_move = dungeon.teleport_col - dungeon.PC.col;
+        int row_move = dungeon.teleport_row - dungeon.pc.row;
+        int col_move = dungeon.teleport_col - dungeon.pc.col;
 		int key = wgetch(teleport);
 		switch(key)
 		{
@@ -315,8 +315,8 @@ void teleport()
                 }
                 while (!is_inside(dungeon.teleport_row, dungeon.teleport_col));
 
-                row_move = dungeon.teleport_row - dungeon.PC.row;
-                col_move = dungeon.teleport_col - dungeon.PC.col;
+                row_move = dungeon.teleport_row - dungeon.pc.row;
+                col_move = dungeon.teleport_col - dungeon.pc.col;
                 message = move_pc_teleport(row_move, col_move);
                 run = false;
 				break;
@@ -430,7 +430,7 @@ void dungeon_ncurses()
 				message = move_pc(0, 0);//rest
 				break;
 			case '<':
-				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain == STAIR_UP)
+				if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == STAIR_UP)
 				{
                     delete_dungeon();
 					generate_dungeon();
@@ -442,7 +442,7 @@ void dungeon_ncurses()
 				}
 				break;
 			case '>':
-				if (dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain == STAIR_DOWN)
+				if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == STAIR_DOWN)
 				{
                     delete_dungeon();
 					generate_dungeon();
@@ -565,7 +565,7 @@ void dungeon_ncurses()
 				break;
 		}
 
-		if (dungeon.PC.dead)
+		if (dungeon.pc.dead)
 		{
 			message = "Player is dead!";
 		}

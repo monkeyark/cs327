@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #include "queue.h"
 
@@ -54,51 +53,6 @@ class Terrain
 	    int hardness;
 };
 
-/*
-class Character
-{
-    public:
-        unsigned int characteristics;
-        int row;
-        int col;
-        int birth;
-        int speed;
-        bool dead;
-        int dist[ROW * COL];
-        bool vision[ROW][COL];
-};
-
-class PC
-{
-    public:
-        bool vision[ROW][COL];
-};
-
-class NPC
-{
-    public:
-        unsigned int characteristics;
-        int pc_row;
-        int pc_col;
-        int dist[ROW * COL];
-}
-*/
-
-class Character
-{
-    public:
-        unsigned int characteristics;
-        int row;
-        int col;
-        int birth;
-        int speed;
-        int pc_row;
-        int pc_col;
-        bool dead;
-        int dist[ROW * COL];
-        bool vision[ROW][COL];
-};
-
 class Room
 {
     public:
@@ -106,6 +60,21 @@ class Room
         int col;
         int width;
         int height;
+};
+
+class Character
+{
+    public:
+        unsigned int characteristics;
+        int row;
+        int col;
+        int birth;
+        int speed;
+        int pc_row;
+        int pc_col;
+        int dead;
+        int dist[ROW * COL];
+        int vision[ROW][COL];
 };
 
 class Dungeon
@@ -117,7 +86,7 @@ class Dungeon
         int version;
         Room *rooms;
         Character *monster;
-        Character PC;
+        Character pc;
         int teleport_row;
         int teleport_col;
         Terrain map[ROW][COL];
@@ -133,12 +102,13 @@ void print_dungeon();
 void load_dungeon(FILE *f);
 void save_dungeon(FILE *f);
 void delete_dungeon();
+
 int get_random(int modulus, int min);
-bool is_visible_terrain(int i, int j);
-bool is_room_corridor_stair(int row, int col);
+int is_visible_terrain(int i, int j);
+int is_room_corridor_stair(int row, int col);
 void remember_map_PC();
 int is_monster(int row, int col);
-bool is_inside(int row, int col);
+int is_inside(int row, int col);
 void move_dungeon();
 
 #endif

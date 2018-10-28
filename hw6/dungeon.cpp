@@ -1,12 +1,10 @@
+#include <math.h>
+#include <string.h>
+
 #include "dungeon.h"
 #include "move.h"
 #include "path.h"
 
-
-#include <math.h>
-#include <string.h>
-#include <ncurses.h>
-#include <curses.h>
 
 void init_dungeon()
 {
@@ -18,7 +16,7 @@ void init_dungeon()
             dungeon.map[i][j].space = ROCK;
             dungeon.map[i][j].fog = ROCK;
 			dungeon.map[i][j].hardness = ROCK_H;
-			dungeon.PC.vision[i][j] = false;
+			dungeon.pc.vision[i][j] = 0;
 		}
 	}
 }
@@ -91,7 +89,7 @@ void print_dungeon()
 	printf("\n");
 }
 
-bool is_inside(int row, int col)
+int is_inside(int row, int col)
 {
 	//is room not on edge or outside of dungeon or cross dungeon
 	return row > 0 && col > 0 && row < ROW - 1 && col < COL - 1;
@@ -102,7 +100,7 @@ bool is_room(int row, int col)
 	return dungeon.map[row][col].terrain == ROOM;
 }
 
-bool is_room_corridor_stair(int row, int col)
+int is_room_corridor_stair(int row, int col)
 {
 	return dungeon.map[row][col].terrain == ROOM
 		|| dungeon.map[row][col].terrain == CORRIDOR
@@ -285,25 +283,25 @@ void new_stair()
 	
 }
 
-bool is_visible_terrain(int i, int j)
+int is_visible_terrain(int i, int j)
 {
-    return i >= dungeon.PC.row - PC_VISION_RADIUS &&
-           i <= dungeon.PC.row + PC_VISION_RADIUS &&
-           j >= dungeon.PC.col - PC_VISION_RADIUS &&
-           j <= dungeon.PC.col + PC_VISION_RADIUS;
+    return i >= dungeon.pc.row - PC_VISION_RADIUS &&
+           i <= dungeon.pc.row + PC_VISION_RADIUS &&
+           j >= dungeon.pc.col - PC_VISION_RADIUS &&
+           j <= dungeon.pc.col + PC_VISION_RADIUS;
 }
 
 void remember_map_PC()
 {
     //TODO
     int row, col;
-    for (row = dungeon.PC.row - PC_VISION_RADIUS; row < dungeon.PC.row + PC_VISION_RADIUS + 1; row++)
+    for (row = dungeon.pc.row - PC_VISION_RADIUS; row < dungeon.pc.row + PC_VISION_RADIUS + 1; row++)
     {
-        for (col = dungeon.PC.col - PC_VISION_RADIUS; col < dungeon.PC.col + PC_VISION_RADIUS + 1; col++)
+        for (col = dungeon.pc.col - PC_VISION_RADIUS; col < dungeon.pc.col + PC_VISION_RADIUS + 1; col++)
         {
             if (row >= 0 && col >= 0 && row < ROW && col < COL)
             {
-                dungeon.PC.vision[row][col] = true;
+                dungeon.pc.vision[row][col] = 1;
                 if (is_monster(row, col) && is_visible_terrain(row, col))
                 {
                     dungeon.map[row][col].fog = dungeon.map[row][col].space;
@@ -334,11 +332,11 @@ Character new_NPC(int birth)
 		//creating NPC with all four characteristics having 1/2 probability, clean unused bits
 		npc.characteristics = rand() & 0xf;
 		npc.speed = get_random(20, 5);
-		npc.dead = false;
+		npc.dead = 0;
 		if (npc.characteristics & NPC_TELEPATH) //monster is telepath
 		{
-			npc.pc_row = dungeon.PC.row;
-			npc.pc_col = dungeon.PC.col;
+			npc.pc_row = dungeon.pc.row;
+			npc.pc_col = dungeon.pc.col;
 		}
         sprintf(&dungeon.map[npc.row][npc.col].space, "%x", npc.characteristics);
 		dungeon.map[npc.row][npc.col].hardness = 0;
@@ -354,13 +352,13 @@ Character new_NPC(int birth)
 void new_PC()
 {
 	//add initial player location
-	dungeon.PC.birth = -1;
-	dungeon.PC.speed = 10;
-	dungeon.PC.dead = false;
-	dungeon.PC.row = dungeon.rooms[0].row;
-	dungeon.PC.col = dungeon.rooms[0].col;
-    dungeon.map[dungeon.PC.row][dungeon.PC.col].space = PLAYER;
-	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = 0;
+	dungeon.pc.birth = -1;
+	dungeon.pc.speed = 10;
+	dungeon.pc.dead = 0;
+	dungeon.pc.row = dungeon.rooms[0].row;
+	dungeon.pc.col = dungeon.rooms[0].col;
+    dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
+	dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
 
     remember_map_PC();
 }
@@ -467,10 +465,10 @@ void load_dungeon(FILE *f)
 
 	uint8_t pc_col;
 	fread(&pc_col, 1, 1, f);
-	dungeon.PC.col = pc_col;
+	dungeon.pc.col = pc_col;
 	uint8_t pc_row;
 	fread(&pc_row, 1, 1, f);
-	dungeon.PC.row = pc_row;
+	dungeon.pc.row = pc_row;
 
 	uint8_t hard[1680];
 	fread(hard, 1, 1680, f);
@@ -511,8 +509,8 @@ void load_dungeon(FILE *f)
 	}
 
 	//add PC
-	dungeon.map[dungeon.PC.row][dungeon.PC.col].terrain = PLAYER;
-	dungeon.map[dungeon.PC.row][dungeon.PC.col].hardness = PC_H;
+	dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain = PLAYER;
+	dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = PC_H;
 
 	fclose(f);
 }
@@ -536,9 +534,9 @@ void save_dungeon(FILE *f)
 	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);
 
-	int pc_x = dungeon.PC.col;
+	int pc_x = dungeon.pc.col;
 	fwrite(&pc_x, 1, 1, f);
-	int pc_y = dungeon.PC.row;
+	int pc_y = dungeon.pc.row;
 	fwrite(&pc_y, 1, 1, f);
 
 	char *hard = (char *) malloc(1680);

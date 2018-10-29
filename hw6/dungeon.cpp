@@ -95,7 +95,7 @@ int is_inside(int row, int col)
 	return row > 0 && col > 0 && row < ROW - 1 && col < COL - 1;
 }
 
-bool is_room(int row, int col)
+int is_room(int row, int col)
 {
 	return dungeon.map[row][col].terrain == ROOM;
 }
@@ -108,38 +108,38 @@ int is_room_corridor_stair(int row, int col)
 		|| dungeon.map[row][col].terrain == STAIR_DOWN;
 }
 
-bool is_valid_room(int row, int col, int width, int height)
+int is_valid_room(int row, int col, int width, int height)
 {
 	//is current terrain free
 	if (dungeon.map[row][col].terrain != ROCK)
-		return false;
+		return 0;
 	if (!is_inside(row, col) || !is_inside(row + height, col + width))
-		return false;
+		return 0;
 	//touch or overlap another room
 	for (int i = row - 1; i < row + height + 2; i++)
 	{
 		if (dungeon.map[i][col - 1].terrain != ROCK)
-			return false; //left touch
+			return 0; //left touch
 		if (dungeon.map[i][col].terrain != ROCK)
-			return false; //left overlap
+			return 0; //left overlap
 		if (dungeon.map[i][col + width + 1].terrain != ROCK)
-			return false; //right touch
+			return 0; //right touch
 		if (dungeon.map[i][col + width].terrain != ROCK)
-			return false; //right overlap
+			return 0; //right overlap
 	}
 	for (int j = col - 1; j < col + width + 2; j++)
 	{
 		if (dungeon.map[row - 1][j].terrain != ROCK)
-			return false; //top touch
+			return 0; //top touch
 		if (dungeon.map[row][j].terrain != ROCK)
-			return false; //top overlap
+			return 0; //top overlap
 		if (dungeon.map[row + height + 1][j].terrain != ROCK)
-			return false; //bottom touch
+			return 0; //bottom touch
 		if (dungeon.map[row + height][j].terrain != ROCK)
-			return false; //bottom overlap
+			return 0; //bottom overlap
 	}
 
-	return true;
+	return 1;
 }
 
 Room new_room_random()
@@ -150,7 +150,7 @@ Room new_room_random()
 	r.width = get_random(7, 3);
 	r.height = get_random(6, 2);
 
-	bool validRoom = is_valid_room(r.row, r.col, r.width, r.height);
+	int validRoom = is_valid_room(r.row, r.col, r.width, r.height);
 
 	if (validRoom)
 	{
@@ -193,7 +193,7 @@ int distance(int aRow, int aCol, int bRow, int bCol)
 	return row * row + col * col;
 }
 
-bool is_connected(int row, int col)
+int is_connected(int row, int col)
 {
 	return dungeon.map[row - 1][col].terrain == CORRIDOR
 		|| dungeon.map[row + 1][col].terrain == CORRIDOR
@@ -293,7 +293,6 @@ int is_visible_terrain(int i, int j)
 
 void remember_map_PC()
 {
-    //TODO
     int row, col;
     for (row = dungeon.pc.row - PC_VISION_RADIUS; row < dungeon.pc.row + PC_VISION_RADIUS + 1; row++)
     {

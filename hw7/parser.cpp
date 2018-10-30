@@ -10,13 +10,17 @@ void load_monster(char *path)
 {
     if (!fopen(path, "r"))
 	{
-        //printf("%s\n", path);
 		fprintf(stderr, "Failed to open file\n");
 		return;
 	}
+    else
+    {
+        printf("found path: %s\n", path);
+    }
 
-    ifstream file(path);
-
-    cout << (char) file.get() << endl;
+    ifstream f(path);
+    std::string s;
+    getline(f, s);
+    cout << s << endl;
 
 }

@@ -9,13 +9,13 @@ LDFLAGS = -lncurses
 
 BIN = main
 OBJS = main.o queue.o dungeon.o \
-		path.o move.o io.o
+		path.o move.o io.o parser.o
 
 all: $(BIN) etags
 
 $(BIN): $(OBJS)
 	@$(ECHO) Linking $@
-	@$(CC) $^ -o $@ $(LDFLAGS)
+	@$(CXX) $^ -o $@ $(LDFLAGS)
 
 -include $(OBJS:.o=.d)
 

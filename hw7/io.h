@@ -5,7 +5,6 @@
 
 #include <unistd.h>
 #include <stdint.h>
-#include <sys/stat.h>
 
 
 void dungeon_ncurses();

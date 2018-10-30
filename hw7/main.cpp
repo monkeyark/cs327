@@ -2,19 +2,37 @@
 #include <stdbool.h>
 #include <time.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <string>
 
 #include "dungeon.h"
 #include "queue.h"
 #include "io.h"
+#include "parser.h"
+
+using namespace std;
 
 Dungeon dungeon;
 
 int main(int argc, char *argv[])
 {
 	char *home = getenv("HOME");
-	char *path = strcat(home, "/.rlg327");
+	const char *path = strcat(home, "/.rlg327");
 	mkdir(path, 0777);
-	path = strcat(path, "/dungeon");
+    /*
+	char *path_dungeon = strcat(path, "/dungeon");
+    char *path_monster = strcat(path, "/monster_desc.txt");
+    */
+    char path_dungeon[sizeof(path) + 10];
+    char path_monster[sizeof(path) + 19];
+    strcpy(path_dungeon, path);
+    strcpy(path_monster, path);
+    strcat(path_dungeon, "/dungeon");
+    strcat(path_monster, "/monster_desc.txt");
+
+    printf("path: %s\n", path);
+    printf("path_dungeon: %s\n", path_dungeon);
+    printf("path_monster: %s\n", path_monster);
 
     dungeon.num_mon = 0;
 	//set up random seed
@@ -56,8 +74,8 @@ int main(int argc, char *argv[])
 
 	if (load)
 	{
-		FILE *f = fopen(path, "r");
-		load_dungeon(f);
+		FILE *file_dungeon = fopen(path_dungeon, "r");
+		load_dungeon(file_dungeon);
 	}
 	else
 	{
@@ -66,13 +84,16 @@ int main(int argc, char *argv[])
 
 	if (save)
 	{
-		FILE *f = fopen(path, "w");
-		save_dungeon(f);
+		FILE *file_dungeon = fopen(path_dungeon, "w");
+		save_dungeon(file_dungeon);
 	}
-
+/*
 	move_dungeon();
     //print_dungeon();
     delete_dungeon();
+*/
+
+    load_monster(path_monster);
 
 	return 0;
 }

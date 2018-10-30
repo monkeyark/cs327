@@ -19,18 +19,21 @@ int main(int argc, char *argv[])
 	char *home = getenv("HOME");
 	const char *path = strcat(home, "/.rlg327");
 	mkdir(path, 0777);
-    /*
+/*
 	char *path_dungeon = strcat(path, "/dungeon");
     char *path_monster = strcat(path, "/monster_desc.txt");
-    */
-    char path_dungeon[sizeof(path) + 10];
-    char path_monster[sizeof(path) + 19];
+    char *path_dungeon = " ";
+    char *path_monster = " ";
+    path_dungeon = strcat(path_dungeon, path);
+    path_monster = strcat(path_monster, path);
+*/
+
+    char path_dungeon[sizeof(path)*5];
+    char path_monster[sizeof(path)*5];
     strcpy(path_dungeon, path);
     strcpy(path_monster, path);
     strcat(path_dungeon, "/dungeon");
     strcat(path_monster, "/monster_desc.txt");
-
-    printf("path: %s\n", path);
     printf("path_dungeon: %s\n", path_dungeon);
     printf("path_monster: %s\n", path_monster);
 

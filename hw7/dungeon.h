@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include "queue.h"
+#include "dice.h"
 
 
 #define ROW 21
@@ -62,6 +63,7 @@ class Room
         int height;
 };
 
+/*
 class Character
 {
     public:
@@ -70,6 +72,29 @@ class Character
         int col;
         int birth;
         int speed;
+        int pc_row;
+        int pc_col;
+        int dead;
+        int dist[ROW * COL];
+        int vision[ROW][COL];
+};
+*/
+
+class Character
+{
+    public:
+        string name;
+        string description;
+        char symbol;
+        uint32_t color;
+        uint32_t abilities;
+        dice damage;
+        uint32_t hitpoints;
+        unsigned int characteristics;
+        int row;
+        int col;
+        int birth;
+        int32_t speed;
         int pc_row;
         int pc_col;
         int dead;

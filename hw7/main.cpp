@@ -19,14 +19,6 @@ int main(int argc, char *argv[])
 	char *home = getenv("HOME");
 	const char *path = strcat(home, "/.rlg327");
 	mkdir(path, 0777);
-/*
-	char *path_dungeon = strcat(path, "/dungeon");
-    char *path_monster = strcat(path, "/monster_desc.txt");
-    char *path_dungeon = " ";
-    char *path_monster = " ";
-    path_dungeon = strcat(path_dungeon, path);
-    path_monster = strcat(path_monster, path);
-*/
 
     char path_dungeon[sizeof(path)*5];
     char path_monster[sizeof(path)*5];
@@ -41,11 +33,9 @@ int main(int argc, char *argv[])
     dungeon.num_mon = 0;
 	//set up random seed
 	dungeon.seed = time(NULL);
-    dungeon.seed = 1540452211;
     
 	//TODO
     dungeon.seed = 1540445615;
-    //dungeon.seed = 1540445616;
 	srand(dungeon.seed);
 
 	bool load = false;
@@ -85,7 +75,7 @@ int main(int argc, char *argv[])
 	{
 		generate_dungeon();
 	}
-
+    
 	if (save)
 	{
 		FILE *file_dungeon = fopen(path_dungeon, "w");
@@ -96,8 +86,8 @@ int main(int argc, char *argv[])
     //print_dungeon();
     delete_dungeon();
 */
-
     load_monster_desc(path_monster);
+    print_monster_desc();
 
 	return 0;
 }

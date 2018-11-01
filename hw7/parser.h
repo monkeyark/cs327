@@ -61,9 +61,9 @@ class monster_description
     inline const dice &get_damage() const { return damage; }
     inline const uint32_t get_abilities() const { return abilities; }
     char get_symbol() { return symbol; }
-    Character *genMonster()
+    NPC *genMonster()
     {
-        Character *n = new Character;
+        NPC *n = new NPC;
         n->name = this->name;               //Valgrind says leak is happening here
         n->description = this->description; //Valgrind says leak is happening here
         n->symbol = this->symbol;

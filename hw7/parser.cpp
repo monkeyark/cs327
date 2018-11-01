@@ -145,7 +145,7 @@ void parse_monster_description(ifstream &f, string *lookahead)
     vector<uint32_t> color;
     dice speed, dam, hp;
     int rrty;
-    monster_description m;
+    //monster_description m;
 
     if ((*lookahead).compare("BEGIN"))
     {
@@ -196,6 +196,19 @@ void parse_monster_description(ifstream &f, string *lookahead)
     {
         getline(f, *lookahead);
     }
+    
+    Monster *m = new Monster;
+    m->name = name;
+    m->description = desc;
+    m->symbol = symb;
+    m->abil_string = abil_s;
+    m->color_string = color_s;
+    m->damage = dam;
+    m->hitpoints = hp;
+    m->speed_dice = speed;
+    m->rrty = rrty;
+
+    dungeon.mon.push_back(*m);
 }
 
 void load_monster(ifstream &f)
@@ -225,9 +238,10 @@ void load_monster_desc(char *path)
     std::string s;
 
     getline(f, s); //consume file header line
-
+    int i = 0;
     while (f.peek() != EOF)
     {
+        cout << i++ << endl;
         load_monster(f);
     }
 }
@@ -236,5 +250,19 @@ void load_item_desc(char *path);
 
 void print_monster_desc()
 {
+    for (unsigned int i = 0; i < dungeon.mon.size(); i++)
+    {
+        Monster m = dungeon.mon.at(i);
+        cout << "" << m.name << endl;
 
+        cout << "" << m.symbol << endl;
+        cout << "" << m.color_string << endl;
+        cout << "" << m.description << endl;
+        cout << "" << m.speed_dice.print_string() << endl;
+        cout << "" << m.damage.print_string() << endl;
+        cout << "" << m.hitpoints.print_string() << endl;
+        cout << "" << m.abil_string << endl;
+        cout << "" << m.rrty << endl;
+    }
+    
 }

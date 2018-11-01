@@ -9,7 +9,8 @@ LDFLAGS = -lncurses
 
 BIN = main
 OBJS = main.o queue.o dungeon.o \
-		path.o move.o io.o parser.o
+		path.o move.o io.o parser.o \
+		dice.o
 
 all: $(BIN) etags
 

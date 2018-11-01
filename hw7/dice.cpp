@@ -31,3 +31,12 @@ std::ostream &operator<<(std::ostream &o, dice &d)
 {
     return d.print(o);
 }
+
+std::string &dice::print_string()
+{
+    std::string *s = NULL;
+    
+    *s = base + '+' + number + 'd' + sides;
+
+    return *s; 
+}

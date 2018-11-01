@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 
 #include "queue.h"
 #include "dice.h"
@@ -106,6 +107,7 @@ class Character
         int vision[ROW][COL];
 };
 
+/*
 class NPC : public Character
 {
     public:
@@ -127,6 +129,24 @@ class NPC : public Character
         int dist[ROW * COL];
         int vision[ROW][COL];
 };
+*/
+
+class Monster : public Character
+{
+    public:
+        string name;
+        string description;
+        char symbol;
+        string abil_string;
+        string color_string;
+        uint32_t color;
+        uint32_t abilities;
+        int rrty;
+
+        dice damage;
+        dice hitpoints;
+        dice speed_dice;
+};
 
 class Dungeon
 {
@@ -143,6 +163,8 @@ class Dungeon
         Terrain map[ROW][COL];
         Queue pq_tunel;
         Queue pq_nontunel;
+
+        vector<Monster> mon;
 };
 
 extern Dungeon dungeon;

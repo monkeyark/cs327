@@ -1,1 +1,1 @@
-This project is reading monster description text file.
+This project is reading monster description text file, using the read content to build a dungeon and print it in console.

@@ -51,6 +51,8 @@ class dice
     }
 
     std::string &print_string();
+
+    std::string toString();
 };
 
 std::ostream &operator<<(std::ostream &o, dice &d);

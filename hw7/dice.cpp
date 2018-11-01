@@ -40,3 +40,13 @@ std::string &dice::print_string()
 
     return *s; 
 }
+
+std::string dice::toString()
+{
+  std::string temp;
+
+  temp = std::to_string(base) + "+" + std::to_string(number) + "d" + std::to_string(sides);
+
+  return temp;
+  
+}

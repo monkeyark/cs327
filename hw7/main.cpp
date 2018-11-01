@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     delete_dungeon();
 */
     load_monster_desc(path_monster);
-    print_monster_desc();
+    //print_monster_desc();
 
 	return 0;
 }

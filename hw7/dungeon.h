@@ -137,8 +137,6 @@ class Monster : public Character
         string name;
         string description;
         char symbol;
-        string abil_string;
-        string color_string;
         uint32_t color;
         uint32_t abilities;
         int rrty;
@@ -146,6 +144,12 @@ class Monster : public Character
         dice damage;
         dice hitpoints;
         dice speed_dice;
+
+        string abil_string;
+        string color_string;
+        string damage_string;
+        string hitpoints_string;
+        string speed_string;
 };
 
 class Dungeon

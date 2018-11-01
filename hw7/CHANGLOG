@@ -2,8 +2,13 @@ Oct 29
 	start project
     open file in correct path
     read line of txt file
+
 Oct 30
     add dice
     change character interface
     add monster and item desc
     add monster parser function
+
+Oct 31
+    add all monster ability
+    

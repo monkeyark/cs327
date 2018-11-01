@@ -92,10 +92,12 @@ void parse_monster_color(ifstream &f, string *lookahead, vector<uint32_t> *color
 void parse_monster_desc(ifstream &f, string *lookahead, string *desc)
 {
     eat_blankspace(f);
+    getline(f, *lookahead);
+    *desc += *lookahead;
     while (f.peek() != '.')
     {
         getline(f, *lookahead);
-        *desc += *lookahead + "\n";
+        *desc += "\n" + *lookahead;
     }
 }
 
@@ -193,10 +195,7 @@ void parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         parse_monster_rrty(f, lookahead, &rrty);
         m->rrty = rrty;
     }
-    // else if (!(*lookahead).compare("END"))
-    //   {
-    //     getline(f, *lookahead);
-    //   }
+
 }
 
 void load_monster(ifstream &f)
@@ -227,10 +226,8 @@ void load_monster_desc(char *path)
     std::string s;
 
     getline(f, s); //consume file header line
-    int i = 0;
     while (f.peek() != EOF)
     {
-        cout << i++ << endl;
         load_monster(f);
     }
 }
@@ -242,14 +239,31 @@ void print_monster_desc()
     for (unsigned int i = 0; i < dungeon.mon.size(); i++)
     {
         Monster m = dungeon.mon.at(i);
-        cout << "" << m.name << endl;
-        cout << "" << m.symbol << endl;
-        cout << "" << m.color_string << endl;
-        cout << "" << m.description << endl;
-        cout << "" << m.speed_dice.toString() << endl;
-        cout << "" << m.damage.toString() << endl;
-        cout << "" << m.hitpoints.toString() << endl;
-        cout << "" << m.abil_string << endl;
-        cout << "" << m.rrty << endl;
+        cout << m.name << endl;
+        cout << m.symbol << endl;
+        cout << m.color_string << endl;
+        cout << m.description << endl;
+        cout << m.speed_dice.print_string() << endl;
+        cout << m.damage.print_string() << endl;
+        cout << m.hitpoints.print_string() << endl;
+        cout << m.abil_string << endl;
+        cout << m.rrty << endl;
+    }
+}
+
+void print_monster_desc_with_type()
+{
+    for (unsigned int i = 0; i < dungeon.mon.size(); i++)
+    {
+        Monster m = dungeon.mon.at(i);
+        cout << "NAME: " << m.name << endl;
+        cout << "SYMBOL: " << m.symbol << endl;
+        cout << "COLOR: " << m.color_string << endl;
+        cout << "DESCRIPTION: " << m.description << endl;
+        cout << "SPEED: " << m.speed_dice.print_string() << endl;
+        cout << "DAMAGE: " << m.damage.print_string() << endl;
+        cout << "HITPOINTS: " << m.hitpoints.print_string() << endl;
+        cout << "ABILITY: " << m.abil_string << endl;
+        cout << "RRTY: " << m.rrty << endl;
     }
 }

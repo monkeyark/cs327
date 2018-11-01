@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	dungeon.seed = time(NULL);
     
 	//TODO
-    dungeon.seed = 1540445615;
+    //dungeon.seed = 1540445615;
 	srand(dungeon.seed);
 
 	bool load = false;
@@ -88,6 +88,10 @@ int main(int argc, char *argv[])
 */
     load_monster_desc(path_monster);
     print_monster_desc();
+    printf("\n\n\n\n\n==================================================\n");
+    printf("text file above without type header, below with type header");
+    printf("\n==================================================\n\n\n\n\n");
+    print_monster_desc_with_type();
 
 	return 0;
 }

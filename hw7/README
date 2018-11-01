@@ -1,1 +1,19 @@
-This project is reading monster description text file, using the read content to build a dungeon and print it in console.
+This project is reading monster description text file, using
+the read file function to parse text file content to construct
+a dungeon and then output the constructed dungeon as a text file
+in terminal. The read monster description is parse as monsters
+and store in dungeon class as a vector of Monster type.
+
+Monster information is printed in terminal in following order:
+
+name
+symbol
+color
+description
+speed
+damage
+hitpoints
+ability
+rrty
+
+uncomment code in main.c to make dungeon move

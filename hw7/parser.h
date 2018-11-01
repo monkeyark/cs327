@@ -121,7 +121,6 @@ class monster_description
         return n;
     }
 };
-*/
 
 class monster_description
 {
@@ -168,9 +167,11 @@ class monster_description
         return n;
     }
 };
+*/
 
 void load_monster_desc(char *path);
-//void load_item_desc(char *path);
+void load_item_desc(char *path);
 void print_monster_desc();
+void print_monster_desc_with_type();
 
 #endif

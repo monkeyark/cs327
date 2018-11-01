@@ -32,21 +32,8 @@ std::ostream &operator<<(std::ostream &o, dice &d)
     return d.print(o);
 }
 
-std::string &dice::print_string()
+std::string dice::print_string()
 {
-    std::string *s = NULL;
-    
-    *s = base + '+' + number + 'd' + sides;
-
-    return *s; 
+    return std::to_string(base) + "+" + std::to_string(number) + "d" + std::to_string(sides);
 }
 
-std::string dice::toString()
-{
-  std::string temp;
-
-  temp = std::to_string(base) + "+" + std::to_string(number) + "d" + std::to_string(sides);
-
-  return temp;
-  
-}

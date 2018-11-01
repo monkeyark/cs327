@@ -50,9 +50,7 @@ class dice
         return sides;
     }
 
-    std::string &print_string();
-
-    std::string toString();
+    std::string print_string();
 };
 
 std::ostream &operator<<(std::ostream &o, dice &d);

@@ -7,13 +7,13 @@ and store in dungeon class as a vector of Monster type.
 Monster information is printed in terminal in following order:
 
 name
-symbol
-color
 description
+color
 speed
-damage
-hitpoints
 ability
+hitpoints
+damage
+symbol
 rrty
 
 uncomment code in main.c to make dungeon move

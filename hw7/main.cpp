@@ -25,10 +25,8 @@ int main(int argc, char *argv[])
     strcpy(path_dungeon, path);
     strcpy(path_monster, path);
     strcat(path_dungeon, "/dungeon");
-    strcat(path_monster, "/monster_desc.txt");
-    //strcat(path_monster, "/monster_desc_copy.txt");
-    //printf("path_dungeon: %s\n", path_dungeon);
-    //printf("path_monster: %s\n", path_monster);
+    //strcat(path_monster, "/monster_desc.txt");
+    strcat(path_monster, "/monster_desc_copy.txt");
 
     dungeon.num_mon = 0;
 	//set up random seed
@@ -87,10 +85,7 @@ int main(int argc, char *argv[])
     delete_dungeon();
 */
     load_monster_desc(path_monster);
-    print_monster_desc();
-    printf("\n\n\n\n\n==================================================\n");
-    printf("text file above without type header, below with type header");
-    printf("\n==================================================\n\n\n\n\n");
+    //print_monster_desc();
     print_monster_desc_with_type();
 
 	return 0;

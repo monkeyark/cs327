@@ -10,6 +10,9 @@
 #include "dice.h"
 #include "limits.h"
 
+#define NUM_MONSTER_FIELDS 9
+#define NUM_OBJECT_FIELDS 14
+
 using namespace std;
 
 static inline void eat_whitespace(ifstream &f)
@@ -55,7 +58,7 @@ int parse_dice(ifstream &f, string *lookahead, dice *d)
 int parse_nextline(ifstream &f, string *lookahead)
 {
     getline(f, *lookahead);
-    return 1;
+    return 0;
 }
 
 int parse_monster_begin(ifstream &f, string *lookahead)
@@ -79,7 +82,8 @@ int parse_monster_name(ifstream &f, string *lookahead, string *name)
 
     getline(f, *name);
 
-    //f >> *lookahead;
+    f >> *lookahead;
+
     return 0;
 }
 
@@ -100,31 +104,30 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symb)
         return 1;
     }
 
-    //f >> *lookahead;
+    f >> *lookahead;
+
     return 0;
 }
 
 int parse_monster_color(ifstream &f, string *lookahead, vector<uint32_t> *color, string *color_s)
 {
     eat_blankspace(f);
+
+    if (f.peek() == '\n')
+    {
+        return 1;
+    }
+
     getline(f, *lookahead);
     *color_s = *lookahead;
 
-    return 1; //TODO
+    f >> *lookahead;
+
+    return 0;
 }
 
 int parse_monster_desc(ifstream &f, string *lookahead, string *desc)
 {
-    /*
-    eat_blankspace(f);
-    getline(f, *lookahead);
-    *desc += *lookahead;
-    while (f.peek() != '.')
-    {
-        getline(f, *lookahead);
-        *desc += "\n" + *lookahead;
-    }
-    */
     if (f.peek() != '\n')
     {
         return 1;
@@ -184,11 +187,6 @@ int parse_monster_hp(ifstream &f, string *lookahead, dice *d)
 
 int parse_monster_abil(ifstream &f, string *lookahead, uint32_t *abil, string *abil_s)
 {
-/*
-    eat_blankspace(f);
-    getline(f, *lookahead);
-    *abil_s = *lookahead;
-*/
     eat_blankspace(f);
 
     if (f.peek() == '\n')
@@ -196,15 +194,11 @@ int parse_monster_abil(ifstream &f, string *lookahead, uint32_t *abil, string *a
         return 1;
     }
 
-    *abil_s = f.get();
+    getline(f, *lookahead);
+    *abil_s = *lookahead;
 
-    eat_blankspace(f);
-    if (f.peek() != '\n')
-    {
-        return 1;
-    }
+    f >> *lookahead;
 
-    //f >> *lookahead;
     return 0;
 }
 
@@ -213,14 +207,11 @@ int parse_monster_rrty(ifstream &f, string *lookahead, int *rrty)
     getline(f, *lookahead);
     *rrty = atoi((*lookahead).c_str());
 
-   return 1; //TODO
+    return 0;
 }
 
 int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
 {
-    int pass, tmp;
-    pass = 1;;
-
     string abil_s, color_s;
 
     string name, desc;
@@ -229,71 +220,122 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     vector<uint32_t> color;
     dice speed, dam, hp;
     int rrty;
+    int count;
+    for (count = 0; count < NUM_MONSTER_FIELDS; count++)
+    {
+        if (!(*lookahead).compare("BEGIN"))
+        {
+            if (parse_monster_begin(f, lookahead))
+            {
+                cout << "BEGIN------------------------------" << endl;
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("NAME"))
+        {
+            if (parse_monster_name(f, lookahead, &name))
+            {
+                cout << "NAME------------------------------" << endl;
+                return 0;
+            }
+            m->name = name;
+        }
+        else if (!(*lookahead).compare("SYMB"))
+        {
+            if (parse_monster_symb(f, lookahead, &symb))
+            {
+                cout << "SYMB------------------------------" << endl;
+                return 0;
+            }
+            m->symbol = symb;
+        }
+        else if (!(*lookahead).compare("COLOR"))
+        {
+            if (parse_monster_color(f, lookahead, &color, &color_s))
+            {
+                cout << "COLOR------------------------------" << endl;
+                return 0;
+            }
+            m->color_string = color_s;
+        }
+        else if (!(*lookahead).compare("DESC"))
+        {
+            if (parse_monster_desc(f, lookahead, &desc))
+            {
+                cout << "DESC------------------------------" << endl;
+                return 0;
+            }
+            m->description = desc;
+        }
+        else if (!(*lookahead).compare("."))
+        {
+            if (parse_monster_desc_end(f, lookahead))
+            {
+                cout << ".------------------------------" << endl;
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("SPEED"))
+        {
+            if (parse_dice(f, lookahead, &speed))
+            {
+                cout << "SPEED------------------------------" << endl;
+                return 0;
+            }
 
-    if (!(*lookahead).compare("BEGIN"))
-    {
-        pass &= parse_monster_begin(f, lookahead);
+            m->speed_dice = speed;
+        }
+        else if (!(*lookahead).compare("DAM"))
+        {
+            if (parse_dice(f, lookahead, &dam))
+            {
+                cout << "DAM------------------------------" << endl;
+                return 0;
+            }
+            m->damage = dam;
+        }
+        else if (!(*lookahead).compare("HP"))
+        {
+            if (parse_dice(f, lookahead, &hp))
+            {
+                cout << "HP------------------------------" << endl;
+                return 0;
+            }
+            m->hitpoints = hp;
+        }
+        else if (!(*lookahead).compare("ABIL"))
+        {
+            if (parse_monster_abil(f, lookahead, &abil, &abil_s))
+            {
+                cout << "ABIL------------------------------" << endl;
+                return 0;
+            }
+            m->abil_string = abil_s;
+        }
+        else if (!(*lookahead).compare("RRTY"))
+        {
+            if (parse_monster_rrty(f, lookahead, &rrty))
+            {
+                cout << "RRTY------------------------------" << endl;
+                return 0;
+            }
+            m->rrty = rrty;
+        }
+        // else if (*lookahead == "END")
+        // {
+        //     if (parse_monster_begin(f, lookahead))
+        //     {
+        //         cout << "END------------------------------" << endl;
+        //         return 0;
+        //     }
+        // }
+        // else
+        // {
+        //     return 0;
+        // }
     }
-    else if (!(*lookahead).compare("NAME"))
-    {
-        pass &= parse_monster_name(f, lookahead, &name);
-        m->name = name;
-    }
-    else if (!(*lookahead).compare("SYMB"))
-    {
-        pass &= parse_monster_symb(f, lookahead, &symb);
-        m->symbol = symb;
-    }
-    else if (!(*lookahead).compare("COLOR"))
-    {
-        pass &= parse_monster_color(f, lookahead, &color, &color_s);
-        m->color_string = color_s;
-    }
-    else if (!(*lookahead).compare("DESC"))
-    {
-        pass &= parse_monster_desc(f, lookahead, &desc);
-        m->description = desc;
-    }
-    else if (!(*lookahead).compare("."))
-    {
-        pass &= parse_monster_desc_end(f, lookahead);
-    }
-    else if (!(*lookahead).compare("SPEED"))
-    {
-        pass &= parse_dice(f, lookahead, &speed);
-        m->speed_dice = speed;
-    }
-    else if (!(*lookahead).compare("DAM"))
-    {
-        pass &= parse_dice(f, lookahead, &dam);
-        m->damage = dam;
-    }
-    else if (!(*lookahead).compare("HP"))
-    {
-        pass &= parse_dice(f, lookahead, &hp);
-        m->hitpoints = hp;
-    }
-    else if (!(*lookahead).compare("ABIL"))
-    {
-        pass &= parse_monster_abil(f, lookahead, &abil, &abil_s);
-        m->abil_string = abil_s;
-    }
-    else if (!(*lookahead).compare("RRTY"))
-    {
-        pass &= parse_monster_rrty(f, lookahead, &rrty);
-        m->rrty = rrty;
-    }
-    // else if (!(*lookahead).compare("END"))
-    // {
-    //     parse_monster_end(f, lookahead);
-    // }
-    // else
-    // {
-        
-    //     return 0;
-    // }
 
-    return pass;
+    return 1;
 }
 
 void load_monster(ifstream &f)
@@ -304,18 +346,19 @@ void load_monster(ifstream &f)
     {
         f >> s;
         eat_whitespace(f);
-        if (f.peek() == '\n')
-        {
-            free(m);
-            return;
-        }
+        // if (f.peek() == '\n')
+        // {
+        //     free(m);
+        //     return;
+        // }
         if (!parse_monster_description(f, &s, m))
         {
+            cout << "discard------------------------------" << endl;
             free(m);
             return;
         }
         eat_blankspace(f);
-    } //while (f.peek() != '\n');
+    } //while (s != "\n");
     while (s.compare("END"));
 
     dungeon.mon.push_back(*m);
@@ -350,7 +393,7 @@ void load_item_desc(char *path);
 
 void print_monster_desc()
 {
-    for (int i = 0; i < dungeon.mon.size(); i++)
+    for (unsigned int i = 0; i < dungeon.mon.size(); i++)
     {
         Monster m = dungeon.mon.at(i);
         cout << m.name << endl;
@@ -367,7 +410,7 @@ void print_monster_desc()
 
 void print_monster_desc_with_type()
 {
-    for (int i = 0; i < dungeon.mon.size(); i++)
+    for (unsigned int i = 0; i < dungeon.mon.size(); i++)
     {
         Monster m = dungeon.mon.at(i);
         cout << "NAME: " << m.name << endl;
@@ -379,5 +422,6 @@ void print_monster_desc_with_type()
         cout << "DAMAGE: " << m.damage.print_string() << endl;
         cout << "SYMBOL: " << m.symbol << endl;
         cout << "RRTY: " << m.rrty << endl;
+        cout << endl;
     }
 }

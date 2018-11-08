@@ -83,17 +83,17 @@ int main(int argc, char *argv[])
 		save_dungeon(file_dungeon);
 	}
 
-/*
-	move_dungeon();
-    //print_dungeon();
-    delete_dungeon();
-*/
     load_monster_desc(path_monster);
     //print_monster_desc();
     //print_monster_desc_with_type();
 	
 	load_item_desc(path_item);
-	print_item_desc_with_type();
+	//print_item_desc_with_type();
+
+
+	move_dungeon();
+    //print_dungeon();
+    delete_dungeon();
 
 	return 0;
 }

@@ -11,7 +11,7 @@
 #include "limits.h"
 
 #define NUM_MONSTER_FIELDS 9
-#define NUM_OBJECT_FIELDS 14
+#define NUM_ITEM_FIELDS 14
 
 using namespace std;
 
@@ -60,18 +60,7 @@ int parse_nextline(ifstream &f, string *lookahead)
     getline(f, *lookahead);
     return 0;
 }
-
-int parse_monster_begin(ifstream &f, string *lookahead)
-{
-    return parse_nextline(f, lookahead);
-}
-
-int parse_monster_end(ifstream &f, string *lookahead)
-{
-    return parse_nextline(f, lookahead);
-}
-
-int parse_monster_name(ifstream &f, string *lookahead, string *name)
+int parse_name(ifstream &f, string *lookahead, string *name)
 {
     eat_blankspace(f);
 
@@ -85,6 +74,21 @@ int parse_monster_name(ifstream &f, string *lookahead, string *name)
     f >> *lookahead;
 
     return 0;
+}
+
+int parse_monster_begin(ifstream &f, string *lookahead)
+{
+    return parse_nextline(f, lookahead);
+}
+
+int parse_monster_end(ifstream &f, string *lookahead)
+{
+    return parse_nextline(f, lookahead);
+}
+
+int parse_monster_name(ifstream &f, string *lookahead, string *name)
+{
+    return parse_name(f, lookahead, name);
 }
 
 int parse_monster_symb(ifstream &f, string *lookahead, char *symb)
@@ -109,7 +113,7 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symb)
     return 0;
 }
 
-int parse_monster_color(ifstream &f, string *lookahead, vector<uint32_t> *color, string *color_s)
+int parse_color(ifstream &f, string *lookahead, vector<uint32_t> *integer, string *integer_string)
 {
     eat_blankspace(f);
 
@@ -119,14 +123,19 @@ int parse_monster_color(ifstream &f, string *lookahead, vector<uint32_t> *color,
     }
 
     getline(f, *lookahead);
-    *color_s = *lookahead;
+    *integer_string = *lookahead;
 
     f >> *lookahead;
 
     return 0;
 }
 
-int parse_monster_desc(ifstream &f, string *lookahead, string *desc)
+int parse_monster_color(ifstream &f, string *lookahead, vector<uint32_t> *color, string *color_string)
+{
+    return parse_color(f, lookahead, color, color_string);
+}
+
+int parse_desc(ifstream &f, string *lookahead, string *desc)
 {
     if (f.peek() != '\n')
     {
@@ -165,6 +174,11 @@ int parse_monster_desc(ifstream &f, string *lookahead, string *desc)
     return 0;
 }
 
+int parse_monster_desc(ifstream &f, string *lookahead, string *desc)
+{
+    return parse_desc(f, lookahead, desc);
+}
+
 int parse_monster_desc_end(ifstream &f, string *lookahead)
 {
     return parse_nextline(f, lookahead);
@@ -185,7 +199,7 @@ int parse_monster_hp(ifstream &f, string *lookahead, dice *d)
     return parse_dice(f, lookahead, d);
 }
 
-int parse_monster_abil(ifstream &f, string *lookahead, uint32_t *abil, string *abil_s)
+int parse_monster_abil(ifstream &f, string *lookahead, uint32_t *abil, string *abil_string)
 {
     eat_blankspace(f);
 
@@ -195,19 +209,24 @@ int parse_monster_abil(ifstream &f, string *lookahead, uint32_t *abil, string *a
     }
 
     getline(f, *lookahead);
-    *abil_s = *lookahead;
+    *abil_string = *lookahead;
 
     f >> *lookahead;
 
     return 0;
 }
 
-int parse_monster_rrty(ifstream &f, string *lookahead, int *rrty)
+int parse_rarity(ifstream &f, string *lookahead, int *rarity)
 {
     getline(f, *lookahead);
-    *rrty = atoi((*lookahead).c_str());
+    *rarity = atoi((*lookahead).c_str());
 
     return 0;
+}
+
+int parse_monster_rarity(ifstream &f, string *lookahead, int *rarity)
+{
+    return parse_rarity(f, lookahead, rarity);
 }
 
 int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
@@ -219,7 +238,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     uint32_t abil;
     vector<uint32_t> color;
     dice speed, dam, hp;
-    int rrty;
+    int rarity;
     int count;
     for (count = 0; count < NUM_MONSTER_FIELDS; count++)
     {
@@ -314,12 +333,12 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         }
         else if (!(*lookahead).compare("RRTY"))
         {
-            if (parse_monster_rrty(f, lookahead, &rrty))
+            if (parse_monster_rarity(f, lookahead, &rarity))
             {
                 cout << "RRTY------------------------------" << endl;
                 return 0;
             }
-            m->rrty = rrty;
+            m->rrty = rarity;
         }
         // else if (*lookahead == "END")
         // {
@@ -389,49 +408,82 @@ void load_monster_desc(char *path)
     }
 }
 
-void print_monster_desc()
-{
-    for (unsigned int i = 0; i < dungeon.mon.size(); i++)
-    {
-        Monster m = dungeon.mon.at(i);
-        cout << m.name << endl;
-        cout << m.description << endl;
-        cout << m.color_string << endl;
-        cout << m.speed_dice.print_string() << endl;
-        cout << m.abil_string << endl;
-        cout << m.hitpoints.print_string() << endl;
-        cout << m.damage.print_string() << endl;
-        cout << m.symbol << endl;
-        cout << m.rrty << endl;
-    }
-}
 
-void print_monster_desc_with_type()
-{
-    for (unsigned int i = 0; i < dungeon.mon.size(); i++)
-    {
-        Monster m = dungeon.mon.at(i);
-        cout << "NAME: " << m.name << endl;
-        cout << "DESCRIPTION: " << m.description << endl;
-        cout << "COLOR: " << m.color_string << endl;
-        cout << "SPEED: " << m.speed_dice.print_string() << endl;
-        cout << "ABILITY: " << m.abil_string << endl;
-        cout << "HITPOINTS: " << m.hitpoints.print_string() << endl;
-        cout << "DAMAGE: " << m.damage.print_string() << endl;
-        cout << "SYMBOL: " << m.symbol << endl;
-        cout << "RRTY: " << m.rrty << endl;
-        cout << endl;
-    }
-}
 
-void print_item_desc();
-void print_item_desc_with_type();
+
+int parse_item_begin(ifstream &f, string *lookahead)
+{
+    return parse_nextline(f, lookahead);
+}
+int parse_item_end(ifstream &f, string *lookahead)
+{
+    return parse_nextline(f, lookahead);
+}
+int parse_item_name(ifstream &f, string *lookahead, string *name)
+{
+    return parse_name(f, lookahead, name);
+}
+int parse_item_color(ifstream &f, string *lookahead, vector<uint32_t> *color, string *color_string)
+{
+    return parse_color(f, lookahead, color, color_string);
+}
+int parse_item_weight(ifstream &f, string *lookahead, dice *weight)
+{
+    return parse_dice(f, lookahead, weight);
+}
+int parse_item_hit(ifstream &f, string *lookahead, dice *hit)
+{
+    return parse_dice(f, lookahead, hit);
+}
+int parse_item_damage(ifstream &f, string *lookahead, dice *damage)
+{
+    return parse_dice(f, lookahead, damage);
+}
+int parse_item_attribute(ifstream &f, string *lookahead, dice *attribute)
+{
+    return parse_dice(f, lookahead, attribute);
+}
+int parse_item_value(ifstream &f, string *lookahead, dice *value)
+{
+    return parse_dice(f, lookahead, value);
+}
+int parse_item_dodge(ifstream &f, string *lookahead, dice *dodge)
+{
+    return parse_dice(f, lookahead, dodge);
+}
+int parse_item_defence(ifstream &f, string *lookahead, dice *defence)
+{
+    return parse_dice(f, lookahead, defence);
+}
+int parse_item_speed(ifstream &f, string *lookahead, dice *speed)
+{
+    return parse_dice(f, lookahead, speed);
+}
+int parse_item_desc(ifstream &f, string *lookahead, string *desc)
+{
+    return parse_desc(f, lookahead, desc);
+}
+int parse_item_desc_end(ifstream &f, string *lookahead)
+{
+    return parse_nextline(f, lookahead);
+}
+int parse_item_rarity(ifstream &f, string *lookahead, int *rarity)
+{
+    return parse_rarity(f, lookahead, rarity);
+}
+int parse_item_artifact(ifstream &f, string *lookahead, bool *artifact)
+{
+    getline(f, *lookahead);
+    //*artifact = atoi((*lookahead).c_str()); //TODO
+
+    return 0;
+}
 
 int parse_item_description(ifstream &f, string *lookahead, Item *item)
 {
         string name;
         string description;
-        //uint32_t color;
+        vector<uint32_t> color;
         dice hit;
         dice damage;
         dice dodge;
@@ -447,7 +499,7 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
         string color_string;
 
         int count = 0;
-    for (count = 0; count < NUM_MONSTER_FIELDS; count++)
+    for (count = 0; count < NUM_ITEM_FIELDS; count++)
     {
         if (!(*lookahead).compare("BEGIN"))
         {
@@ -459,112 +511,98 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
         }
         else if (!(*lookahead).compare("NAME"))
         {
-            if (parse_item_name(f, lookahead))
+            if (parse_item_name(f, lookahead, &name))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("COLOR"))
         {
-            if (parse_item_color(f, lookahead))
+            if (parse_item_color(f, lookahead, &color, &color_string))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("WEIGHT"))
         {
-            if (parse_item_weight(f, lookahead))
+            if (parse_item_weight(f, lookahead, &weight))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("HIT"))
         {
-            if ()
+            if (parse_item_hit(f, lookahead, &hit))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("DAM"))
         {
-            if ()
+            if (parse_item_damage(f, lookahead, &damage))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("ATTR"))
         {
-            if ()
+            if (parse_item_attribute(f, lookahead, &attribute))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("VAL"))
         {
-            if ()
+            if (parse_item_value(f, lookahead, &value))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("DODGE"))
         {
-            if ()
+            if (parse_item_dodge(f, lookahead, &dodge))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("DEF"))
         {
-            if ()
+            if (parse_item_defence(f, lookahead, &defence))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("SPEED"))
         {
-            if ()
+            if (parse_item_speed(f, lookahead, &speed))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("DESC"))
         {
-            if ()
+            if (parse_item_desc(f, lookahead, &description))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("."))
         {
-            if ()
+            if (parse_item_desc_end(f, lookahead))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("RRTY"))
         {
-            if ()
+            if (parse_item_rarity(f, lookahead, &rarity))
             {
                 return 0;
             }
         }
         else if (!(*lookahead).compare("ART"))
         {
-            if ()
-            {
-                return 0;
-            }
-        }
-        else if (!(*lookahead).compare("NAME"))
-        {
-            if ()
-            {
-                return 0;
-            }
-        }
-        else if (!(*lookahead).compare("NAME"))
-        {
-            if ()
+            if (parse_item_artifact(f, lookahead, &artifact))
             {
                 return 0;
             }
@@ -624,3 +662,41 @@ void load_item_desc(char *path)
         load_item(f);
     }
 }
+
+void print_monster_desc()
+{
+    for (unsigned int i = 0; i < dungeon.mon.size(); i++)
+    {
+        Monster m = dungeon.mon.at(i);
+        cout << m.name << endl;
+        cout << m.description << endl;
+        cout << m.color_string << endl;
+        cout << m.speed_dice.print_string() << endl;
+        cout << m.abil_string << endl;
+        cout << m.hitpoints.print_string() << endl;
+        cout << m.damage.print_string() << endl;
+        cout << m.symbol << endl;
+        cout << m.rrty << endl;
+    }
+}
+
+void print_monster_desc_with_type()
+{
+    for (unsigned int i = 0; i < dungeon.mon.size(); i++)
+    {
+        Monster m = dungeon.mon.at(i);
+        cout << "NAME: " << m.name << endl;
+        cout << "DESCRIPTION: " << m.description << endl;
+        cout << "COLOR: " << m.color_string << endl;
+        cout << "SPEED: " << m.speed_dice.print_string() << endl;
+        cout << "ABILITY: " << m.abil_string << endl;
+        cout << "HITPOINTS: " << m.hitpoints.print_string() << endl;
+        cout << "DAMAGE: " << m.damage.print_string() << endl;
+        cout << "SYMBOL: " << m.symbol << endl;
+        cout << "RRTY: " << m.rrty << endl;
+        cout << endl;
+    }
+}
+
+void print_item_desc();
+void print_item_desc_with_type();

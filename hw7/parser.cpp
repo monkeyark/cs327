@@ -698,7 +698,6 @@ void print_monster_desc_with_type()
 void print_item_desc();
 void print_item_desc_with_type()
 {
-    cout << dungeon.item.size() << endl;
     for (unsigned int i = 0; i < dungeon.item.size(); i++)
     {
         Item item = dungeon.item.at(i);

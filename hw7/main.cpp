@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	strcpy(path_item, path);
     strcat(path_dungeon, "/dungeon");
     strcat(path_monster, "/monster_desc.txt");
-	strcat(path_monster, "/object_desc.txt");
+	strcat(path_item, "/object_desc.txt");
     //strcat(path_monster, "/monster_desc_copy.txt");
 	//strcat(path_item, "/object_desc_copy.txt");
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	//set up random seed
 	dungeon.seed = time(NULL);
     
-    dungeon.seed = 1540445615;
+    //dungeon.seed = 1540445615;
 	srand(dungeon.seed);
 
 	bool load = false;
@@ -85,10 +85,10 @@ int main(int argc, char *argv[])
 
     load_monster_desc(path_monster);
     //print_monster_desc();
-    //print_monster_desc_with_type();
+	print_monster_desc_with_type();
 	
 	load_item_desc(path_item);
-	//print_item_desc_with_type();
+	print_item_desc_with_type();
 
 
 	move_dungeon();

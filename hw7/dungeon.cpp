@@ -569,6 +569,27 @@ void delete_dungeon()
 {
     free(dungeon.rooms);
 	free(dungeon.monster);
+	/*
+	unsigned int i;
+	for (i = 0; i < dungeon.mon.size(); i++)
+	{
+		cout << "monster: " << i << endl;
+		cout << "leak check" << endl;
+		delete &(dungeon.mon.at(i));
+		cout << "leak check=============" << endl;
+	}
+	for (i = 0; i < dungeon.it.size(); i++)
+	{
+		cout << "item: " << i << endl;
+		delete &(dungeon.it.at(i));
+	}
+	*/
+/*
+	while (!dungeon.mon.empty())
+	{
+		delete dungeon.mon.pop_back();
+	}
+*/
 }
 
 void move_dungeon()

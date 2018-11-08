@@ -88,6 +88,17 @@
 
 using namespace std;
 
+enum Colors
+{
+  BLACK,
+  RED,
+  GREEN,
+  YELLOW, BLUE,
+  MAGENTA,
+  CYAN,
+  WHITE
+};
+
 class Terrain
 {
   public:
@@ -126,9 +137,8 @@ class Monster : public Character
   public:
   Monster()
   {
-    name = "haha";
+    name = "";
     description= "";
-    color = 0;
     abilities = 0;
     rrty = 0;
 
@@ -137,8 +147,8 @@ class Monster : public Character
     string name;
     string description;
     char symbol;
-    uint32_t color;
-    uint32_t abilities;
+    vector<int> color;
+    int abilities;
     int rrty;
 
     dice damage;
@@ -161,7 +171,7 @@ class Item
 
     string name;
     string description;
-    uint32_t color;
+    vector<int> color;
     dice hit;
     dice damage;
     dice dodge;

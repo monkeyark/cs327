@@ -11,7 +11,7 @@
 #include "limits.h"
 
 #define NUM_MONSTER_FIELDS 11
-#define NUM_ITEM_FIELDS 14
+#define NUM_ITEM_FIELDS 16
 
 using namespace std;
 
@@ -110,7 +110,7 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symb)
     return 0;
 }
 
-int parse_color(ifstream &f, string *lookahead, vector<uint32_t> *integer, string *integer_string)
+int parse_color(ifstream &f, string *lookahead, vector<int> *integer, string *integer_string)
 {
     eat_blankspace(f);
 
@@ -127,7 +127,7 @@ int parse_color(ifstream &f, string *lookahead, vector<uint32_t> *integer, strin
     return 0;
 }
 
-int parse_monster_color(ifstream &f, string *lookahead, vector<uint32_t> *color, string *color_string)
+int parse_monster_color(ifstream &f, string *lookahead, vector<int> *color, string *color_string)
 {
     return parse_color(f, lookahead, color, color_string);
 }
@@ -187,7 +187,7 @@ int parse_monster_hp(ifstream &f, string *lookahead, dice *d)
     return parse_dice(f, lookahead, d);
 }
 
-int parse_monster_abil(ifstream &f, string *lookahead, uint32_t *abil, string *abil_string)
+int parse_monster_abil(ifstream &f, string *lookahead, int *abil, string *abil_string)
 {
     eat_blankspace(f);
 
@@ -222,20 +222,17 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     //TODO
     //this parser can only read description with no repeative filed
     //the later repeative filed will overried the previous one
-    cout << "parse_monster_description" << endl;//TODO
     string abil_s, color_s;
 
     string name, desc;
     char symb;
-    uint32_t abil;
-    vector<uint32_t> color;
+    int abil;
+    vector<int> color;
     dice speed, dam, hp;
     int rarity;
     int count;
     for (f >> *lookahead, count = 0; count < NUM_MONSTER_FIELDS; count++)
     {
-        cout << count << endl;//TODO
-        cout << "Go to-------" << *lookahead << endl;
         if (!(*lookahead).compare("BEGIN"))
         {
             if (parse_monster_begin(f, lookahead))
@@ -243,7 +240,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "BEGIN reading fail" << endl;
                 return 0;
             }
-            cout << *lookahead << endl;
             continue;
         }
         else if (!(*lookahead).compare("NAME"))
@@ -253,7 +249,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "NAME reading fail" << endl;
                 return 0;
             }
-            cout << "line" << endl;
             m->name = name;
             continue;
         }
@@ -264,7 +259,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "SYMB reading fail" << endl;
                 return 0;
             }
-            cout << *lookahead << endl;
             m->symbol = symb;
             continue;
         }
@@ -275,7 +269,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "COLOR reading fail" << endl;
                 return 0;
             }
-            cout << *lookahead << endl;
             m->color_string = color_s;
             continue;
         }
@@ -286,7 +279,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "DESC reading fail" << endl;
                 return 0;
             }
-            cout << *lookahead << endl;
             m->description = desc;
             continue;
         }
@@ -297,7 +289,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "SPEED reading fail" << endl;
                 return 0;
             }
-            cout << *lookahead << endl;
             m->speed_dice = speed;
             continue;
         }
@@ -308,7 +299,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "DAM reading fail" << endl;
                 return 0;
             }
-            cout << *lookahead << endl;
             m->damage = dam;
             continue;
         }
@@ -319,7 +309,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "HP reading fail" << endl;
                 return 0;
             }
-            cout << *lookahead << endl;
             m->hitpoints = hp;
             continue;
         }
@@ -330,7 +319,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "ABIL reading fail" << endl;
                 return 0;
             }
-            cout << *lookahead << endl;
             m->abil_string = abil_s;
             continue;
         }
@@ -341,21 +329,18 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "RRTY reading fail" << endl;
                 return 0;
             }
-            cout << *lookahead << endl;
             m->rrty = rarity;
 
             continue;
         }
         else if (*lookahead == "END")
         {
-            cout << *lookahead << endl;
             getline(f, *lookahead);
-            cout << *lookahead << endl;
             return 1;
         }
         else
         {
-            cout << "===============================in else" << *lookahead << endl;
+            cout << *lookahead << " not in filed" << endl;
             return 0;
         }
     }
@@ -382,27 +367,17 @@ void load_monster_desc(char *path)
     }
 
     Monster *m = new Monster;
-    int i = 0;
     while (f.peek() != EOF)
     {
         if (!parse_monster_description(f, &s, m))
         {
-            cout << "discard------------------------------" << endl;
+            cout << "discard monster" << endl;
             free(m);
             return;
         }
-        eat_whitespace(f);
-        eat_blankspace(f);
-        eat_whitespace(f);
-        cout << "i = " << i << "!!!!!!!!!!!!!!!!!!!!!!" << endl;
-        i++;
-        cout << m->symbol << endl;
-        cout << m->name << endl;
         dungeon.mon.push_back(*m);
     }
 }
-
-
 
 
 int parse_item_begin(ifstream &f, string *lookahead)
@@ -417,7 +392,11 @@ int parse_item_name(ifstream &f, string *lookahead, string *name)
 {
     return parse_name(f, lookahead, name);
 }
-int parse_item_color(ifstream &f, string *lookahead, vector<uint32_t> *color, string *color_string)
+int parse_item_type(ifstream &f, string *lookahead, string *type)
+{
+    return parse_name(f, lookahead, type);
+}
+int parse_item_color(ifstream &f, string *lookahead, vector<int> *color, string *color_string)
 {
     return parse_color(f, lookahead, color, color_string);
 }
@@ -463,41 +442,53 @@ int parse_item_rarity(ifstream &f, string *lookahead, int *rarity)
 }
 int parse_item_artifact(ifstream &f, string *lookahead, bool *artifact)
 {
+    eat_whitespace(f);
     getline(f, *lookahead);
-    //*artifact = atoi((*lookahead).c_str()); //TODO
-
+    if (!(*lookahead).compare("TRUE"))
+    {
+        *artifact = true;
+    }
+    else if (!(*lookahead).compare("FALSE"))
+    {
+        *artifact = false;
+    }
+    else
+    {
+        return 1;
+    }
+    f >> *lookahead;
     return 0;
 }
 
 int parse_item_description(ifstream &f, string *lookahead, Item *item)
 {
-        string name;
-        string description;
-        vector<uint32_t> color;
-        dice hit;
-        dice damage;
-        dice dodge;
-        dice defence;
-        dice weight;
-        dice speed;
-        dice attribute;
-        dice value;
-        bool artifact;
-        int rarity;
+    string name;
+    string description;
+    vector<int> color;
+    dice hit;
+    dice damage;
+    dice dodge;
+    dice defence;
+    dice weight;
+    dice speed;
+    dice attribute;
+    dice value;
+    bool artifact;
+    int rarity;
 
-        string type;
-        string color_string;
+    string type;
+    string color_string;
 
-        int count = 0;
-    for (count = 0; count < NUM_ITEM_FIELDS; count++)
+    int count;
+    for (f >> *lookahead, count = 0; count < NUM_ITEM_FIELDS; count++)
     {
         if (!(*lookahead).compare("BEGIN"))
         {
             if (parse_item_begin(f, lookahead))
             {
-                cout << "BEGIN------------------------------" << endl;
                 return 0;
             }
+            continue;
         }
         else if (!(*lookahead).compare("NAME"))
         {
@@ -505,6 +496,16 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->name = name;
+            continue;
+        }
+        else if (!(*lookahead).compare("TYPE"))
+        {
+            if (parse_item_type(f, lookahead, &type))
+            {
+                return 0;
+            }
+            item->type = type;
         }
         else if (!(*lookahead).compare("COLOR"))
         {
@@ -512,6 +513,9 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->color = color;
+            item->color_string = color_string;
+            continue;
         }
         else if (!(*lookahead).compare("WEIGHT"))
         {
@@ -519,6 +523,8 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->weight = weight;
+            continue;
         }
         else if (!(*lookahead).compare("HIT"))
         {
@@ -526,6 +532,8 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->hit = hit;
+            continue;
         }
         else if (!(*lookahead).compare("DAM"))
         {
@@ -533,6 +541,8 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->damage = damage;
+            continue;
         }
         else if (!(*lookahead).compare("ATTR"))
         {
@@ -540,6 +550,8 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->attribute = attribute;
+            continue;
         }
         else if (!(*lookahead).compare("VAL"))
         {
@@ -547,6 +559,8 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->value = value;
+            continue;
         }
         else if (!(*lookahead).compare("DODGE"))
         {
@@ -554,6 +568,8 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->dodge = dodge;
+            continue;
         }
         else if (!(*lookahead).compare("DEF"))
         {
@@ -561,6 +577,8 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->defence = defence;
+            continue;
         }
         else if (!(*lookahead).compare("SPEED"))
         {
@@ -568,6 +586,8 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->speed = speed;
+            continue;
         }
         else if (!(*lookahead).compare("DESC"))
         {
@@ -575,6 +595,8 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->description = description;
+            continue;
         }
         else if (!(*lookahead).compare("RRTY"))
         {
@@ -582,6 +604,8 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->rarity = rarity;
+            continue;
         }
         else if (!(*lookahead).compare("ART"))
         {
@@ -589,6 +613,18 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
+            item->artifact = artifact;
+            continue;
+        }
+        else if (*lookahead == "END")
+        {
+            getline(f, *lookahead);
+            return 1;
+        }
+        else
+        {
+            cout << *lookahead << " is not in filed" << endl;
+            return 0;
         }
     }
 
@@ -613,18 +649,15 @@ void load_item_desc(char *path)
         fprintf(stderr, "Incorrect format of item desc\n");
         return;
     }
-    Item *item = (Item *)malloc(sizeof(Item));
+    Item *item = new Item;
     while (f.peek() != EOF)
     {
         if (!parse_item_description(f, &s, item))
         {
-            cout << "discard------------------------------" << endl;
+            cout << "discard item" << endl;
             free(item);
             return;
         }
-        eat_whitespace(f);
-        eat_blankspace(f);
-        eat_whitespace(f);
         dungeon.item.push_back(*item);
     }
 }
@@ -665,4 +698,26 @@ void print_monster_desc_with_type()
 }
 
 void print_item_desc();
-void print_item_desc_with_type();
+void print_item_desc_with_type()
+{
+    cout << dungeon.item.size() << endl;
+    for (unsigned int i = 0; i < dungeon.item.size(); i++)
+    {
+        Item item = dungeon.item.at(i);
+        cout << "NAME: " << item.name << endl;
+        cout << "DESCRIPTION: " << item.description << endl;
+        cout << "TYPE: " << item.type << endl;
+        cout << "COLOR: " << item.color_string << endl;
+        cout << "WEIGHT: " << item.weight.print_string() << endl;
+        cout << "HITPOINTS: " << item.hit.print_string() << endl;
+        cout << "DAMAGE: " << item.damage.print_string() << endl;
+        cout << "ATTRIBUTE: " << item.attribute.print_string() << endl;
+        cout << "VALUE: " << item.value.print_string() << endl;
+        cout << "DODGE: " << item.dodge.print_string() << endl;
+        cout << "DEF: " << item.defence.print_string() << endl;
+        cout << "SPEED: " << item.speed.print_string() << endl;
+        cout << "ARTIFACT: " << uppercase << boolalpha << item.artifact << endl;
+        cout << "RRTY: " << item.rarity << endl;
+        cout << endl;
+    }
+}

@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
 	//set up random seed
 	dungeon.seed = time(NULL);
     
-	//TODO
     //dungeon.seed = 1540445615;
 	srand(dungeon.seed);
 
@@ -83,6 +82,7 @@ int main(int argc, char *argv[])
 		FILE *file_dungeon = fopen(path_dungeon, "w");
 		save_dungeon(file_dungeon);
 	}
+
 /*
 	move_dungeon();
     //print_dungeon();

@@ -253,7 +253,8 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "NAME reading fail" << endl;
                 return 0;
             }
-            //m->name = name;
+            cout << "line" << endl;
+            m->name = name;
             continue;
         }
         else if (!(*lookahead).compare("SYMB"))
@@ -275,7 +276,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 return 0;
             }
             cout << *lookahead << endl;
-            //m->color_string = color_s;
+            m->color_string = color_s;
             continue;
         }
         else if (!(*lookahead).compare("DESC"))
@@ -286,7 +287,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 return 0;
             }
             cout << *lookahead << endl;
-            //m->description = desc;
+            m->description = desc;
             continue;
         }
         else if (!(*lookahead).compare("SPEED"))
@@ -330,7 +331,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 return 0;
             }
             cout << *lookahead << endl;
-            //m->abil_string = abil_s;
+            m->abil_string = abil_s;
             continue;
         }
         else if (!(*lookahead).compare("RRTY"))
@@ -347,7 +348,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         }
         else if (*lookahead == "END")
         {
-            //f >> *lookahead;
             cout << *lookahead << endl;
             getline(f, *lookahead);
             cout << *lookahead << endl;
@@ -380,10 +380,11 @@ void load_monster_desc(char *path)
         fprintf(stderr, "Incorrect format of monster desc\n");
         return;
     }
-    Monster *m = (Monster *)malloc(sizeof(Monster));
+
+    Monster *m = new Monster;
+    int i = 0;
     while (f.peek() != EOF)
     {
-        //load_monster(f);
         if (!parse_monster_description(f, &s, m))
         {
             cout << "discard------------------------------" << endl;
@@ -393,6 +394,11 @@ void load_monster_desc(char *path)
         eat_whitespace(f);
         eat_blankspace(f);
         eat_whitespace(f);
+        cout << "i = " << i << "!!!!!!!!!!!!!!!!!!!!!!" << endl;
+        i++;
+        cout << m->symbol << endl;
+        cout << m->name << endl;
+        dungeon.mon.push_back(*m);
     }
 }
 
@@ -589,33 +595,6 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
     return 1;
 }
 
-void load_item(ifstream &f)
-{
-    std::string s;
-    Item *item = (Item *)malloc(sizeof(Item));
-    do
-    {
-        f >> s;
-        eat_whitespace(f);
-        // if (f.peek() == '\n')
-        // {
-        //     free(item);
-        //     return;
-        // }
-        if (!parse_item_description(f, &s, item))
-        {
-            cout << "discard------------------------------" << endl;
-            free(item);
-            return;
-        }
-        eat_blankspace(f);
-    } //while (s != "\n");
-    while (s.compare("END"));
-
-    dungeon.item.push_back(*item);
-    free(item);
-}
-
 void load_item_desc(char *path)
 {
     if (!fopen(path, "r"))
@@ -634,9 +613,19 @@ void load_item_desc(char *path)
         fprintf(stderr, "Incorrect format of item desc\n");
         return;
     }
+    Item *item = (Item *)malloc(sizeof(Item));
     while (f.peek() != EOF)
     {
-        load_item(f);
+        if (!parse_item_description(f, &s, item))
+        {
+            cout << "discard------------------------------" << endl;
+            free(item);
+            return;
+        }
+        eat_whitespace(f);
+        eat_blankspace(f);
+        eat_whitespace(f);
+        dungeon.item.push_back(*item);
     }
 }
 

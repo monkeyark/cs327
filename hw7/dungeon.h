@@ -121,6 +121,37 @@ class Character
     int vision[ROW][COL];
 };
 
+class Monster : public Character
+{
+  public:
+  Monster()
+  {
+    name = "haha";
+    description= "";
+    color = 0;
+    abilities = 0;
+    rrty = 0;
+
+  }
+  public:
+    string name;
+    string description;
+    char symbol;
+    uint32_t color;
+    uint32_t abilities;
+    int rrty;
+
+    dice damage;
+    dice hitpoints;
+    dice speed_dice;
+
+    string abil_string;
+    string color_string;
+    string damage_string;
+    string hitpoints_string;
+    string speed_string;
+};
+
 class Item
 {
   public:
@@ -171,27 +202,6 @@ class NPC : public Character
         int vision[ROW][COL];
 };
 */
-
-class Monster : public Character
-{
-  public:
-    string name = "";
-    string description;
-    char symbol;
-    uint32_t color;
-    uint32_t abilities;
-    int rrty;
-
-    dice damage;
-    dice hitpoints;
-    dice speed_dice;
-
-    string abil_string;
-    string color_string;
-    string damage_string;
-    string hitpoints_string;
-    string speed_string;
-};
 
 class Dungeon
 {

@@ -46,8 +46,8 @@
 # define NPC_PASS_WALL     0x00000010
 # define NPC_DESTROY_OBJ   0x00000020
 # define NPC_PICKUP_OBJ    0x00000040
-# define NPC_BIT07         0x00000080
-# define NPC_BIT08         0x00000100
+# define NPC_UNIQ          0x00000080
+# define NPC_BOSS          0x00000100
 # define NPC_BIT09         0x00000200
 # define NPC_BIT10         0x00000400
 # define NPC_BIT11         0x00000800
@@ -105,6 +105,33 @@ class Character
         int dead;
         int dist[ROW * COL];
         int vision[ROW][COL];
+};
+
+class Item
+{
+    public:
+        int row;
+        int col;
+        int seen;
+
+        string name;
+        string description;
+        uint32_t color;
+        dice hit;
+        dice damage;
+        dice dodge;
+        dice defence;
+        dice weight;
+        dice speed;
+        dice attribute;
+        dice value;
+        bool artifact;
+        int rarity;
+
+        string type;
+        char symbol;
+
+        string color_string;
 };
 
 /*
@@ -169,6 +196,7 @@ class Dungeon
         Queue pq_nontunel;
 
         vector<Monster> mon;
+        vector<Item> item;
 };
 
 extern Dungeon dungeon;

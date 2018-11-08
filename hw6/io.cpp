@@ -29,13 +29,13 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 		{
             if (is_visible_terrain(i, j))
             {
-                mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
+                mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].space);
             }
             else
             {
-                if (dungeon.pc.vision[i][j])
+                if (dungeon.pc.vision[i-1][j])
                 {
-                    mvwprintw(game, i, j, "%c", dungeon.map[i][j].terrain);
+                    mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].terrain);
                 }
                 else
                 {
@@ -67,7 +67,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
-            mvwprintw(game, i, j, "%c", dungeon.map[i][j].space);
+            mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].space);
 		}
 	}
 }
@@ -141,21 +141,21 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
-            if (i == dungeon.teleport_row && j == dungeon.teleport_col)
+            if ((i-1) == dungeon.teleport_row && j == dungeon.teleport_col)
             {
                 mvwprintw(game, i, j, "*");
             }
-			else if (i == dungeon.pc.row && j == dungeon.pc.col)
+			else if ((i-1) == dungeon.pc.row && j == dungeon.pc.col)
 			{
 				mvwprintw(game, i, j, "@");
 			}
-			else if (!(is_monster(i, j) < 0))
+			else if (!(is_monster((i-1), j) < 0))
 			{
-				mvwprintw(game, i, j, "%x", dungeon.monster[is_monster(i, j)].characteristics);
+				mvwprintw(game, i, j, "%x", dungeon.monster[is_monster((i-1), j)].characteristics);
 			}
 			else
 			{
-				mvwprintw(game, i, j, "%c", dungeon.map[i][j].terrain);
+				mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].terrain);
 			}
 		}
 	}

@@ -16,8 +16,6 @@ Dungeon dungeon;
 
 int main(int argc, char *argv[])
 {
-	//int t = 1; while(t);
-
 	char *home = getenv("HOME");
 	const char *path = strcat(home, "/.rlg327");
 	mkdir(path, 0777);
@@ -29,10 +27,10 @@ int main(int argc, char *argv[])
     strcpy(path_monster, path);
 	strcpy(path_item, path);
     strcat(path_dungeon, "/dungeon");
-    //strcat(path_monster, "/monster_desc.txt");
-	//strcat(path_monster, "/object_desc.txt");
-    strcat(path_monster, "/monster_desc_copy.txt");
-	strcat(path_item, "/object_desc_copy.txt");
+    strcat(path_monster, "/monster_desc.txt");
+	strcat(path_monster, "/object_desc.txt");
+    //strcat(path_monster, "/monster_desc_copy.txt");
+	//strcat(path_item, "/object_desc_copy.txt");
 
     dungeon.num_mon = 0;
 	//set up random seed

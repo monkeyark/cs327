@@ -389,8 +389,6 @@ void load_monster_desc(char *path)
     }
 }
 
-void load_item_desc(char *path);
-
 void print_monster_desc()
 {
     for (unsigned int i = 0; i < dungeon.mon.size(); i++)
@@ -423,5 +421,206 @@ void print_monster_desc_with_type()
         cout << "SYMBOL: " << m.symbol << endl;
         cout << "RRTY: " << m.rrty << endl;
         cout << endl;
+    }
+}
+
+void print_item_desc();
+void print_item_desc_with_type();
+
+int parse_item_description(ifstream &f, string *lookahead, Item *item)
+{
+        string name;
+        string description;
+        //uint32_t color;
+        dice hit;
+        dice damage;
+        dice dodge;
+        dice defence;
+        dice weight;
+        dice speed;
+        dice attribute;
+        dice value;
+        bool artifact;
+        int rarity;
+
+        string type;
+        string color_string;
+
+        int count = 0;
+    for (count = 0; count < NUM_MONSTER_FIELDS; count++)
+    {
+        if (!(*lookahead).compare("BEGIN"))
+        {
+            if (parse_item_begin(f, lookahead))
+            {
+                cout << "BEGIN------------------------------" << endl;
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("NAME"))
+        {
+            if (parse_item_name(f, lookahead))
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("COLOR"))
+        {
+            if (parse_item_color(f, lookahead))
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("WEIGHT"))
+        {
+            if (parse_item_weight(f, lookahead))
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("HIT"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("DAM"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("ATTR"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("VAL"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("DODGE"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("DEF"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("SPEED"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("DESC"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("."))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("RRTY"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("ART"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("NAME"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+        else if (!(*lookahead).compare("NAME"))
+        {
+            if ()
+            {
+                return 0;
+            }
+        }
+    }
+
+    return 1;
+}
+
+void load_item(ifstream &f)
+{
+    std::string s;
+    Item *item = (Item *)malloc(sizeof(Item));
+    do
+    {
+        f >> s;
+        eat_whitespace(f);
+        // if (f.peek() == '\n')
+        // {
+        //     free(item);
+        //     return;
+        // }
+        if (!parse_item_description(f, &s, item))
+        {
+            cout << "discard------------------------------" << endl;
+            free(item);
+            return;
+        }
+        eat_blankspace(f);
+    } //while (s != "\n");
+    while (s.compare("END"));
+
+    dungeon.item.push_back(*item);
+    free(item);
+}
+
+void load_item_desc(char *path)
+{
+    if (!fopen(path, "r"))
+    {
+        fprintf(stderr, "Failed to open file\n");
+        return;
+    }
+
+    ifstream f(path);
+    std::string s;
+
+    getline(f, s); //get file header line
+    string str = s.substr(0, 25);
+    if (str.compare("RLG327 OBJECT DESCRIPTION"))
+    {
+        fprintf(stderr, "Incorrect format of item desc\n");
+        return;
+    }
+    while (f.peek() != EOF)
+    {
+        load_item(f);
     }
 }

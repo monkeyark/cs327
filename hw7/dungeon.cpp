@@ -42,7 +42,6 @@ int is_monster(int row, int col)
 
 void print_dungeon()
 {
-	//printf("\nnpc_row = %d; npc_col = %d\n", dungeon.monster[0].row, dungeon.monster[0].col);//TODO
 	printf("   ");
 	for (int i = 0; i < COL; i++)
 	{

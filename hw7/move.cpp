@@ -234,4 +234,3 @@ void move_character()
 	//move_npc();
 }
 
-

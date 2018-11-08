@@ -16,6 +16,8 @@ Dungeon dungeon;
 
 int main(int argc, char *argv[])
 {
+	//int t = 1; while(t);
+
 	char *home = getenv("HOME");
 	const char *path = strcat(home, "/.rlg327");
 	mkdir(path, 0777);
@@ -36,7 +38,7 @@ int main(int argc, char *argv[])
 	//set up random seed
 	dungeon.seed = time(NULL);
     
-    //dungeon.seed = 1540445615;
+    dungeon.seed = 1540445615;
 	srand(dungeon.seed);
 
 	bool load = false;

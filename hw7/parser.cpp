@@ -372,7 +372,6 @@ void load_monster_desc(char *path)
         if (!parse_monster_description(f, &s, m))
         {
             cout << "discard monster" << endl;
-            free(m);
             return;
         }
         dungeon.mon.push_back(*m);
@@ -655,7 +654,6 @@ void load_item_desc(char *path)
         if (!parse_item_description(f, &s, item))
         {
             cout << "discard item" << endl;
-            free(item);
             return;
         }
         dungeon.item.push_back(*item);

@@ -372,7 +372,6 @@ void load_monster_desc(char *path)
         if (!parse_monster_description(f, &s, m))
         {
             cout << "discard monster" << endl;
-            free(m);
             return;
         }
         dungeon.mon.push_back(*m);
@@ -462,6 +461,9 @@ int parse_item_artifact(ifstream &f, string *lookahead, bool *artifact)
 
 int parse_item_description(ifstream &f, string *lookahead, Item *item)
 {
+    //TODO
+    //this parser can only read description with no repeative filed
+    //the later repeative filed will overried the previous one
     string name;
     string description;
     vector<int> color;
@@ -655,10 +657,9 @@ void load_item_desc(char *path)
         if (!parse_item_description(f, &s, item))
         {
             cout << "discard item" << endl;
-            free(item);
             return;
         }
-        dungeon.item.push_back(*item);
+        dungeon.it.push_back(*item);
     }
 }
 
@@ -700,10 +701,10 @@ void print_monster_desc_with_type()
 void print_item_desc();
 void print_item_desc_with_type()
 {
-    cout << dungeon.item.size() << endl;
-    for (unsigned int i = 0; i < dungeon.item.size(); i++)
+    cout << dungeon.it.size() << endl;
+    for (unsigned int i = 0; i < dungeon.it.size(); i++)
     {
-        Item item = dungeon.item.at(i);
+        Item item = dungeon.it.at(i);
         cout << "NAME: " << item.name << endl;
         cout << "DESCRIPTION: " << item.description << endl;
         cout << "TYPE: " << item.type << endl;

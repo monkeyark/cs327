@@ -218,10 +218,12 @@ class Dungeon
   public:
     int seed;
     int num_mon;
+    int num_item;
     int num_room;
     int version;
     Room *rooms;
     Character *monster;
+    Item *item;
     Character pc;
     int teleport_row;
     int teleport_col;
@@ -230,13 +232,14 @@ class Dungeon
     Queue pq_nontunel;
 
     vector<Monster> mon;
-    vector<Item> item;
+    vector<Item> it;
 };
 
 extern Dungeon dungeon;
 
 void init_dungeon();
 void generate_dungeon();
+void generate_dungeon_decs();
 void print_dungeon();
 void load_dungeon(FILE *f);
 void save_dungeon(FILE *f);

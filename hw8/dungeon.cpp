@@ -348,6 +348,38 @@ Character new_NPC(int birth)
 	return npc;
 }
 
+Character new_NPC_desc(int birth)
+{
+	Character npc;
+	int row = get_random(ROW, 0);
+	int col = get_random(COL, 0);
+	//add monster into map
+	if (dungeon.map[row][col].space == ROOM ||
+		dungeon.map[row][col].space == CORRIDOR)
+	{
+		npc.row = row;
+		npc.col = col;
+		npc.birth = birth;
+		//creating NPC with all four characteristics having 1/2 probability, clean unused bits
+		npc.characteristics = rand() & 0xf;
+		npc.speed = get_random(20, 5);
+		npc.dead = 0;
+		if (npc.characteristics & NPC_TELEPATH) //monster is telepath
+		{
+			npc.pc_row = dungeon.pc.row;
+			npc.pc_col = dungeon.pc.col;
+		}
+        sprintf(&dungeon.map[npc.row][npc.col].space, "%x", npc.characteristics);
+		dungeon.map[npc.row][npc.col].hardness = 0;
+	}
+	else
+	{
+		return new_NPC(birth);
+	}
+
+	return npc;
+}
+
 void new_PC()
 {
 	//add initial player location
@@ -362,8 +394,32 @@ void new_PC()
     remember_map_PC();
 }
 
+Item new_item_desc()
+{
+	cout << "!!!!!!!!!" << endl;
+	Item item;
+	int row = get_random(ROW, 0);
+	int col = get_random(COL, 0);
+	//add item into map
+	if (dungeon.map[row][col].space == ROOM ||
+		dungeon.map[row][col].space == CORRIDOR)
+	{
+		item.row = row;
+		item.col = col;
+		
+        dungeon.map[item.row][item.col].space = '$';
+	}
+	else
+	{
+		cout << "!???????" << endl;
+		return new_item_desc();
+	}
+cout << "222222222" << endl;
+	return item;
+}
+
 void generate_dungeon_nummon()
-{ 
+{
 	//initialize dungeon
 	init_dungeon();
 
@@ -400,7 +456,7 @@ void generate_dungeon_nummon()
 }
 
 void generate_dungeon()
-{ 
+{
 	//initialize dungeon
 	init_dungeon();
 
@@ -439,6 +495,58 @@ void generate_dungeon()
 	
 	//add pc
 	new_PC();
+}
+
+void generate_dungeon_desc()
+{
+	//initialize dungeon
+	init_dungeon();
+
+    //generate random number of rooms
+	dungeon.num_room = get_random(7, 5);
+	//generate random number of monster
+    if (!dungeon.num_mon)
+    {
+	    dungeon.num_mon = get_random(5, 8);
+    }
+	dungeon.num_item = get_random(5, 10);
+
+    dungeon.rooms = (Room *) malloc(dungeon.num_room * sizeof(Room));
+	dungeon.monster = (Character *) malloc(dungeon.num_mon * sizeof(Character));
+	dungeon.item = (Item *) malloc(dungeon.num_item * sizeof(Item));
+
+	int i;
+	//add rooms
+	for (i = 0; i < dungeon.num_room; i++)
+	{
+		dungeon.rooms[i] = new_room_random();
+	}
+
+	//add corridors
+	for (i = 0; i < dungeon.num_room - 1; i++)
+	{
+		new_corridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
+	}
+
+	//add stair
+	new_stair();
+
+	//add npc
+	for (i = 0; i < dungeon.num_mon; i++)
+	{
+		dungeon.monster[i] = new_NPC_desc(i);
+	}
+	//add item
+	
+	for (i = 0; i < dungeon.num_item; i++)
+	{
+		cout << i << endl;
+		dungeon.item[i] = new_item_desc();
+	}
+
+	//add pc
+	new_PC();
+
 }
 
 void load_dungeon(FILE *f)
@@ -570,6 +678,14 @@ void delete_dungeon()
 {
     free(dungeon.rooms);
 	free(dungeon.monster);
+	for (unsigned int i = 0; i < dungeon.mon.size(); i++)
+	{
+		delete &(dungeon.mon.at(i));
+	}
+	for (unsigned int i = 0; i < dungeon.it.size(); i++)
+	{
+		delete &(dungeon.it.at(i));
+	}
 }
 
 void move_dungeon()

@@ -27,7 +27,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
-            if (is_visible_terrain(i, j))
+            if (is_visible_terrain((i-1), j))
             {
                 mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].space);
             }

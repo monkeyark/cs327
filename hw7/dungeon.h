@@ -25,6 +25,20 @@
 #define CORRIDOR_H 0
 #define PC_H 0
 #define PC_VISION_RADIUS 2
+#define typeof(x) __typeof__(x)
+
+
+ #define MIN(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a < _b ? _a : _b; })
+
+ #define MAX(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a > _b ? _a : _b; })
+
+/*
 #define MIN(x,y)			\
 ({							\
     typeof(x) _x = (x);     \
@@ -38,6 +52,7 @@
     typeof(y) _y = (y);     \
     (void) (&_x == &_y);    \
     _x > _y ? _x : _y;})
+*/
 
 # define NPC_SMART         0x00000001
 # define NPC_TELEPATH      0x00000002

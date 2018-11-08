@@ -4,7 +4,7 @@ ECHO = echo
 RM = rm -f
 
 CFLAGS = -Wall -Werror -ggdb3 -funroll-loops
-CXXFLAGS = -Wall -Werror -ggdb3 -funroll-loops
+CXXFLAGS = -std=c++11 -Wall -Werror -ggdb3 -funroll-loops
 LDFLAGS = -lncurses
 
 BIN = main

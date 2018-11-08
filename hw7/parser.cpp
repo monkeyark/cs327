@@ -10,7 +10,7 @@
 #include "dice.h"
 #include "limits.h"
 
-#define NUM_MONSTER_FIELDS 9
+#define NUM_MONSTER_FIELDS 11
 #define NUM_ITEM_FIELDS 14
 
 using namespace std;
@@ -35,44 +35,41 @@ int parse_dice(ifstream &f, string *lookahead, dice *d)
 {
     int32_t base;
     uint32_t number, sides;
-
     eat_blankspace(f);
-
     if (f.peek() == '\n')
     {
         return 1;
     }
-
     f >> *lookahead;
-
     if (sscanf(lookahead->c_str(), "%d+%ud%u", &base, &number, &sides) != 3)
     {
         return 1;
     }
-
     d->set(base, number, sides);
-
+    f >> *lookahead;
     return 0;
 }
 
 int parse_nextline(ifstream &f, string *lookahead)
 {
+    eat_whitespace(f);
     getline(f, *lookahead);
+    eat_whitespace(f);
+    eat_blankspace(f);
+    eat_whitespace(f);
+    f >> *lookahead;
     return 0;
 }
 int parse_name(ifstream &f, string *lookahead, string *name)
 {
+    eat_whitespace(f);
     eat_blankspace(f);
-
     if (f.peek() == '\n')
     {
         return 1;
     }
-
     getline(f, *name);
-
     f >> *lookahead;
-
     return 0;
 }
 
@@ -141,9 +138,7 @@ int parse_desc(ifstream &f, string *lookahead, string *desc)
     {
         return 1;
     }
-
     f.get();
-
     while (f.peek() != EOF)
     {
         getline(f, *lookahead);
@@ -161,9 +156,7 @@ int parse_desc(ifstream &f, string *lookahead, string *desc)
 
         *desc += *lookahead;
     }
-
     desc->erase(desc->length() - 1);
-
     if (*lookahead != ".\n")
     {
         return 1;
@@ -177,11 +170,6 @@ int parse_desc(ifstream &f, string *lookahead, string *desc)
 int parse_monster_desc(ifstream &f, string *lookahead, string *desc)
 {
     return parse_desc(f, lookahead, desc);
-}
-
-int parse_monster_desc_end(ifstream &f, string *lookahead)
-{
-    return parse_nextline(f, lookahead);
 }
 
 int parse_monster_speed(ifstream &f, string *lookahead, dice *d)
@@ -220,7 +208,7 @@ int parse_rarity(ifstream &f, string *lookahead, int *rarity)
 {
     getline(f, *lookahead);
     *rarity = atoi((*lookahead).c_str());
-
+    f >> *lookahead;
     return 0;
 }
 
@@ -231,6 +219,10 @@ int parse_monster_rarity(ifstream &f, string *lookahead, int *rarity)
 
 int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
 {
+    //TODO
+    //this parser can only read description with no repeative filed
+    //the later repeative filed will overried the previous one
+    cout << "parse_monster_description" << endl;//TODO
     string abil_s, color_s;
 
     string name, desc;
@@ -240,148 +232,134 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     dice speed, dam, hp;
     int rarity;
     int count;
-    for (count = 0; count < NUM_MONSTER_FIELDS; count++)
+    for (f >> *lookahead, count = 0; count < NUM_MONSTER_FIELDS; count++)
     {
+        cout << count << endl;//TODO
+        cout << "Go to-------" << *lookahead << endl;
         if (!(*lookahead).compare("BEGIN"))
         {
             if (parse_monster_begin(f, lookahead))
             {
-                cout << "BEGIN------------------------------" << endl;
+                cout << "BEGIN reading fail" << endl;
                 return 0;
             }
+            cout << *lookahead << endl;
+            continue;
         }
         else if (!(*lookahead).compare("NAME"))
         {
             if (parse_monster_name(f, lookahead, &name))
             {
-                cout << "NAME------------------------------" << endl;
+                cout << "NAME reading fail" << endl;
                 return 0;
             }
-            m->name = name;
+            //m->name = name;
+            continue;
         }
         else if (!(*lookahead).compare("SYMB"))
         {
             if (parse_monster_symb(f, lookahead, &symb))
             {
-                cout << "SYMB------------------------------" << endl;
+                cout << "SYMB reading fail" << endl;
                 return 0;
             }
+            cout << *lookahead << endl;
             m->symbol = symb;
+            continue;
         }
         else if (!(*lookahead).compare("COLOR"))
         {
             if (parse_monster_color(f, lookahead, &color, &color_s))
             {
-                cout << "COLOR------------------------------" << endl;
+                cout << "COLOR reading fail" << endl;
                 return 0;
             }
-            m->color_string = color_s;
+            cout << *lookahead << endl;
+            //m->color_string = color_s;
+            continue;
         }
         else if (!(*lookahead).compare("DESC"))
         {
             if (parse_monster_desc(f, lookahead, &desc))
             {
-                cout << "DESC------------------------------" << endl;
+                cout << "DESC reading fail" << endl;
                 return 0;
             }
-            m->description = desc;
-        }
-        else if (!(*lookahead).compare("."))
-        {
-            if (parse_monster_desc_end(f, lookahead))
-            {
-                cout << ".------------------------------" << endl;
-                return 0;
-            }
+            cout << *lookahead << endl;
+            //m->description = desc;
+            continue;
         }
         else if (!(*lookahead).compare("SPEED"))
         {
             if (parse_dice(f, lookahead, &speed))
             {
-                cout << "SPEED------------------------------" << endl;
+                cout << "SPEED reading fail" << endl;
                 return 0;
             }
-
+            cout << *lookahead << endl;
             m->speed_dice = speed;
+            continue;
         }
         else if (!(*lookahead).compare("DAM"))
         {
             if (parse_dice(f, lookahead, &dam))
             {
-                cout << "DAM------------------------------" << endl;
+                cout << "DAM reading fail" << endl;
                 return 0;
             }
+            cout << *lookahead << endl;
             m->damage = dam;
+            continue;
         }
         else if (!(*lookahead).compare("HP"))
         {
             if (parse_dice(f, lookahead, &hp))
             {
-                cout << "HP------------------------------" << endl;
+                cout << "HP reading fail" << endl;
                 return 0;
             }
+            cout << *lookahead << endl;
             m->hitpoints = hp;
+            continue;
         }
         else if (!(*lookahead).compare("ABIL"))
         {
             if (parse_monster_abil(f, lookahead, &abil, &abil_s))
             {
-                cout << "ABIL------------------------------" << endl;
+                cout << "ABIL reading fail" << endl;
                 return 0;
             }
-            m->abil_string = abil_s;
+            cout << *lookahead << endl;
+            //m->abil_string = abil_s;
+            continue;
         }
         else if (!(*lookahead).compare("RRTY"))
         {
             if (parse_monster_rarity(f, lookahead, &rarity))
             {
-                cout << "RRTY------------------------------" << endl;
+                cout << "RRTY reading fail" << endl;
                 return 0;
             }
+            cout << *lookahead << endl;
             m->rrty = rarity;
+
+            continue;
         }
-        // else if (*lookahead == "END")
-        // {
-        //     if (parse_monster_begin(f, lookahead))
-        //     {
-        //         cout << "END------------------------------" << endl;
-        //         return 0;
-        //     }
-        // }
-        // else
-        // {
-        //     return 0;
-        // }
-    }
-
-    return 1;
-}
-
-void load_monster(ifstream &f)
-{
-    std::string s;
-    Monster *m = (Monster *)malloc(sizeof(Monster));
-    do
-    {
-        f >> s;
-        eat_whitespace(f);
-        // if (f.peek() == '\n')
-        // {
-        //     free(m);
-        //     return;
-        // }
-        if (!parse_monster_description(f, &s, m))
+        else if (*lookahead == "END")
         {
-            cout << "discard------------------------------" << endl;
-            free(m);
-            return;
+            //f >> *lookahead;
+            cout << *lookahead << endl;
+            getline(f, *lookahead);
+            cout << *lookahead << endl;
+            return 1;
         }
-        eat_blankspace(f);
-    } //while (s != "\n");
-    while (s.compare("END"));
-
-    dungeon.mon.push_back(*m);
-    free(m);
+        else
+        {
+            cout << "===============================in else" << *lookahead << endl;
+            return 0;
+        }
+    }
+    return 1;
 }
 
 void load_monster_desc(char *path)
@@ -402,9 +380,19 @@ void load_monster_desc(char *path)
         fprintf(stderr, "Incorrect format of monster desc\n");
         return;
     }
+    Monster *m = (Monster *)malloc(sizeof(Monster));
     while (f.peek() != EOF)
     {
-        load_monster(f);
+        //load_monster(f);
+        if (!parse_monster_description(f, &s, m))
+        {
+            cout << "discard------------------------------" << endl;
+            free(m);
+            return;
+        }
+        eat_whitespace(f);
+        eat_blankspace(f);
+        eat_whitespace(f);
     }
 }
 
@@ -462,10 +450,6 @@ int parse_item_speed(ifstream &f, string *lookahead, dice *speed)
 int parse_item_desc(ifstream &f, string *lookahead, string *desc)
 {
     return parse_desc(f, lookahead, desc);
-}
-int parse_item_desc_end(ifstream &f, string *lookahead)
-{
-    return parse_nextline(f, lookahead);
 }
 int parse_item_rarity(ifstream &f, string *lookahead, int *rarity)
 {
@@ -582,13 +566,6 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
         else if (!(*lookahead).compare("DESC"))
         {
             if (parse_item_desc(f, lookahead, &description))
-            {
-                return 0;
-            }
-        }
-        else if (!(*lookahead).compare("."))
-        {
-            if (parse_item_desc_end(f, lookahead))
             {
                 return 0;
             }

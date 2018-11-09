@@ -78,11 +78,6 @@ int parse_monster_begin(ifstream &f, string *lookahead)
     return parse_nextline(f, lookahead);
 }
 
-int parse_monster_end(ifstream &f, string *lookahead)
-{
-    return parse_nextline(f, lookahead);
-}
-
 int parse_monster_name(ifstream &f, string *lookahead, string *name)
 {
     return parse_name(f, lookahead, name);
@@ -110,7 +105,7 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symb)
     return 0;
 }
 
-int parse_color(ifstream &f, string *lookahead, vector<int> *color, string *color_string)
+int parse_color(ifstream &f, string *lookahead, vector<int> *color, int *color_int, string *color_string)
 {
     eat_blankspace(f);
 
@@ -127,9 +122,9 @@ int parse_color(ifstream &f, string *lookahead, vector<int> *color, string *colo
     return 0;
 }
 
-int parse_monster_color(ifstream &f, string *lookahead, vector<int> *color, string *color_string)
+int parse_monster_color(ifstream &f, string *lookahead, vector<int> *color, int *color_int, string *color_string)
 {
-    return parse_color(f, lookahead, color, color_string);
+    return parse_color(f, lookahead, color, color_int, color_string);
 }
 
 int parse_desc(ifstream &f, string *lookahead, string *desc)
@@ -187,7 +182,7 @@ int parse_monster_hp(ifstream &f, string *lookahead, dice *d)
     return parse_dice(f, lookahead, d);
 }
 
-int parse_monster_abil(ifstream &f, string *lookahead, int *abil, string *abil_string)
+int parse_monster_ability(ifstream &f, string *lookahead, int *ability, string *ability_string)
 {
     eat_blankspace(f);
 
@@ -197,7 +192,7 @@ int parse_monster_abil(ifstream &f, string *lookahead, int *abil, string *abil_s
     }
 
     getline(f, *lookahead);
-    *abil_string = *lookahead;
+    *ability_string = *lookahead;
 
     f >> *lookahead;
 
@@ -220,16 +215,18 @@ int parse_monster_rarity(ifstream &f, string *lookahead, int *rarity)
 int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
 {
     //TODO
-    //this parser can only read description with no repeative filed
-    //the later repeative filed will overried the previous one
-    string abil_s, color_s;
+    //this parser can only read description with no repeative field
+    //the later repeative field will overried the previous one
+    string ability_string, color_string;
 
     string name, desc;
     char symb;
-    int abil;
+    int ability;
     vector<int> *color = nullptr;
+    int color_int;
     dice speed, dam, hp;
     int rarity;
+
     int count;
     for (f >> *lookahead, count = 0; count < NUM_MONSTER_FIELDS; count++)
     {
@@ -264,13 +261,14 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         }
         else if (!(*lookahead).compare("COLOR"))
         {
-            if (parse_monster_color(f, lookahead, color, &color_s))
+            if (parse_monster_color(f, lookahead, color, &color_int, &color_string))
             {
                 cout << "COLOR reading fail" << endl;
                 return 0;
             }
             //m->color = *color; //TODO
-            m->color_string = color_s;
+            m->color_int = color_int;
+            m->color_string = color_string;
             continue;
         }
         else if (!(*lookahead).compare("DESC"))
@@ -315,12 +313,12 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         }
         else if (!(*lookahead).compare("ABIL"))
         {
-            if (parse_monster_abil(f, lookahead, &abil, &abil_s))
+            if (parse_monster_ability(f, lookahead, &ability, &ability_string))
             {
                 cout << "ABIL reading fail" << endl;
                 return 0;
             }
-            m->abil_string = abil_s;
+            m->ability_string = ability_string;
             continue;
         }
         else if (!(*lookahead).compare("RRTY"))
@@ -341,7 +339,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         }
         else
         {
-            cout << *lookahead << " not in filed" << endl;
+            cout << *lookahead << " not in field" << endl;
             return 0;
         }
     }
@@ -387,62 +385,72 @@ int parse_item_begin(ifstream &f, string *lookahead)
 {
     return parse_nextline(f, lookahead);
 }
-int parse_item_end(ifstream &f, string *lookahead)
-{
-    return parse_nextline(f, lookahead);
-}
+
 int parse_item_name(ifstream &f, string *lookahead, string *name)
 {
     return parse_name(f, lookahead, name);
 }
+
 int parse_item_type(ifstream &f, string *lookahead, string *type)
 {
     return parse_name(f, lookahead, type);
 }
-int parse_item_color(ifstream &f, string *lookahead, vector<int> *color, string *color_string)
+
+int parse_item_color(ifstream &f, string *lookahead, vector<int> *color, int *color_int, string *color_string)
 {
-    return parse_color(f, lookahead, color, color_string);
+    return parse_color(f, lookahead, color, color_int, color_string);
 }
+
 int parse_item_weight(ifstream &f, string *lookahead, dice *weight)
 {
     return parse_dice(f, lookahead, weight);
 }
+
 int parse_item_hit(ifstream &f, string *lookahead, dice *hit)
 {
     return parse_dice(f, lookahead, hit);
 }
+
 int parse_item_damage(ifstream &f, string *lookahead, dice *damage)
 {
     return parse_dice(f, lookahead, damage);
 }
+
 int parse_item_attribute(ifstream &f, string *lookahead, dice *attribute)
 {
     return parse_dice(f, lookahead, attribute);
 }
+
 int parse_item_value(ifstream &f, string *lookahead, dice *value)
 {
     return parse_dice(f, lookahead, value);
 }
+
 int parse_item_dodge(ifstream &f, string *lookahead, dice *dodge)
 {
     return parse_dice(f, lookahead, dodge);
 }
+
 int parse_item_defence(ifstream &f, string *lookahead, dice *defence)
 {
     return parse_dice(f, lookahead, defence);
 }
+
 int parse_item_speed(ifstream &f, string *lookahead, dice *speed)
 {
     return parse_dice(f, lookahead, speed);
 }
+
 int parse_item_desc(ifstream &f, string *lookahead, string *desc)
 {
     return parse_desc(f, lookahead, desc);
 }
+
 int parse_item_rarity(ifstream &f, string *lookahead, int *rarity)
 {
     return parse_rarity(f, lookahead, rarity);
 }
+
 int parse_item_artifact(ifstream &f, string *lookahead, bool *artifact)
 {
     eat_whitespace(f);
@@ -466,8 +474,8 @@ int parse_item_artifact(ifstream &f, string *lookahead, bool *artifact)
 int parse_item_description(ifstream &f, string *lookahead, Item *item)
 {
     //TODO
-    //this parser can only read description with no repeative filed
-    //the later repeative filed will overried the previous one
+    //this parser can only read description with no repeative field
+    //the later repeative field will overried the previous one
     string name;
     string description;
     vector<int> *color = nullptr;
@@ -482,6 +490,7 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
     bool artifact;
     int rarity;
 
+    int color_int;
     string type;
     string color_string;
 
@@ -515,11 +524,12 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
         }
         else if (!(*lookahead).compare("COLOR"))
         {
-            if (parse_item_color(f, lookahead, color, &color_string))
+            if (parse_item_color(f, lookahead, color, &color_int, &color_string))
             {
                 return 0;
             }
             //item->color = *color; //TODO
+            item->color_int = color_int;
             item->color_string = color_string;
             continue;
         }
@@ -629,7 +639,7 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
         }
         else
         {
-            cout << *lookahead << " is not in filed" << endl;
+            cout << *lookahead << " is not in field" << endl;
             return 0;
         }
     }
@@ -679,7 +689,7 @@ void print_monster_desc()
         cout << m.description << endl;
         cout << m.color_string << endl;
         cout << m.speed_dice.print_string() << endl;
-        cout << m.abil_string << endl;
+        cout << m.ability_string << endl;
         cout << m.hitpoints.print_string() << endl;
         cout << m.damage.print_string() << endl;
         cout << m.symbol << endl;
@@ -696,7 +706,7 @@ void print_monster_desc_with_type()
         cout << "DESCRIPTION: " << m.description << endl;
         cout << "COLOR: " << m.color_string << endl;
         cout << "SPEED: " << m.speed_dice.print_string() << endl;
-        cout << "ABILITY: " << m.abil_string << endl;
+        cout << "ABILITY: " << m.ability_string << endl;
         cout << "HITPOINTS: " << m.hitpoints.print_string() << endl;
         cout << "DAMAGE: " << m.damage.print_string() << endl;
         cout << "SYMBOL: " << m.symbol << endl;

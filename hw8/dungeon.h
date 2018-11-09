@@ -134,32 +134,21 @@ class Character
 class Monster : public Character
 {
   public:
-  Monster()
-  {
-    name = "";
-    description= "";
-    abilities = 0;
-    rrty = 0;
-
-  }
-  public:
     string name;
     string description;
     char symbol;
-    vector<int> color;
-    //vector<int> *color;
-    int abilities;
+    //vector<int> color;
+    vector<int> *color;
+    int color_int;
+    int ability;
     int rrty;
 
     dice damage;
     dice hitpoints;
     dice speed_dice;
 
-    string abil_string;
+    string ability_string;
     string color_string;
-    string damage_string;
-    string hitpoints_string;
-    string speed_string;
 };
 
 class Item
@@ -171,8 +160,9 @@ class Item
 
     string name;
     string description;
-    vector<int> color;
-    //vector<int> *color;
+    //vector<int> color;
+    vector<int> *color;
+    int color_int;
     dice hit;
     dice damage;
     dice dodge;

@@ -239,7 +239,7 @@ extern Dungeon dungeon;
 
 void init_dungeon();
 void generate_dungeon();
-void generate_dungeon_decs();
+void generate_dungeon_desc();
 void print_dungeon();
 void load_dungeon(FILE *f);
 void save_dungeon(FILE *f);

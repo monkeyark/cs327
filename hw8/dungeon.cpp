@@ -411,10 +411,10 @@ Item new_item_desc()
 	}
 	else
 	{
-		cout << "!???????" << endl;
+		cout << "????????" << endl;
 		return new_item_desc();
 	}
-cout << "222222222" << endl;
+	cout << "222222222" << endl;
 	return item;
 }
 

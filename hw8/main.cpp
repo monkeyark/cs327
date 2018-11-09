@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		//generate_dungeon();
-		generate_dungeon_decs();
+		generate_dungeon_desc();
 	}
     
 	if (save)

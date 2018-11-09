@@ -678,6 +678,7 @@ void delete_dungeon()
 {
     free(dungeon.rooms);
 	free(dungeon.monster);
+	/*
 	for (unsigned int i = 0; i < dungeon.mon->size(); i++)
 	{
 		delete &(dungeon.mon->at(i));
@@ -686,7 +687,7 @@ void delete_dungeon()
 	{
 		delete &(dungeon.it->at(i));
 	}
-	/*
+	*/
 	for (unsigned int i = 0; i < dungeon.mon.size(); i++)
 	{
 		delete &(dungeon.mon.at(i));
@@ -695,7 +696,7 @@ void delete_dungeon()
 	{
 		delete &(dungeon.it.at(i));
 	}
-	*/
+	
 }
 
 void move_dungeon()

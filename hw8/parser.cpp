@@ -269,6 +269,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "COLOR reading fail" << endl;
                 return 0;
             }
+            //m->color = *color; //TODO
             m->color_string = color_s;
             continue;
         }
@@ -518,7 +519,7 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
             {
                 return 0;
             }
-            item->color = *color;
+            //item->color = *color; //TODO
             item->color_string = color_string;
             continue;
         }

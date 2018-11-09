@@ -1,0 +1,31 @@
+I added a static generate_monster() method to the monster_description class. This gets called from gen_monsters() to do all of the work that the old gen_monsters() did, but using the new definitions. Objects are generated in essentially the same way, but since objects are new (not converting old C code), I've got a constructor that take an object description, and I call it rather than a factory method. Monster generation and object generation could be essentially the same. This gives you two different examples showing how they could be done.
+
+ 
+
+Objects are stored in the object map (analogous to our character map), but unlike NPCs, this is the only place they are stored, so when leaving a level or quitting the game, it's necessary to iterate through the entire map to locate and clean up objects.
+
+ 
+
+Displaying objects correctly with fog of war is a bit tricky. Since objects don't move, the semantics are slightly different. I added a "seen" flag to the object class and can_see() has been updated such that whenever the PC sees a cell, any objects in that position are marked as having been seen, then only previously seen objects are displayed. Another solution would be to display objects only in cells that have been seen. If we were to implement monsters that can pick up items, neither of these would be sufficient, but they're good for now.
+
+ 
+
+Multi-colored monsters use the select() system call to monitor standard input and as a high-precision timer. The games loops on select(), redrawing the dungeon when the timer goes off (colors are chosen randomly at print-time), and continuing into io processing when input is available.
+
+ 
+
+Pass wall monsters are implemented, but PICKUP and DESTROY are not.
+
+ 
+
+Unique monsters are implemented by the monster description class. It checks if it is allowable for a monster to be created before actually creating it, and a reference to the description is passed to the npc. The NPC's destructor then takes care of calling back into the description to update the records there.
+
+ 
+
+If you see a river crab, you're probably already dead. Not to mention Rory and SpongeBob. I have to admit that Rory was an accident. She was supposed to have speed 10. I'm not quite sure how she ended up with speed 50, but it was not intentional.  As it stands, she now moves as fast as she talks.
+
+ 
+
+ 
+
+I found a minor GCC bug while doing this update.  Only the second one I've ever submitted.  The first one (I don't remember what it was) was in 2007.  This one was a known bug, so my report only confirms that it still exists in 8.2.0.  Look for "pragma" in io.cpp.

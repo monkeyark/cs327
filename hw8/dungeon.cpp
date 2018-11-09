@@ -396,7 +396,7 @@ void new_PC()
 
 Item new_item_desc()
 {
-	cout << "!!!!!!!!!" << endl;
+	cout << "new_item_desc " << dungeon.num_item << endl;
 	Item item;
 	int row = get_random(ROW, 0);
 	int col = get_random(COL, 0);
@@ -411,10 +411,10 @@ Item new_item_desc()
 	}
 	else
 	{
-		cout << "????????" << endl;
+		cout << "new_item_desc_recursive" << endl;
 		return new_item_desc();
 	}
-	cout << "222222222" << endl;
+	cout << "new_item_desc_return" << endl;
 	return item;
 }
 
@@ -540,7 +540,7 @@ void generate_dungeon_desc()
 	
 	for (i = 0; i < dungeon.num_item; i++)
 	{
-		cout << i << endl;
+		cout << i << " of " << dungeon.num_item<< " getting " << endl;
 		dungeon.item[i] = new_item_desc();
 	}
 
@@ -678,6 +678,15 @@ void delete_dungeon()
 {
     free(dungeon.rooms);
 	free(dungeon.monster);
+	for (unsigned int i = 0; i < dungeon.mon->size(); i++)
+	{
+		delete &(dungeon.mon->at(i));
+	}
+	for (unsigned int i = 0; i < dungeon.it->size(); i++)
+	{
+		delete &(dungeon.it->at(i));
+	}
+	/*
 	for (unsigned int i = 0; i < dungeon.mon.size(); i++)
 	{
 		delete &(dungeon.mon.at(i));
@@ -686,6 +695,7 @@ void delete_dungeon()
 	{
 		delete &(dungeon.it.at(i));
 	}
+	*/
 }
 
 void move_dungeon()

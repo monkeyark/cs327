@@ -23,7 +23,6 @@
 #define CORRIDOR_H 0
 #define PC_H 0
 #define PC_VISION_RADIUS 2
-#define typeof(x) __typeof__(x)
 
 #define MIN(a, b)           \
 ({                          \
@@ -148,6 +147,7 @@ class Monster : public Character
     string description;
     char symbol;
     vector<int> color;
+    //vector<int> *color;
     int abilities;
     int rrty;
 
@@ -172,6 +172,7 @@ class Item
     string name;
     string description;
     vector<int> color;
+    //vector<int> *color;
     dice hit;
     dice damage;
     dice dodge;
@@ -233,6 +234,8 @@ class Dungeon
 
     vector<Monster> mon;
     vector<Item> it;
+    //vector<Monster> *mon;
+    //vector<Item> *it;
 };
 
 extern Dungeon dungeon;
@@ -244,6 +247,7 @@ void print_dungeon();
 void load_dungeon(FILE *f);
 void save_dungeon(FILE *f);
 void delete_dungeon();
+void move_dungeon();
 
 int get_random(int modulus, int min);
 int is_visible_terrain(int i, int j);
@@ -251,6 +255,5 @@ int is_room_corridor_stair(int row, int col);
 void remember_map_PC();
 int is_monster(int row, int col);
 int is_inside(int row, int col);
-void move_dungeon();
 
 #endif

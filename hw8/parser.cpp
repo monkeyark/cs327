@@ -110,7 +110,7 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symb)
     return 0;
 }
 
-int parse_color(ifstream &f, string *lookahead, vector<int> *integer, string *integer_string)
+int parse_color(ifstream &f, string *lookahead, vector<int> *color, string *color_string)
 {
     eat_blankspace(f);
 
@@ -120,7 +120,7 @@ int parse_color(ifstream &f, string *lookahead, vector<int> *integer, string *in
     }
 
     getline(f, *lookahead);
-    *integer_string = *lookahead;
+    *color_string = *lookahead;
 
     f >> *lookahead;
 
@@ -227,7 +227,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     string name, desc;
     char symb;
     int abil;
-    vector<int> color;
+    vector<int> *color = nullptr;
     dice speed, dam, hp;
     int rarity;
     int count;
@@ -264,7 +264,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         }
         else if (!(*lookahead).compare("COLOR"))
         {
-            if (parse_monster_color(f, lookahead, &color, &color_s))
+            if (parse_monster_color(f, lookahead, color, &color_s))
             {
                 cout << "COLOR reading fail" << endl;
                 return 0;
@@ -374,7 +374,10 @@ void load_monster_desc(char *path)
             cout << "discard monster" << endl;
             return;
         }
+        //TODO
         dungeon.mon.push_back(*m);
+        //(dungeon.mon)->push_back(*m);
+        //(*dungeon.mon).push_back(*m);
     }
 }
 
@@ -466,7 +469,7 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
     //the later repeative filed will overried the previous one
     string name;
     string description;
-    vector<int> color;
+    vector<int> *color = nullptr;
     dice hit;
     dice damage;
     dice dodge;
@@ -511,11 +514,11 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
         }
         else if (!(*lookahead).compare("COLOR"))
         {
-            if (parse_item_color(f, lookahead, &color, &color_string))
+            if (parse_item_color(f, lookahead, color, &color_string))
             {
                 return 0;
             }
-            item->color = color;
+            item->color = *color;
             item->color_string = color_string;
             continue;
         }
@@ -659,7 +662,10 @@ void load_item_desc(char *path)
             cout << "discard item" << endl;
             return;
         }
+        //TODO
         dungeon.it.push_back(*item);
+        //(dungeon.it)->push_back(*item);
+        //(*(dungeon.it)).push_back(*item);
     }
 }
 

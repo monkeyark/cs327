@@ -67,6 +67,13 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	load_monster_desc(path_monster);
+    //print_monster_desc();
+    //print_monster_desc_with_type();
+	
+	load_item_desc(path_item);
+	//print_item_desc_with_type();
+
 	if (load)
 	{
 		FILE *file_dungeon = fopen(path_dungeon, "r");
@@ -83,13 +90,6 @@ int main(int argc, char *argv[])
 		FILE *file_dungeon = fopen(path_dungeon, "w");
 		save_dungeon(file_dungeon);
 	}
-
-    load_monster_desc(path_monster);
-    //print_monster_desc();
-    //print_monster_desc_with_type();
-	
-	load_item_desc(path_item);
-	//print_item_desc_with_type();
 
 
 	move_dungeon();

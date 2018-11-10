@@ -56,7 +56,7 @@ static const struct {
   /* We can use this convenient macro here, but we can't use a *
    * similar macro above because of PASS and TELE.             */
   /* color_lu_entry(BLACK), Can't display COLOR_BLACK */
-  "BLACK", COLOR_WHITE,
+  "BLACK", COLOR_WHITE, //BUG is here
   color_lu_entry(BLUE),
   color_lu_entry(CYAN),
   color_lu_entry(GREEN),

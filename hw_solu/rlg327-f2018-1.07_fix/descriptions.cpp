@@ -228,6 +228,7 @@ static uint32_t parse_color(std::ifstream &f,
   }
 
   f >> *lookahead;
+  *color_string = *lookahead;//BUGFIX
 
   for (i = 0; colors_lookup[i].name; i++) {
     if (*lookahead == colors_lookup[i].name) {
@@ -259,6 +260,7 @@ static uint32_t parse_monster_color(std::ifstream &f,
   uint32_t c;
 
   c = UINT_MAX;
+  *color_string = "";//BUGFIX
 
   eat_blankspace(f);
 
@@ -268,6 +270,7 @@ static uint32_t parse_monster_color(std::ifstream &f,
 
   do {
     f >> *lookahead;
+    *color_string += *lookahead + " ";//BUGFIX
 
     for (i = 0; colors_lookup[i].name; i++) {
       if (*lookahead == colors_lookup[i].name) {
@@ -941,7 +944,7 @@ void monster_description::set(const std::string &name,
                               const std::string &description,
                               const char symbol,
                               const std::vector<uint32_t> &color,
-                              const std::string &color_string,
+                              const std::string &color_string,//BUGFIX
                               const dice &speed,
                               const uint32_t abilities,
                               const dice &hitpoints,
@@ -952,6 +955,7 @@ void monster_description::set(const std::string &name,
   this->description = description;
   this->symbol = symbol;
   this->color = color;
+  this->color_string = color_string;//BUGFIX
   this->speed = speed;
   this->abilities = abilities;
   this->hitpoints = hitpoints;
@@ -976,7 +980,7 @@ std::ostream &monster_description::print(std::ostream& o)
       }
     }
   }
-  o << std::endl;
+  o << std::endl << "========" << color_string << "--------" << std::endl;//BUGFIX
   o << speed << std::endl;
   for (i = num_abilities = 0; abilities_lookup[i].name; i++) {
     if (abilities & abilities_lookup[i].value) {
@@ -1010,7 +1014,7 @@ void object_description::set(const std::string &name,
                              const std::string &description,
                              const object_type_t type,
                              const uint32_t color,
-                             const std::string &color_string,
+                             const std::string &color_string,//BUGFIX
                              const dice &hit,
                              const dice &damage,
                              const dice &dodge,
@@ -1026,6 +1030,7 @@ void object_description::set(const std::string &name,
   this->description = description;
   this->type = type;
   this->color = color;
+  this->color_string = color_string;//BUGFIX
   this->hit = hit;
   this->damage = damage;
   this->dodge = dodge;
@@ -1056,7 +1061,7 @@ std::ostream &object_description::print(std::ostream &o)
       break;
     }
   }
-
+  o << "========" << color_string << "--------" << std::endl;//BUGFIX
 return o << hit << std::endl << damage << std::endl << dodge << std::endl
          << defence << std::endl << weight << std::endl << speed << std::endl
          << attribute << std::endl << value << std::endl << artifact

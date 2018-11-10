@@ -40,7 +40,7 @@ extern const char object_symbol[];
 
 class monster_description {
  private:
-  std::string name, description;
+  std::string name, description, color_string; //BUGFIX
   char symbol;
   std::vector<uint32_t> color;
   uint32_t abilities;
@@ -56,6 +56,7 @@ class monster_description {
            const std::string &description,
            const char symbol,
            const std::vector<uint32_t> &color,
+           const std::string &color_string, //BUGFIX
            const dice &speed,
            const uint32_t abilities,
            const dice &hitpoints,
@@ -67,7 +68,7 @@ class monster_description {
 
 class object_description {
  private:
-  std::string name, description;
+  std::string name, description, color_string;
   object_type_t type;
   uint32_t color;
   dice hit, damage, dodge, defence, weight, speed, attribute, value;
@@ -85,6 +86,7 @@ class object_description {
            const std::string &description,
            const object_type_t type,
            const uint32_t color,
+           const std::string &color_string, //BUGFIX
            const dice &hit,
            const dice &damage,
            const dice &dodge,

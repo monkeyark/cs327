@@ -214,7 +214,8 @@ static uint32_t parse_monster_rrty(std::ifstream &f,
 
 static uint32_t parse_color(std::ifstream &f,
                             std::string *lookahead,
-                            uint32_t *color)
+                            uint32_t *color,
+                            std::string *color_string)//BUGFIX
 {
   uint32_t i;
 
@@ -251,7 +252,8 @@ static uint32_t parse_color(std::ifstream &f,
 
 static uint32_t parse_monster_color(std::ifstream &f,
                                     std::string *lookahead,
-                                    std::vector<uint32_t> *color)
+                                    std::vector<uint32_t> *color,
+                                    std::string *color_string)//BUGFIX
 {
   uint32_t i;
   uint32_t c;
@@ -414,7 +416,7 @@ static uint32_t parse_monster_description(std::ifstream &f,
   std::string s;
   bool read_name, read_symb, read_color, read_desc,
        read_speed, read_dam, read_hp, read_abil, read_rrty;
-  std::string name, desc;
+  std::string name, desc, color_string;//BUGFIX
   char symb;
   uint32_t abil;
   std::vector<uint32_t> color;
@@ -471,7 +473,7 @@ static uint32_t parse_monster_description(std::ifstream &f,
       }
       read_symb = true;
     } else if (*lookahead == "COLOR") {
-      if (read_color || parse_monster_color(f, lookahead, &color)) {
+      if (read_color || parse_monster_color(f, lookahead, &color, &color_string)) {//BUGFIX
         std::cerr << "Discovered at " << __FILE__ << ":" << __LINE__ << "\n"
                   << "Parse error in monster color.\n"
                   << "Discarding monster." << std::endl;
@@ -536,7 +538,7 @@ static uint32_t parse_monster_description(std::ifstream &f,
   }
   f >> *lookahead;
 
-  m.set(name, desc, symb, color, speed, abil, hp, dam, rrty);
+  m.set(name, desc, symb, color, color_string, speed, abil, hp, dam, rrty);//BUGFIX
   v->push_back(m);
 
   return 0;
@@ -622,9 +624,10 @@ static uint32_t parse_object_type(std::ifstream &f,
 
 static uint32_t parse_object_color(std::ifstream &f,
                                    std::string *lookahead,
-                                   uint32_t *color)
+                                   uint32_t *color,
+                                   std::string *color_string)//BUGFIX
 {
-  return parse_color(f, lookahead, color);
+  return parse_color(f, lookahead, color, color_string);
 }
 
 static dice_parser_func_t parse_object_hit = parse_dice;
@@ -645,7 +648,7 @@ static uint32_t parse_object_description(std::ifstream &f,
        read_hit, read_dam, read_dodge, read_def,
        read_weight, read_speed, read_attr, read_val,
        read_art, read_rrty;
-  std::string name, desc;
+  std::string name, desc, color_string;//BUGFIX
   uint32_t color;
   object_type_t type;
   dice hit, dam, dodge, def, weight, speed, attr, val;
@@ -704,7 +707,7 @@ static uint32_t parse_object_description(std::ifstream &f,
       }
       read_type = true;
     } else if (*lookahead == "COLOR") {
-      if (read_color || parse_object_color(f, lookahead, &color)) {
+      if (read_color || parse_object_color(f, lookahead, &color, &color_string)) {//BUGFIX
         std::cerr << "Discovered at " << __FILE__ << ":" << __LINE__ << "\n"
                   << "Parse error in object color.\n"
                   << "Discarding object." << std::endl;
@@ -809,8 +812,8 @@ static uint32_t parse_object_description(std::ifstream &f,
   }
   f >> *lookahead;
 
-  o.set(name, desc, type, color, hit, dam, dodge,
-        def, weight, speed, attr, val, art, rrty);
+  o.set(name, desc, type, color, color_string, hit, dam, dodge,
+        def, weight, speed, attr, val, art, rrty);//BUGFIX
   v->push_back(o);
 
   return 0;
@@ -938,6 +941,7 @@ void monster_description::set(const std::string &name,
                               const std::string &description,
                               const char symbol,
                               const std::vector<uint32_t> &color,
+                              const std::string &color_string,
                               const dice &speed,
                               const uint32_t abilities,
                               const dice &hitpoints,
@@ -1006,6 +1010,7 @@ void object_description::set(const std::string &name,
                              const std::string &description,
                              const object_type_t type,
                              const uint32_t color,
+                             const std::string &color_string,
                              const dice &hit,
                              const dice &damage,
                              const dice &dodge,

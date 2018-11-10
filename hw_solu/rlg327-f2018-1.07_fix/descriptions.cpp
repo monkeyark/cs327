@@ -980,7 +980,7 @@ std::ostream &monster_description::print(std::ostream& o)
       }
     }
   }
-  o << std::endl << "========" << color_string << "--------" << std::endl;//BUGFIX
+  o << std::endl << color_string << " <-------------- this is the correct color: color_string" << std::endl;//BUGFIX
   o << speed << std::endl;
   for (i = num_abilities = 0; abilities_lookup[i].name; i++) {
     if (abilities & abilities_lookup[i].value) {
@@ -1061,7 +1061,7 @@ std::ostream &object_description::print(std::ostream &o)
       break;
     }
   }
-  o << "========" << color_string << "--------" << std::endl;//BUGFIX
+  o << color_string << " <-------------- this is the correct color: color_string" << std::endl;//BUGFIX
 return o << hit << std::endl << damage << std::endl << dodge << std::endl
          << defence << std::endl << weight << std::endl << speed << std::endl
          << attribute << std::endl << value << std::endl << artifact

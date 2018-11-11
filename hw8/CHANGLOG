@@ -10,6 +10,7 @@ Nov 7
     BUGFIX: fix segfault, use new for monster object not malloc
 
 Nov 8
-    BUGFIX: fix segfault -ncurses use the first line in terminal to print message,
+    BUGFIX: fix segfault - ncurses use the first line in terminal to print message,
             so the row index of ncurses print in terminal is not the same with the
             row index of dungeon
+    BUGFIX: fix segfault - malloc class cannot contain dynamic field e.g. vector and string

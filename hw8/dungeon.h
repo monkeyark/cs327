@@ -129,10 +129,9 @@ class Item
 		int col;
 		int seen;
 
-		std::string name;
-		std::string description;
-		int color_int;
-		std::string color_string;
+		std::string *name;
+		std::string *description;
+		int color;
 		int hit;
 		dice damage;
 		int dodge;
@@ -143,18 +142,20 @@ class Item
 		int value;
 		bool artifact;
 		int rarity;
-		std::string type;
+		std::string *type;
 };
 
 class Character
 {
 	public:
+		char symbol;
 		int row;
 		int col;
 		int birth;
 		int speed;
 		int dead;
-		char symbol;
+
+		dice damage;
 };
 
 class NPC : public Character

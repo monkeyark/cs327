@@ -10,16 +10,16 @@ typedef struct queue_node Node;
 struct queue_node
 {
 	Node *next;
-    Node *prev;
+	Node *prev;
 	int priority;
 };
 
 typedef struct Priority_Queue
 {
-  Node **head;
-  uint32_t size;
-  int32_t (*compare)(const void *key, const void *with);
-  void (*datum_delete)(void *);
+	Node **head;
+	uint32_t size;
+	int32_t (*compare)(const void *key, const void *with);
+	void (*datum_delete)(void *);
 } Queue;
 
 

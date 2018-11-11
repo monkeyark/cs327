@@ -25,31 +25,31 @@
 #define PC_VISION_RADIUS 2
 
 #define MIN(a, b) \
-  ({                          \
-    __typeof__ (a) _a = (a);\
-    __typeof__ (b) _b = (b);\
-     _a < _b ? _a : _b; })
+	({                          \
+	 __typeof__ (a) _a = (a);\
+	 __typeof__ (b) _b = (b);\
+	 _a < _b ? _a : _b; })
 
 #define MAX(a, b) \
-  ({                          \
-    __typeof__ (a) _a = (a);\
-    __typeof__ (b) _b = (b);\
-    _a > _b ? _a : _b; })
+	({                          \
+	 __typeof__ (a) _a = (a);\
+	 __typeof__ (b) _b = (b);\
+	 _a > _b ? _a : _b; })
 
 /*
 #define MIN(x,y)			\
 ({							\
-    typeof(x) _x = (x);     \
-    typeof(y) _y = (y);     \
-    (void) (&_x == &_y);    \
-    _x < _y ? _x : _y;})
+typeof(x) _x = (x);     \
+typeof(y) _y = (y);     \
+(void) (&_x == &_y);    \
+_x < _y ? _x : _y;})
 
 #define MAX(x,y)			\
 ({							\
-    typeof(x) _x = (x);     \
-    typeof(y) _y = (y);     \
-    (void) (&_x == &_y);    \
-    _x > _y ? _x : _y;})
+typeof(x) _x = (x);     \
+typeof(y) _y = (y);     \
+(void) (&_x == &_y);    \
+_x > _y ? _x : _y;})
 */
 
 #define NPC_SMART 0x00000001
@@ -89,148 +89,148 @@ using namespace std;
 
 enum Colors
 {
-  BLACK,
-  RED,
-  GREEN,
-  YELLOW,
-  BLUE,
-  MAGENTA,
-  CYAN,
-  WHITE
+	BLACK,
+	RED,
+	GREEN,
+	YELLOW,
+	BLUE,
+	MAGENTA,
+	CYAN,
+	WHITE
 };
 
 class Terrain
 {
-public:
-  char terrain;
-  char space;
-  char fog;
-  int hardness;
+	public:
+		char terrain;
+		char space;
+		char fog;
+		int hardness;
 };
 
 class Room
 {
-public:
-  int row;
-  int col;
-  int width;
-  int height;
+	public:
+		int row;
+		int col;
+		int width;
+		int height;
 };
 
 class Item
 {
-public:
-  int row;
-  int col;
-  int seen;
+	public:
+		int row;
+		int col;
+		int seen;
 };
 
 class Character
 {
-public:
-  unsigned int characteristics;
-  int row;
-  int col;
-  int birth;
-  int speed;
-  int pc_row;
-  int pc_col;
-  int dead;
-  int dist[ROW * COL];
-  int vision[ROW][COL];
+	public:
+		unsigned int characteristics;
+		int row;
+		int col;
+		int birth;
+		int speed;
+		int pc_row;
+		int pc_col;
+		int dead;
+		int dist[ROW * COL];
+		int vision[ROW][COL];
 
-  Item *item;
+		Item *item;
 };
 
 /*
-class NPC : public Character
-{
-    public:
-        string name;
-        string description;
-        char symbol;
-        uint32_t color;
-        uint32_t abilities;
-        dice damage;
-        uint32_t hitpoints;
-        unsigned int characteristics;
-        int row;
-        int col;
-        int birth;
-        int32_t speed;
-        int pc_row;
-        int pc_col;
-        int dead;
-        int dist[ROW * COL];
-        int vision[ROW][COL];
-};
-*/
+   class NPC : public Character
+   {
+   public:
+   string name;
+   string description;
+   char symbol;
+   uint32_t color;
+   uint32_t abilities;
+   dice damage;
+   uint32_t hitpoints;
+   unsigned int characteristics;
+   int row;
+   int col;
+   int birth;
+   int32_t speed;
+   int pc_row;
+   int pc_col;
+   int dead;
+   int dist[ROW * COL];
+   int vision[ROW][COL];
+   };
+   */
 
 class Monster : public Character
 {
-public:
-  string name;
-  string description;
-  char symbol;
-  vector<int> *color;
-  int color_int;
-  int ability;
-  int rrty;
+	public:
+		string name;
+		string description;
+		char symbol;
+		vector<int> *color;
+		int color_int;
+		int ability;
+		int rrty;
 
-  dice damage;
-  dice hitpoints;
-  dice speed_dice;
+		dice damage;
+		dice hitpoints;
+		dice speed_dice;
 
-  string ability_string;
-  string color_string;
+		string ability_string;
+		string color_string;
 };
 
 class Object : public Item
 {
-public:
-  string name;
-  string description;
-  vector<int> *color;
-  int color_int;
-  dice hit;
-  dice damage;
-  dice dodge;
-  dice defence;
-  dice weight;
-  dice speed;
-  dice attribute;
-  dice value;
-  bool artifact;
-  int rarity;
+	public:
+		string name;
+		string description;
+		vector<int> *color;
+		int color_int;
+		dice hit;
+		dice damage;
+		dice dodge;
+		dice defence;
+		dice weight;
+		dice speed;
+		dice attribute;
+		dice value;
+		bool artifact;
+		int rarity;
 
-  string type;
-  char symbol;
+		string type;
+		char symbol;
 
-  string color_string;
+		string color_string;
 };
 
 class Dungeon
 {
-public:
-  int seed;
-  int num_mon;
-  int num_item;
-  int num_room;
-  int version;
-  Room *rooms;
-  Character *monster;
-  Item *item;
-  Character pc;
-  int teleport_row;
-  int teleport_col;
-  Terrain map[ROW][COL];
-  Queue pq_tunel;
-  Queue pq_nontunel;
+	public:
+		int seed;
+		int num_mon;
+		int num_item;
+		int num_room;
+		int version;
+		Room *rooms;
+		Character *monster;
+		Item *item;
+		Character pc;
+		int teleport_row;
+		int teleport_col;
+		Terrain map[ROW][COL];
+		Queue pq_tunel;
+		Queue pq_nontunel;
 
-  vector<Monster> mon;
-  vector<Object> obj;
-  //vector<Monster> *mon;
-  //vector<Object> *obj;
+		vector<Monster> mon;
+		vector<Object> obj;
+		//vector<Monster> *mon;
+		//vector<Object> *obj;
 };
 
 extern Dungeon dungeon;

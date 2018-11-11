@@ -327,16 +327,16 @@ NPC new_NPC(int birth)
 		npc.row = row;
 		npc.col = col;
 		npc.birth = birth;
-		//creating NPC with all four characteristics having 1/2 probability, clean unused bits
-		npc.characteristics = rand() & 0xf;
+		//creating NPC with all four ability having 1/2 probability, clean unused bits
+		npc.ability = rand() & 0xf;
 		npc.speed = get_random(20, 5);
 		npc.dead = 0;
-		if (npc.characteristics & NPC_TELEPATH) //monster is telepath
+		if (npc.ability & NPC_TELEPATH) //monster is telepath
 		{
 			npc.pc_row = dungeon.pc.row;
 			npc.pc_col = dungeon.pc.col;
 		}
-        sprintf(&dungeon.map[npc.row][npc.col].space, "%x", npc.characteristics);
+        sprintf(&dungeon.map[npc.row][npc.col].space, "%x", npc.ability);
 		dungeon.map[npc.row][npc.col].hardness = 0;
 	}
 	else
@@ -429,16 +429,17 @@ NPC new_NPC_desc(int birth)
 		npc.row = row;
 		npc.col = col;
 		npc.birth = birth;
-		//creating NPC with all four characteristics having 1/2 probability, clean unused bits
-		npc.characteristics = rand() & 0xf;
+		//creating NPC with all four ability having 1/2 probability, clean unused bits
+		npc.ability = rand() & 0xf;
 		npc.speed = get_random(20, 5);
 		npc.dead = 0;
-		if (npc.characteristics & NPC_TELEPATH) //monster is telepath
+		if (npc.ability & NPC_TELEPATH) //monster is telepath
 		{
 			npc.pc_row = dungeon.pc.row;
 			npc.pc_col = dungeon.pc.col;
 		}
-        sprintf(&dungeon.map[npc.row][npc.col].space, "%x", npc.characteristics);
+		
+        sprintf(&dungeon.map[npc.row][npc.col].space, "%x", npc.ability);
 		dungeon.map[npc.row][npc.col].hardness = 0;
 	}
 	else

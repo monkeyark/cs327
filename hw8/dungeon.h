@@ -91,7 +91,6 @@
 #define OBJ_WAND 0x00040000
 #define OBJ_STACK 0x00080000
 
-using namespace std;
 
 enum Colors
 {
@@ -129,6 +128,22 @@ class Item
 		int row;
 		int col;
 		int seen;
+
+		std::string name;
+		std::string description;
+		int color_int;
+		std::string color_string;
+		int hit;
+		dice damage;
+		int dodge;
+		int defence;
+		int weight;
+		int speed;
+		int attribute;
+		int value;
+		bool artifact;
+		int rarity;
+		std::string type;
 };
 
 class Character
@@ -139,16 +154,13 @@ class Character
 		int birth;
 		int speed;
 		int dead;
-
-		int vision[ROW][COL];
-
-		Item *item;
+		char symbol;
 };
 
 class NPC : public Character
 {
 	public:
-		unsigned int characteristics;
+		unsigned int ability;
 		int pc_row;
 		int pc_col;
 		int dist[ROW * COL];
@@ -164,16 +176,16 @@ class PC : public Character
 class Monster
 {
 	public:
-		string name;
-		string description;
-		vector<int> *color;
+		std::string name;
+		std::string description;
+		std::vector<int> *color;
 		int color_int;
-		string color_string;
+		std::string color_string;
 		dice damage;
 		dice hitpoints;
 		dice speed;
 		unsigned int ability;
-		string ability_string;
+		std::string ability_string;
 		int rarity;
 
 		char symbol;
@@ -182,11 +194,11 @@ class Monster
 class Object
 {
 	public:
-		string name;
-		string description;
-		vector<int> *color;
+		std::string name;
+		std::string description;
+		std::vector<int> *color;
 		int color_int;
-		string color_string;
+		std::string color_string;
 		dice hit;
 		dice damage;
 		dice dodge;
@@ -197,7 +209,7 @@ class Object
 		dice value;
 		bool artifact;
 		int rarity;
-		string type;
+		std::string type;
 
 		int seen;
 };
@@ -220,10 +232,10 @@ class Dungeon
 		Queue pq_tunel;
 		Queue pq_nontunel;
 
-		vector<Monster> mon;
-		vector<Object> obj;
-		//vector<Monster> *mon;
-		//vector<Object> *obj;
+		std::vector<Monster> mon;
+		std::vector<Object> obj;
+		//std::vector<Monster> *mon;
+		//std::vector<Object> *obj;
 };
 
 extern Dungeon dungeon;

@@ -109,7 +109,7 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 			col_pos = "     ";
 		}
 
-		sprintf(str, "%x:  %2d %s and %2d %s", npc.characteristics, abs(row_dis), row_pos, abs(col_dis), col_pos);
+		sprintf(str, "%x:  %2d %s and %2d %s", npc.ability, abs(row_dis), row_pos, abs(col_dis), col_pos);
 		char *m = str;
 
 		for (int n = 0; *m; m++, n++)
@@ -151,7 +151,7 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 			}
 			else if (!(is_monster((i-1), j) < 0))
 			{
-				mvwprintw(game, i, j, "%x", dungeon.monster[is_monster((i-1), j)].characteristics);
+				mvwprintw(game, i, j, "%x", dungeon.monster[is_monster((i-1), j)].ability);
 			}
 			else
 			{

@@ -162,7 +162,7 @@ class Monster : public Character
     string speed_string;
 };
 
-class Item
+class Object
 {
   public:
     int row;
@@ -230,7 +230,7 @@ class Dungeon
     Queue pq_nontunel;
 
     vector<Monster> mon;
-    vector<Item> it;
+    vector<Object> it;
 };
 
 extern Dungeon dungeon;

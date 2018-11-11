@@ -11,7 +11,7 @@
 #include "limits.h"
 
 #define NUM_MONSTER_FIELDS 11
-#define NUM_ITEM_FIELDS 16
+#define NUM_object_FIELDS 16
 
 using namespace std;
 
@@ -379,67 +379,67 @@ void load_monster_desc(char *path)
 }
 
 
-int parse_item_begin(ifstream &f, string *lookahead)
+int parse_object_begin(ifstream &f, string *lookahead)
 {
     return parse_nextline(f, lookahead);
 }
-int parse_item_end(ifstream &f, string *lookahead)
+int parse_object_end(ifstream &f, string *lookahead)
 {
     return parse_nextline(f, lookahead);
 }
-int parse_item_name(ifstream &f, string *lookahead, string *name)
+int parse_object_name(ifstream &f, string *lookahead, string *name)
 {
     return parse_name(f, lookahead, name);
 }
-int parse_item_type(ifstream &f, string *lookahead, string *type)
+int parse_object_type(ifstream &f, string *lookahead, string *type)
 {
     return parse_name(f, lookahead, type);
 }
-int parse_item_color(ifstream &f, string *lookahead, vector<int> *color, string *color_string)
+int parse_object_color(ifstream &f, string *lookahead, vector<int> *color, string *color_string)
 {
     return parse_color(f, lookahead, color, color_string);
 }
-int parse_item_weight(ifstream &f, string *lookahead, dice *weight)
+int parse_object_weight(ifstream &f, string *lookahead, dice *weight)
 {
     return parse_dice(f, lookahead, weight);
 }
-int parse_item_hit(ifstream &f, string *lookahead, dice *hit)
+int parse_object_hit(ifstream &f, string *lookahead, dice *hit)
 {
     return parse_dice(f, lookahead, hit);
 }
-int parse_item_damage(ifstream &f, string *lookahead, dice *damage)
+int parse_object_damage(ifstream &f, string *lookahead, dice *damage)
 {
     return parse_dice(f, lookahead, damage);
 }
-int parse_item_attribute(ifstream &f, string *lookahead, dice *attribute)
+int parse_object_attribute(ifstream &f, string *lookahead, dice *attribute)
 {
     return parse_dice(f, lookahead, attribute);
 }
-int parse_item_value(ifstream &f, string *lookahead, dice *value)
+int parse_object_value(ifstream &f, string *lookahead, dice *value)
 {
     return parse_dice(f, lookahead, value);
 }
-int parse_item_dodge(ifstream &f, string *lookahead, dice *dodge)
+int parse_object_dodge(ifstream &f, string *lookahead, dice *dodge)
 {
     return parse_dice(f, lookahead, dodge);
 }
-int parse_item_defence(ifstream &f, string *lookahead, dice *defence)
+int parse_object_defence(ifstream &f, string *lookahead, dice *defence)
 {
     return parse_dice(f, lookahead, defence);
 }
-int parse_item_speed(ifstream &f, string *lookahead, dice *speed)
+int parse_object_speed(ifstream &f, string *lookahead, dice *speed)
 {
     return parse_dice(f, lookahead, speed);
 }
-int parse_item_desc(ifstream &f, string *lookahead, string *desc)
+int parse_object_desc(ifstream &f, string *lookahead, string *desc)
 {
     return parse_desc(f, lookahead, desc);
 }
-int parse_item_rarity(ifstream &f, string *lookahead, int *rarity)
+int parse_object_rarity(ifstream &f, string *lookahead, int *rarity)
 {
     return parse_rarity(f, lookahead, rarity);
 }
-int parse_item_artifact(ifstream &f, string *lookahead, bool *artifact)
+int parse_object_artifact(ifstream &f, string *lookahead, bool *artifact)
 {
     eat_whitespace(f);
     getline(f, *lookahead);
@@ -459,7 +459,7 @@ int parse_item_artifact(ifstream &f, string *lookahead, bool *artifact)
     return 0;
 }
 
-int parse_item_description(ifstream &f, string *lookahead, Item *item)
+int parse_object_description(ifstream &f, string *lookahead, Object *object)
 {
     string name;
     string description;
@@ -479,11 +479,11 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
     string color_string;
 
     int count;
-    for (f >> *lookahead, count = 0; count < NUM_ITEM_FIELDS; count++)
+    for (f >> *lookahead, count = 0; count < NUM_object_FIELDS; count++)
     {
         if (!(*lookahead).compare("BEGIN"))
         {
-            if (parse_item_begin(f, lookahead))
+            if (parse_object_begin(f, lookahead))
             {
                 return 0;
             }
@@ -491,128 +491,128 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
         }
         else if (!(*lookahead).compare("NAME"))
         {
-            if (parse_item_name(f, lookahead, &name))
+            if (parse_object_name(f, lookahead, &name))
             {
                 return 0;
             }
-            item->name = name;
+            object->name = name;
             continue;
         }
         else if (!(*lookahead).compare("TYPE"))
         {
-            if (parse_item_type(f, lookahead, &type))
+            if (parse_object_type(f, lookahead, &type))
             {
                 return 0;
             }
-            item->type = type;
+            object->type = type;
         }
         else if (!(*lookahead).compare("COLOR"))
         {
-            if (parse_item_color(f, lookahead, &color, &color_string))
+            if (parse_object_color(f, lookahead, &color, &color_string))
             {
                 return 0;
             }
-            item->color = color;
-            item->color_string = color_string;
+            object->color = color;
+            object->color_string = color_string;
             continue;
         }
         else if (!(*lookahead).compare("WEIGHT"))
         {
-            if (parse_item_weight(f, lookahead, &weight))
+            if (parse_object_weight(f, lookahead, &weight))
             {
                 return 0;
             }
-            item->weight = weight;
+            object->weight = weight;
             continue;
         }
         else if (!(*lookahead).compare("HIT"))
         {
-            if (parse_item_hit(f, lookahead, &hit))
+            if (parse_object_hit(f, lookahead, &hit))
             {
                 return 0;
             }
-            item->hit = hit;
+            object->hit = hit;
             continue;
         }
         else if (!(*lookahead).compare("DAM"))
         {
-            if (parse_item_damage(f, lookahead, &damage))
+            if (parse_object_damage(f, lookahead, &damage))
             {
                 return 0;
             }
-            item->damage = damage;
+            object->damage = damage;
             continue;
         }
         else if (!(*lookahead).compare("ATTR"))
         {
-            if (parse_item_attribute(f, lookahead, &attribute))
+            if (parse_object_attribute(f, lookahead, &attribute))
             {
                 return 0;
             }
-            item->attribute = attribute;
+            object->attribute = attribute;
             continue;
         }
         else if (!(*lookahead).compare("VAL"))
         {
-            if (parse_item_value(f, lookahead, &value))
+            if (parse_object_value(f, lookahead, &value))
             {
                 return 0;
             }
-            item->value = value;
+            object->value = value;
             continue;
         }
         else if (!(*lookahead).compare("DODGE"))
         {
-            if (parse_item_dodge(f, lookahead, &dodge))
+            if (parse_object_dodge(f, lookahead, &dodge))
             {
                 return 0;
             }
-            item->dodge = dodge;
+            object->dodge = dodge;
             continue;
         }
         else if (!(*lookahead).compare("DEF"))
         {
-            if (parse_item_defence(f, lookahead, &defence))
+            if (parse_object_defence(f, lookahead, &defence))
             {
                 return 0;
             }
-            item->defence = defence;
+            object->defence = defence;
             continue;
         }
         else if (!(*lookahead).compare("SPEED"))
         {
-            if (parse_item_speed(f, lookahead, &speed))
+            if (parse_object_speed(f, lookahead, &speed))
             {
                 return 0;
             }
-            item->speed = speed;
+            object->speed = speed;
             continue;
         }
         else if (!(*lookahead).compare("DESC"))
         {
-            if (parse_item_desc(f, lookahead, &description))
+            if (parse_object_desc(f, lookahead, &description))
             {
                 return 0;
             }
-            item->description = description;
+            object->description = description;
             continue;
         }
         else if (!(*lookahead).compare("RRTY"))
         {
-            if (parse_item_rarity(f, lookahead, &rarity))
+            if (parse_object_rarity(f, lookahead, &rarity))
             {
                 return 0;
             }
-            item->rarity = rarity;
+            object->rarity = rarity;
             continue;
         }
         else if (!(*lookahead).compare("ART"))
         {
-            if (parse_item_artifact(f, lookahead, &artifact))
+            if (parse_object_artifact(f, lookahead, &artifact))
             {
                 return 0;
             }
-            item->artifact = artifact;
+            object->artifact = artifact;
             continue;
         }
         else if (*lookahead == "END")
@@ -630,7 +630,7 @@ int parse_item_description(ifstream &f, string *lookahead, Item *item)
     return 1;
 }
 
-void load_item_desc(char *path)
+void load_object_desc(char *path)
 {
     if (!fopen(path, "r"))
     {
@@ -645,18 +645,18 @@ void load_item_desc(char *path)
     string str = s.substr(0, 25);
     if (str.compare("RLG327 OBJECT DESCRIPTION"))
     {
-        fprintf(stderr, "Incorrect format of item desc\n");
+        fprintf(stderr, "Incorrect format of object desc\n");
         return;
     }
-    Item *item = new Item;
+    Object *object = new Object;
     while (f.peek() != EOF)
     {
-        if (!parse_item_description(f, &s, item))
+        if (!parse_object_description(f, &s, object))
         {
-            cout << "discard item" << endl;
+            cout << "discard object" << endl;
             return;
         }
-        dungeon.it.push_back(*item);
+        dungeon.it.push_back(*object);
     }
 }
 
@@ -695,26 +695,26 @@ void print_monster_desc_with_type()
     }
 }
 
-void print_item_desc();
-void print_item_desc_with_type()
+void print_object_desc();
+void print_object_desc_with_type()
 {
     for (unsigned int i = 0; i < dungeon.it.size(); i++)
     {
-        Item item = dungeon.it.at(i);
-        cout << "NAME: " << item.name << endl;
-        cout << "DESCRIPTION: " << item.description << endl;
-        cout << "TYPE: " << item.type << endl;
-        cout << "COLOR: " << item.color_string << endl;
-        cout << "WEIGHT: " << item.weight.print_string() << endl;
-        cout << "HITPOINTS: " << item.hit.print_string() << endl;
-        cout << "DAMAGE: " << item.damage.print_string() << endl;
-        cout << "ATTRIBUTE: " << item.attribute.print_string() << endl;
-        cout << "VALUE: " << item.value.print_string() << endl;
-        cout << "DODGE: " << item.dodge.print_string() << endl;
-        cout << "DEF: " << item.defence.print_string() << endl;
-        cout << "SPEED: " << item.speed.print_string() << endl;
-        cout << "ARTIFACT: " << uppercase << boolalpha << item.artifact << endl;
-        cout << "RRTY: " << item.rarity << endl;
+        Object object = dungeon.it.at(i);
+        cout << "NAME: " << object.name << endl;
+        cout << "DESCRIPTION: " << object.description << endl;
+        cout << "TYPE: " << object.type << endl;
+        cout << "COLOR: " << object.color_string << endl;
+        cout << "WEIGHT: " << object.weight.print_string() << endl;
+        cout << "HITPOINTS: " << object.hit.print_string() << endl;
+        cout << "DAMAGE: " << object.damage.print_string() << endl;
+        cout << "ATTRIBUTE: " << object.attribute.print_string() << endl;
+        cout << "VALUE: " << object.value.print_string() << endl;
+        cout << "DODGE: " << object.dodge.print_string() << endl;
+        cout << "DEF: " << object.defence.print_string() << endl;
+        cout << "SPEED: " << object.speed.print_string() << endl;
+        cout << "ARTIFACT: " << uppercase << boolalpha << object.artifact << endl;
+        cout << "RRTY: " << object.rarity << endl;
         cout << endl;
     }
 }

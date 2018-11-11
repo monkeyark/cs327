@@ -22,15 +22,15 @@ int main(int argc, char *argv[])
 
     char path_dungeon[sizeof(path)*5];
     char path_monster[sizeof(path)*5];
-	char path_item[sizeof(path)*5];
+	char path_object[sizeof(path)*5];
     strcpy(path_dungeon, path);
     strcpy(path_monster, path);
-	strcpy(path_item, path);
+	strcpy(path_object, path);
     strcat(path_dungeon, "/dungeon");
     strcat(path_monster, "/monster_desc.txt");
-	strcat(path_item, "/object_desc.txt");
+	strcat(path_object, "/object_desc.txt");
     //strcat(path_monster, "/monster_desc_copy.txt");
-	//strcat(path_item, "/object_desc_copy.txt");
+	//strcat(path_object, "/object_desc_copy.txt");
 
     dungeon.num_mon = 0;
 	//set up random seed
@@ -87,8 +87,8 @@ int main(int argc, char *argv[])
     //print_monster_desc();
 	print_monster_desc_with_type();
 	
-	load_item_desc(path_item);
-	print_item_desc_with_type();
+	load_object_desc(path_object);
+	print_object_desc_with_type();
 
 
 	move_dungeon();

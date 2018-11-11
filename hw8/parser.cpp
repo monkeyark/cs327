@@ -105,8 +105,9 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symb)
     return 0;
 }
 
-int parse_color(ifstream &f, string *lookahead, int *color, string *color_string)
+int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string)
 {
+    // *color = //TODO
     eat_blankspace(f);
 
     if (f.peek() == '\n')
@@ -122,7 +123,7 @@ int parse_color(ifstream &f, string *lookahead, int *color, string *color_string
     return 0;
 }
 
-int parse_monster_color(ifstream &f, string *lookahead, int *color, string *color_string)
+int parse_monster_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string)
 {
     return parse_color(f, lookahead, color, color_string);
 }
@@ -182,8 +183,9 @@ int parse_monster_hp(ifstream &f, string *lookahead, dice *d)
     return parse_dice(f, lookahead, d);
 }
 
-int parse_monster_ability(ifstream &f, string *lookahead, int *ability, string *ability_string)
+int parse_monster_ability(ifstream &f, string *lookahead, unsigned int *ability, string *ability_string)
 {
+    //*ability = //TODO
     eat_blankspace(f);
 
     if (f.peek() == '\n')
@@ -218,11 +220,12 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     //this parser can only read description with no repeative field
     //the later repeative field will overried the previous one
     string ability_string, color_string;
+    //unsigned int color; //TODO
 
     string name, desc;
     char symb;
-    int ability;
-    int color;
+    unsigned int color, ability;//TODO
+
     dice speed, dam, hp;
     int rarity;
 
@@ -485,7 +488,7 @@ int parse_object_type(ifstream &f, string *lookahead, string *type, char *symbol
     return 0;
 }
 
-int parse_object_color(ifstream &f, string *lookahead, int *color, string *color_string)
+int parse_object_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string)
 {
     return parse_color(f, lookahead, color, color_string);
 }
@@ -578,9 +581,9 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
     bool artifact;
     int rarity;
     char symbol;
-
-    int color;
     string type;
+
+    unsigned int color;
     string color_string;
 
     int count;

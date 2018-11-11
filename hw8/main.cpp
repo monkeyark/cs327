@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	//move_dungeon();
+	move_dungeon();
     //print_dungeon();
     delete_dungeon();
 

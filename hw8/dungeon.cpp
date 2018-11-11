@@ -336,7 +336,9 @@ NPC new_NPC(int birth)
 			npc.pc_row = dungeon.pc.row;
 			npc.pc_col = dungeon.pc.col;
 		}
-        sprintf(&dungeon.map[npc.row][npc.col].space, "%x", npc.ability);
+		
+		sprintf(&npc.symbol, "%x", npc.ability);
+		dungeon.map[npc.row][npc.col].space = npc.symbol;
 		dungeon.map[npc.row][npc.col].hardness = 0;
 	}
 	else
@@ -438,8 +440,9 @@ NPC new_NPC_desc(int birth)
 			npc.pc_row = dungeon.pc.row;
 			npc.pc_col = dungeon.pc.col;
 		}
-		
-        sprintf(&dungeon.map[npc.row][npc.col].space, "%x", npc.ability);
+
+        sprintf(&npc.symbol, "%x", npc.ability);
+		dungeon.map[npc.row][npc.col].space = npc.symbol;
 		dungeon.map[npc.row][npc.col].hardness = 0;
 	}
 	else
@@ -462,7 +465,35 @@ Item new_item_desc()
 		item.row = row;
 		item.col = col;
 		
-        dungeon.map[item.row][item.col].space = '$';
+		//get random index of object from description
+		int index = get_random(dungeon.obj.size(), 0);
+		Object obj;
+		do
+		{
+			index = get_random(dungeon.obj.size(), 0);
+			obj = dungeon.obj.at(index);
+			dungeon.obj.at(index).seen = true;
+		} while(obj.seen);
+
+		item.name = &obj.name;
+		item.description = &obj.description;
+		item.damage = obj.damage;
+		item.color = obj.color;//TODO
+		item.hit = obj.hit.roll();
+		item.dodge = obj.dodge.roll();
+		item.defence = obj.defence.roll();
+		item.weight = obj.weight.roll();
+		item.speed = obj.speed.roll();
+		item.attribute = obj.attribute.roll();
+		item.value = obj.value.roll();
+		item.artifact = obj.artifact;
+		item.rarity = obj.rarity;
+		item.type = &obj.type;
+		item.symbol = obj.symbol;
+
+		dungeon.map[item.row][item.col].space = item.symbol;
+
+        //dungeon.map[item.row][item.col].space = dungeon.obj.at(index).symbol;
 	}
 	else
 	{

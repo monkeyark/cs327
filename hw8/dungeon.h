@@ -70,39 +70,15 @@
 #define NPC_BIT30 0x40000000
 #define NPC_BIT31 0x80000000
 
-#define OBJ_WEAPON 0x00000001
-#define OBJ_OFFHAND 0x00000002
-#define OBJ_RANGED 0x00000004
-#define OBJ_ARMOR 0x00000008
-#define OBJ_HELMET 0x00000010
-#define OBJ_CLOAK 0x00000020
-#define OBJ_GLOAK 0x00000040
-#define OBJ_GLOVES 0x00000080
-#define OBJ_BOOTS 0x00000100
-#define OBJ_RING 0x00000200
-#define OBJ_AMULET 0x00000400
-#define OBJ_LIGHT 0x00000800
-#define OBJ_SCROLL 0x00001000
-#define OBJ_BOOK 0x00002000
-#define OBJ_FLASK 0x00004000
-#define OBJ_GOLD 0x00008000
-#define OBJ_AMMUNITION 0x00010000
-#define OBJ_FOOD 0x00020000
-#define OBJ_WAND 0x00040000
-#define OBJ_STACK 0x00080000
+#define COLORS_BLACK 0x00000001
+#define COLORS_RED 0x00000002
+#define COLORS_GREEN 0x00000004
+#define COLORS_YELLOW 0x00000008
+#define COLORS_BLUE 0x00000010
+#define COLORS_MAGENTA 0x00000020
+#define COLORS_CYAN 0x00000040
+#define COLORS_WHITE 0x00000080
 
-
-enum Colors
-{
-	BLACK,
-	RED,
-	GREEN,
-	YELLOW,
-	BLUE,
-	MAGENTA,
-	CYAN,
-	WHITE
-};
 
 class Terrain
 {
@@ -127,13 +103,12 @@ class Item
 	public:
 		int row;
 		int col;
-		int seen;
-
+		char symbol;
 		std::string *name;
 		std::string *description;
+		dice damage;
 		int color;
 		int hit;
-		dice damage;
 		int dodge;
 		int defence;
 		int weight;
@@ -179,7 +154,7 @@ class Monster
 	public:
 		std::string name;
 		std::string description;
-		std::vector<int> *color;
+		unsigned int color;
 		int color_int;
 		std::string color_string;
 		dice damage;
@@ -197,7 +172,7 @@ class Object
 	public:
 		std::string name;
 		std::string description;
-		std::vector<int> *color;
+		unsigned int color;
 		int color_int;
 		std::string color_string;
 		dice hit;
@@ -211,6 +186,7 @@ class Object
 		bool artifact;
 		int rarity;
 		std::string type;
+		char symbol;
 
 		int seen;
 };

@@ -105,7 +105,7 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symb)
     return 0;
 }
 
-int parse_color(ifstream &f, string *lookahead, vector<int> *color, int *color_int, string *color_string)
+int parse_color(ifstream &f, string *lookahead, int *color, string *color_string)
 {
     eat_blankspace(f);
 
@@ -122,9 +122,9 @@ int parse_color(ifstream &f, string *lookahead, vector<int> *color, int *color_i
     return 0;
 }
 
-int parse_monster_color(ifstream &f, string *lookahead, vector<int> *color, int *color_int, string *color_string)
+int parse_monster_color(ifstream &f, string *lookahead, int *color, string *color_string)
 {
-    return parse_color(f, lookahead, color, color_int, color_string);
+    return parse_color(f, lookahead, color, color_string);
 }
 
 int parse_desc(ifstream &f, string *lookahead, string *desc)
@@ -222,8 +222,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     string name, desc;
     char symb;
     int ability;
-    vector<int> *color = NULL;
-    int color_int;
+    int color;
     dice speed, dam, hp;
     int rarity;
 
@@ -261,13 +260,13 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         }
         else if (!(*lookahead).compare("COLOR"))
         {
-            if (parse_monster_color(f, lookahead, color, &color_int, &color_string))
+            if (parse_monster_color(f, lookahead, &color, &color_string))
             {
                 cout << "COLOR reading fail" << endl;
                 return 0;
             }
             //m->color = *color; //TODO
-            m->color_int = color_int;
+            m->color_int = color;
             m->color_string = color_string;
             continue;
         }
@@ -391,14 +390,104 @@ int parse_object_name(ifstream &f, string *lookahead, string *name)
     return parse_name(f, lookahead, name);
 }
 
-int parse_object_type(ifstream &f, string *lookahead, string *type)
+int parse_object_type(ifstream &f, string *lookahead, string *type, char *symbol)
 {
-    return parse_name(f, lookahead, type);
+    if (parse_name(f, lookahead, type))
+    {
+        return 1;
+    }
+    if (*type == "WEAPON")
+    {
+        *symbol = '|';
+    }
+    else if(*type == "OFFHAND")
+    {
+        *symbol = ')';
+    }
+    else if(*type == "RANGED")
+    {
+        *symbol = '}';
+    }
+    else if(*type == "ARMOR")
+    {
+        *symbol = '[';
+    }
+    else if(*type == "HELMET")
+    {
+        *symbol = ']';
+    }
+    else if(*type == "CLOAK")
+    {
+        *symbol = '(';
+    }
+    else if(*type == "GLOVES")
+    {
+        *symbol = '{';
+    }
+    else if(*type == "BOOTS")
+    {
+        *symbol = '\\';
+    }
+    else if(*type == "RING")
+    {
+        *symbol = '=';
+    }
+    else if(*type == "AMULET")
+    {
+        *symbol = '"';
+    }
+    else if(*type == "LIGHT")
+    {
+        *symbol = '_';
+    }
+    else if(*type == "SCROLL")
+    {
+        *symbol = '~';
+    }
+    else if(*type == "BOOK")
+    {
+        *symbol = '?';
+    }
+    else if(*type == "FLASK")
+    {
+        *symbol = '!';
+    }
+    else if(*type == "GOLD")
+    {
+        *symbol = '$';
+    }
+    else if(*type == "AMMUNITION")
+    {
+        *symbol = '/';
+    }
+    else if(*type == "FOOD")
+    {
+        *symbol = ',';
+    }
+    else if(*type == "WAND")
+    {
+        *symbol = '-';
+    }
+    else if(*type == "CONTAINER")
+    {
+        *symbol = '%';
+    }
+    else if(*type == "STACK")
+    {
+        *symbol = '&';
+    }
+    else
+    {
+        cout << "Fail to parse type to symbol" << endl;
+        return 1;
+    }
+ 
+    return 0;
 }
 
-int parse_object_color(ifstream &f, string *lookahead, vector<int> *color, int *color_int, string *color_string)
+int parse_object_color(ifstream &f, string *lookahead, int *color, string *color_string)
 {
-    return parse_color(f, lookahead, color, color_int, color_string);
+    return parse_color(f, lookahead, color, color_string);
 }
 
 int parse_object_weight(ifstream &f, string *lookahead, dice *weight)
@@ -478,7 +567,6 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
     //the later repeative field will overried the previous one
     string name;
     string description;
-    vector<int> *color = NULL;
     dice hit;
     dice damage;
     dice dodge;
@@ -489,8 +577,9 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
     dice value;
     bool artifact;
     int rarity;
+    char symbol;
 
-    int color_int;
+    int color;
     string type;
     string color_string;
 
@@ -516,20 +605,21 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
         }
         else if (!(*lookahead).compare("TYPE"))
         {
-            if (parse_object_type(f, lookahead, &type))
+            if (parse_object_type(f, lookahead, &type, &symbol))
             {
                 return 0;
             }
             object->type = type;
+            object->symbol = symbol;
         }
         else if (!(*lookahead).compare("COLOR"))
         {
-            if (parse_object_color(f, lookahead, color, &color_int, &color_string))
+            if (parse_object_color(f, lookahead, &color, &color_string))
             {
                 return 0;
             }
             //object->color = *color; //TODO
-            object->color_int = color_int;
+            object->color_int = color;
             object->color_string = color_string;
             continue;
         }

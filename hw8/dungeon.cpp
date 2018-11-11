@@ -396,7 +396,6 @@ void new_PC()
 
 Item new_item_desc()
 {
-	cout << "new_item_desc " << dungeon.num_item << endl;
 	Item item;
 	int row = get_random(ROW, 0);
 	int col = get_random(COL, 0);
@@ -411,48 +410,9 @@ Item new_item_desc()
 	}
 	else
 	{
-		cout << "new_object_desc_recursive" << endl;
 		return new_item_desc();
 	}
-	cout << "new_object_desc_return" << endl;
 	return item;
-}
-
-void generate_dungeon_nummon()
-{
-	//initialize dungeon
-	init_dungeon();
-
-    //generate random number of rooms
-	dungeon.num_room = get_random(7, 5);
-   
-    dungeon.rooms = (Room *) malloc(dungeon.num_room * sizeof(Room));
-	dungeon.monster = (Character *) malloc(dungeon.num_mon * sizeof(Character));
-	int i;
-
-	//add rooms
-	for (i = 0; i < dungeon.num_room; i++)
-	{
-		dungeon.rooms[i] = new_room_random();
-	}
-
-	//add corridors
-	for (i = 0; i < dungeon.num_room - 1; i++)
-	{
-		new_corridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
-	}
-
-	//add stair
-	new_stair();
-
-	//add npc
-	for (i = 0; i < dungeon.num_mon; i++)
-	{
-		dungeon.monster[i] = new_NPC(i);
-	}
-	
-	//add pc
-	new_PC();
 }
 
 void generate_dungeon()
@@ -540,7 +500,7 @@ void generate_dungeon_desc()
 	
 	for (i = 0; i < dungeon.num_item; i++)
 	{
-		cout << i << " of " << dungeon.num_item<< " getting " << endl;
+		cout << i << " of " << dungeon.num_item << " getting " << endl;
 		dungeon.item[i] = new_item_desc();
 	}
 
@@ -678,24 +638,22 @@ void delete_dungeon()
 {
     free(dungeon.rooms);
 	free(dungeon.monster);
+	free(dungeon.item);
+	
+	//TODO memory leak 
+
 	/*
-	for (unsigned int i = 0; i < dungeon.mon->size(); i++)
-	{
-		delete &(dungeon.mon->at(i));
-	}
-	for (unsigned int i = 0; i < dungeon.it->size(); i++)
-	{
-		delete &(dungeon.it->at(i));
-	}
-	*/
 	for (unsigned int i = 0; i < dungeon.mon.size(); i++)
 	{
-		delete &(dungeon.mon.at(i));
+		Monster m = dungeon.mon.at(i);
+		delete &m;
 	}
 	for (unsigned int i = 0; i < dungeon.obj.size(); i++)
 	{
-		delete &(dungeon.obj.at(i));
+		Object object = dungeon.obj.at(i);
+		delete &object;
 	}
+	*/
 	
 }
 

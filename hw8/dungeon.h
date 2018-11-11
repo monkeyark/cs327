@@ -117,6 +117,14 @@ public:
   int height;
 };
 
+class Item
+{
+public:
+  int row;
+  int col;
+  int seen;
+};
+
 class Character
 {
 public:
@@ -130,59 +138,8 @@ public:
   int dead;
   int dist[ROW * COL];
   int vision[ROW][COL];
-};
 
-class Monster : public Character
-{
-public:
-  string name;
-  string description;
-  char symbol;
-  //vector<int> color;
-  vector<int> *color;
-  int color_int;
-  int ability;
-  int rrty;
-
-  dice damage;
-  dice hitpoints;
-  dice speed_dice;
-
-  string ability_string;
-  string color_string;
-};
-
-class Item
-{
-  public:
-  int row;
-  int col;
-  int seen;
-};
-
-class Object : public Item
-{
-public:
-  string name;
-  string description;
-  //vector<int> color;
-  vector<int> *color;
-  int color_int;
-  dice hit;
-  dice damage;
-  dice dodge;
-  dice defence;
-  dice weight;
-  dice speed;
-  dice attribute;
-  dice value;
-  bool artifact;
-  int rarity;
-
-  string type;
-  char symbol;
-
-  string color_string;
+  Item *item;
 };
 
 /*
@@ -208,6 +165,49 @@ class NPC : public Character
         int vision[ROW][COL];
 };
 */
+
+class Monster : public Character
+{
+public:
+  string name;
+  string description;
+  char symbol;
+  vector<int> *color;
+  int color_int;
+  int ability;
+  int rrty;
+
+  dice damage;
+  dice hitpoints;
+  dice speed_dice;
+
+  string ability_string;
+  string color_string;
+};
+
+class Object : public Item
+{
+public:
+  string name;
+  string description;
+  vector<int> *color;
+  int color_int;
+  dice hit;
+  dice damage;
+  dice dodge;
+  dice defence;
+  dice weight;
+  dice speed;
+  dice attribute;
+  dice value;
+  bool artifact;
+  int rarity;
+
+  string type;
+  char symbol;
+
+  string color_string;
+};
 
 class Dungeon
 {

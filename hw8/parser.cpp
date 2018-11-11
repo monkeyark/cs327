@@ -222,7 +222,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     string name, desc;
     char symb;
     int ability;
-    vector<int> *color = nullptr;
+    vector<int> *color = NULL;
     int color_int;
     dice speed, dam, hp;
     int rarity;
@@ -478,7 +478,7 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
     //the later repeative field will overried the previous one
     string name;
     string description;
-    vector<int> *color = nullptr;
+    vector<int> *color = NULL;
     dice hit;
     dice damage;
     dice dodge;

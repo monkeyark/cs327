@@ -400,7 +400,7 @@ Item new_item_desc()
 	Item item;
 	int row = get_random(ROW, 0);
 	int col = get_random(COL, 0);
-	//add item into map
+	//add object into map
 	if (dungeon.map[row][col].space == ROOM ||
 		dungeon.map[row][col].space == CORRIDOR)
 	{
@@ -411,10 +411,10 @@ Item new_item_desc()
 	}
 	else
 	{
-		cout << "new_item_desc_recursive" << endl;
+		cout << "new_object_desc_recursive" << endl;
 		return new_item_desc();
 	}
-	cout << "new_item_desc_return" << endl;
+	cout << "new_object_desc_return" << endl;
 	return item;
 }
 
@@ -536,7 +536,7 @@ void generate_dungeon_desc()
 	{
 		dungeon.monster[i] = new_NPC_desc(i);
 	}
-	//add item
+	//add object
 	
 	for (i = 0; i < dungeon.num_item; i++)
 	{
@@ -692,9 +692,9 @@ void delete_dungeon()
 	{
 		delete &(dungeon.mon.at(i));
 	}
-	for (unsigned int i = 0; i < dungeon.it.size(); i++)
+	for (unsigned int i = 0; i < dungeon.obj.size(); i++)
 	{
-		delete &(dungeon.it.at(i));
+		delete &(dungeon.obj.at(i));
 	}
 	
 }

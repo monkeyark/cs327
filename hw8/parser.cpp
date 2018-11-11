@@ -288,7 +288,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "SPEED reading fail" << endl;
                 return 0;
             }
-            m->speed_dice = speed;
+            m->speed = speed;
             continue;
         }
         else if (!(*lookahead).compare("DAM"))
@@ -328,7 +328,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "RRTY reading fail" << endl;
                 return 0;
             }
-            m->rrty = rarity;
+            m->rarity = rarity;
 
             continue;
         }
@@ -688,12 +688,13 @@ void print_monster_desc()
         cout << m.name << endl;
         cout << m.description << endl;
         cout << m.color_string << endl;
-        cout << m.speed_dice.print_string() << endl;
+        cout << m.speed.print_string() << endl;
         cout << m.ability_string << endl;
         cout << m.hitpoints.print_string() << endl;
         cout << m.damage.print_string() << endl;
         cout << m.symbol << endl;
-        cout << m.rrty << endl;
+        cout << m.rarity << endl;
+        cout << endl;
     }
 }
 
@@ -705,20 +706,41 @@ void print_monster_desc_with_type()
         cout << "NAME: " << m.name << endl;
         cout << "DESCRIPTION: " << m.description << endl;
         cout << "COLOR: " << m.color_string << endl;
-        cout << "SPEED: " << m.speed_dice.print_string() << endl;
+        cout << "SPEED: " << m.speed.print_string() << endl;
         cout << "ABILITY: " << m.ability_string << endl;
         cout << "HITPOINTS: " << m.hitpoints.print_string() << endl;
         cout << "DAMAGE: " << m.damage.print_string() << endl;
         cout << "SYMBOL: " << m.symbol << endl;
-        cout << "RRTY: " << m.rrty << endl;
+        cout << "RRTY: " << m.rarity << endl;
         cout << endl;
     }
 }
 
-void print_object_desc();
+void print_object_desc()
+{
+    for (unsigned int i = 0; i < dungeon.obj.size(); i++)
+    {
+        Object object = dungeon.obj.at(i);
+        cout << object.name << endl;
+        cout << object.description << endl;
+        cout << object.type << endl;
+        cout << object.color_string << endl;
+        cout << object.weight.print_string() << endl;
+        cout << object.hit.print_string() << endl;
+        cout << object.damage.print_string() << endl;
+        cout << object.attribute.print_string() << endl;
+        cout << object.value.print_string() << endl;
+        cout << object.dodge.print_string() << endl;
+        cout << object.defence.print_string() << endl;
+        cout << object.speed.print_string() << endl;
+        cout << uppercase << boolalpha << object.artifact << endl;
+        cout << object.rarity << endl;
+        cout << endl;
+    }
+}
+
 void print_object_desc_with_type()
 {
-    cout << dungeon.obj.size() << endl;
     for (unsigned int i = 0; i < dungeon.obj.size(); i++)
     {
         Object object = dungeon.obj.at(i);

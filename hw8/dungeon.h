@@ -24,33 +24,18 @@
 #define PC_H 0
 #define PC_VISION_RADIUS 2
 
-#define MIN(a, b) \
-	({                          \
-	 __typeof__ (a) _a = (a);\
-	 __typeof__ (b) _b = (b);\
-	 _a < _b ? _a : _b; })
-
-#define MAX(a, b) \
-	({                          \
-	 __typeof__ (a) _a = (a);\
-	 __typeof__ (b) _b = (b);\
-	 _a > _b ? _a : _b; })
-
-/*
-#define MIN(x,y)			\
+#define MIN(a, b)			\
 ({							\
-typeof(x) _x = (x);     \
-typeof(y) _y = (y);     \
-(void) (&_x == &_y);    \
-_x < _y ? _x : _y;})
+	__typeof__ (a) _a = (a);\
+	__typeof__ (b) _b = (b);\
+	_a < _b ? _a : _b; })
 
-#define MAX(x,y)			\
+#define MAX(a, b)			\
 ({							\
-typeof(x) _x = (x);     \
-typeof(y) _y = (y);     \
-(void) (&_x == &_y);    \
-_x > _y ? _x : _y;})
-*/
+	__typeof__ (a) _a = (a);\
+	__typeof__ (b) _b = (b);\
+	_a > _b ? _a : _b; })
+
 
 #define NPC_SMART 0x00000001
 #define NPC_TELEPATH 0x00000002
@@ -84,6 +69,27 @@ _x > _y ? _x : _y;})
 #define NPC_BIT29 0x20000000
 #define NPC_BIT30 0x40000000
 #define NPC_BIT31 0x80000000
+
+#define OBJ_WEAPON 0x00000001
+#define OBJ_OFFHAND 0x00000002
+#define OBJ_RANGED 0x00000004
+#define OBJ_ARMOR 0x00000008
+#define OBJ_HELMET 0x00000010
+#define OBJ_CLOAK 0x00000020
+#define OBJ_GLOAK 0x00000040
+#define OBJ_GLOVES 0x00000080
+#define OBJ_BOOTS 0x00000100
+#define OBJ_RING 0x00000200
+#define OBJ_AMULET 0x00000400
+#define OBJ_LIGHT 0x00000800
+#define OBJ_SCROLL 0x00001000
+#define OBJ_BOOK 0x00002000
+#define OBJ_FLASK 0x00004000
+#define OBJ_GOLD 0x00008000
+#define OBJ_AMMUNITION 0x00010000
+#define OBJ_FOOD 0x00020000
+#define OBJ_WAND 0x00040000
+#define OBJ_STACK 0x00080000
 
 using namespace std;
 
@@ -128,70 +134,59 @@ class Item
 class Character
 {
 	public:
-		unsigned int characteristics;
 		int row;
 		int col;
 		int birth;
 		int speed;
-		int pc_row;
-		int pc_col;
 		int dead;
-		int dist[ROW * COL];
+
 		int vision[ROW][COL];
 
 		Item *item;
 };
 
-/*
-   class NPC : public Character
-   {
-   public:
-   string name;
-   string description;
-   char symbol;
-   uint32_t color;
-   uint32_t abilities;
-   dice damage;
-   uint32_t hitpoints;
-   unsigned int characteristics;
-   int row;
-   int col;
-   int birth;
-   int32_t speed;
-   int pc_row;
-   int pc_col;
-   int dead;
-   int dist[ROW * COL];
-   int vision[ROW][COL];
-   };
-   */
-
-class Monster : public Character
+class NPC : public Character
 {
 	public:
-		string name;
-		string description;
-		char symbol;
-		vector<int> *color;
-		int color_int;
-		int ability;
-		int rrty;
-
-		dice damage;
-		dice hitpoints;
-		dice speed_dice;
-
-		string ability_string;
-		string color_string;
+		unsigned int characteristics;
+		int pc_row;
+		int pc_col;
+		int dist[ROW * COL];
 };
 
-class Object : public Item
+class PC : public Character
+{
+	public:
+		int vision[ROW][COL];
+		Item *item;
+};
+
+class Monster
 {
 	public:
 		string name;
 		string description;
 		vector<int> *color;
 		int color_int;
+		string color_string;
+		dice damage;
+		dice hitpoints;
+		dice speed;
+		unsigned int ability;
+		string ability_string;
+		int rarity;
+
+		char symbol;
+};
+
+class Object
+{
+	public:
+		string name;
+		string description;
+		vector<int> *color;
+		int color_int;
+		string color_string;
 		dice hit;
 		dice damage;
 		dice dodge;
@@ -202,11 +197,9 @@ class Object : public Item
 		dice value;
 		bool artifact;
 		int rarity;
-
 		string type;
-		char symbol;
 
-		string color_string;
+		int seen;
 };
 
 class Dungeon
@@ -218,9 +211,9 @@ class Dungeon
 		int num_room;
 		int version;
 		Room *rooms;
-		Character *monster;
+		NPC *monster;
 		Item *item;
-		Character pc;
+		PC pc;
 		int teleport_row;
 		int teleport_col;
 		Terrain map[ROW][COL];
@@ -247,8 +240,8 @@ void move_dungeon();
 int get_random(int modulus, int min);
 int is_visible_terrain(int i, int j);
 int is_room_corridor_stair(int row, int col);
-void remember_map_PC();
 int is_monster(int row, int col);
 int is_inside(int row, int col);
+void remember_map_PC();
 
 #endif

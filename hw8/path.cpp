@@ -56,7 +56,7 @@ void print_dijkstra_path(int dist[ROW * COL])
 	putchar('\n');
 }
 
-void dijkstra_tunneling(Character *npc)
+void dijkstra_tunneling(NPC *npc)
 {
 	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
@@ -104,7 +104,7 @@ void dijkstra_tunneling(Character *npc)
 	}
 }
 
-void dijkstra_nontunneling(Character *npc)
+void dijkstra_nontunneling(NPC *npc)
 {
 	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};

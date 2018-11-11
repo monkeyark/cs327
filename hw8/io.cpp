@@ -79,7 +79,7 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 	for (i = 0, j = start; i < ROW && j < dungeon.num_mon - start; i++, j++)
 	{
 
-		Character npc = dungeon.monster[j];
+		NPC npc = dungeon.monster[j];
 		int row_dis = npc.row - dungeon.pc.row;
 		int col_dis = npc.col - dungeon.pc.col;
 		const char *row_pos, *col_pos;

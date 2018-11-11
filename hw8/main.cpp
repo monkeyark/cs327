@@ -10,7 +10,6 @@
 #include "io.h"
 #include "parser.h"
 
-using namespace std;
 
 Dungeon dungeon;
 
@@ -27,15 +26,13 @@ int main(int argc, char *argv[])
     strcpy(path_monster, path);
 	strcpy(path_object, path);
     strcat(path_dungeon, "/dungeon");
-    //strcat(path_monster, "/monster_desc.txt");
-	//strcat(path_monster, "/object_desc.txt");
-    strcat(path_monster, "/monster_desc_copy.txt");
-	strcat(path_object, "/object_desc_copy.txt");
+    strcat(path_monster, "/monster_desc.txt");
+	strcat(path_object, "/object_desc.txt");
+
 
     dungeon.num_mon = 0;
 	//set up random seed
 	dungeon.seed = time(NULL);
-    
     //dungeon.seed = 1540445615;
 	srand(dungeon.seed);
 
@@ -46,8 +43,10 @@ int main(int argc, char *argv[])
 	{
 		for (int i = 1; i < argc; i++)
 		{
-			if (strcmp(argv[i], "--save") != 0 && strcmp(argv[i], "--load") != 0 &&
-                strcmp(argv[i], "--nummon") != 0 && !atoi(argv[i]))
+			if (strcmp(argv[i], "--save") != 0 &&
+				strcmp(argv[i], "--load") != 0 &&
+                strcmp(argv[i], "--nummon") != 0 &&
+				!atoi(argv[i]))
 			{
 				fprintf(stderr, "Bad argument\n");
 				return -1;
@@ -67,12 +66,12 @@ int main(int argc, char *argv[])
 		}
 	}
 
+/*
 	load_monster_desc(path_monster);
-    //print_monster_desc();
-    //print_monster_desc_with_type();
-	
 	load_object_desc(path_object);
-	//print_object_desc_with_type();
+    print_monster_desc();
+	print_object_desc();
+*/
 
 	if (load)
 	{
@@ -92,7 +91,7 @@ int main(int argc, char *argv[])
 	}
 
 
-	move_dungeon();
+	//move_dungeon();
     //print_dungeon();
     delete_dungeon();
 

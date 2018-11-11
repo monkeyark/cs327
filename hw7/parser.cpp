@@ -656,7 +656,7 @@ void load_object_desc(char *path)
             cout << "discard object" << endl;
             return;
         }
-        dungeon.it.push_back(*object);
+        dungeon.obj.push_back(*object);
     }
 }
 
@@ -698,9 +698,9 @@ void print_monster_desc_with_type()
 void print_object_desc();
 void print_object_desc_with_type()
 {
-    for (unsigned int i = 0; i < dungeon.it.size(); i++)
+    for (unsigned int i = 0; i < dungeon.obj.size(); i++)
     {
-        Object object = dungeon.it.at(i);
+        Object object = dungeon.obj.at(i);
         cout << "NAME: " << object.name << endl;
         cout << "DESCRIPTION: " << object.description << endl;
         cout << "TYPE: " << object.type << endl;

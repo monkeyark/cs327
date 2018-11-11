@@ -230,7 +230,7 @@ class Dungeon
     Queue pq_nontunel;
 
     vector<Monster> mon;
-    vector<Object> it;
+    vector<Object> obj;
 };
 
 extern Dungeon dungeon;

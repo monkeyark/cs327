@@ -52,6 +52,62 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 	//clean previous message
 	for (i = 0, j = 0; j < TERMINAL_COL; j++)
 	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(game, COLOR_PAIR(COLOR_CYAN));
+		//attron(COLOR_PAIR(COLOR_RED));
+		mvwprintw(game, i, j, " ");
+		wattroff(game, COLOR_PAIR(COLOR_CYAN));
+		//attroff(COLOR_PAIR(COLOR_RED));
+	}
+
+	//print current message
+	const char *m = message;
+	for (i = 0, j = 0; *m; m++, j++)
+	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		//attron(COLOR_PAIR(COLOR_RED));
+		wattron(game, COLOR_PAIR(COLOR_CYAN));
+		mvwprintw(game, i, j, m);
+		//attroff(COLOR_PAIR(COLOR_RED));
+		wattroff(game, COLOR_PAIR(COLOR_CYAN));
+	}
+
+	//print dungeon
+	for (i = 1; i < ROW + 1; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			int color;
+			if (!(is_item(dungeon.pc.row, dungeon.pc.col) < 0))
+			{
+				color = dungeon.item[is_item((i-1), j)].color;
+			}
+			else if (!(is_monster(dungeon.pc.row, dungeon.pc.col) < 0))
+			{
+				color = dungeon.monster[is_monster((i-1), j)].color;
+			}
+			else
+			{
+				color = COLOR_WHITE;
+			}
+
+			init_pair(color, color, COLOR_BLACK);
+			wattron(game, COLOR_PAIR(color));
+			//attron(COLOR_PAIR(COLOR_RED));
+            mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].space);
+			wattroff(game, COLOR_PAIR(color));
+			//attroff(COLOR_PAIR(COLOR_RED));
+			refresh();
+		}
+	}
+}
+
+void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
+{
+	int i, j;
+	//clean previous message
+	for (i = 0, j = 0; j < TERMINAL_COL; j++)
+	{
 		mvwprintw(game, i, j, " ");
 	}
 
@@ -67,7 +123,51 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
+			/*
+			int color;
+			if (!(is_item(dungeon.pc.row, dungeon.pc.col) < 0))
+			{
+				color = dungeon.item[is_item((i-1), j)].color;
+			}
+			else if (!(is_monster(dungeon.pc.row, dungeon.pc.col) < 0))
+			{
+				color = dungeon.monster[is_monster((i-1), j)].color;
+			}
+			else
+			{
+				color = COLOR_WHITE;
+			}
+
+			init_pair(color, color, COLOR_BLACK);
+			wattron(game, COLOR_PAIR(color));
+			//attron(COLOR_PAIR(COLOR_RED));
             mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].space);
+			wattroff(game, COLOR_PAIR(color));
+			//attroff(COLOR_PAIR(COLOR_RED));
+			refresh();
+			*/
+
+            if ((i-1) == dungeon.teleport_row && j == dungeon.teleport_col)
+            {
+                mvwprintw(game, i, j, "*");
+            }
+			else if ((i-1) == dungeon.pc.row && j == dungeon.pc.col)
+			{
+				mvwprintw(game, i, j, "@");
+			}
+			else if (!(is_monster((i-1), j) < 0))
+			{
+				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i-1), j)].symbol);
+			}
+			else if (!(is_item((i-1), j) < 0))
+			{
+				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i-1), j)].symbol);
+			}
+			else
+			{
+				mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].terrain);
+			}
+
 		}
 	}
 }
@@ -96,6 +196,7 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 		{
 			row_pos = "     ";
 		}
+
 		if (col_dis > 0)
 		{
 			col_pos = " East";
@@ -118,51 +219,6 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 		}
 	}
 
-}
-
-void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
-{
-	int i, j;
-	//clean previous message
-	for (i = 0, j = 0; j < TERMINAL_COL; j++)
-	{
-		mvwprintw(game, i, j, " ");
-	}
-
-	//print current message
-	const char *m = message;
-	for (i = 0, j = 0; *m; m++, j++)
-	{
-		mvwprintw(game, i, j, m);
-	}
-
-	//print dungeon
-	for (i = 1; i < ROW + 1; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-            if ((i-1) == dungeon.teleport_row && j == dungeon.teleport_col)
-            {
-                mvwprintw(game, i, j, "*");
-            }
-			else if ((i-1) == dungeon.pc.row && j == dungeon.pc.col)
-			{
-				mvwprintw(game, i, j, "@");
-			}
-			else if (!(is_monster((i-1), j) < 0))
-			{
-				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i-1), j)].symbol);
-			}
-			else if (!(is_item((i-1), j) < 0))
-			{
-				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i-1), j)].symbol);
-			}
-			else
-			{
-				mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].terrain);
-			}
-		}
-	}
 }
 
 const char *move_tp_pointer(int row_move, int col_move)
@@ -372,6 +428,7 @@ void monster_list()
 void dungeon_ncurses()
 {
 	initscr();
+	start_color();
 	noecho();
 	cbreak();
 	WINDOW *game = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
@@ -379,6 +436,7 @@ void dungeon_ncurses()
 	keypad(game, true);
 	bool run = true;
     bool fog = true;
+
 
 
     char random_seed[10];

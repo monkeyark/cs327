@@ -204,7 +204,16 @@ const char *move_pc(int row_move, int col_move)
 	else if (is_inside(dungeon.pc.row + row_move, dungeon.pc.col + col_move) &&
 		    is_room_corridor_stair(dungeon.pc.row + row_move, dungeon.pc.col + col_move))
 	{
-        dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
+		
+		if (!(is_item(dungeon.pc.row, dungeon.pc.col) < 0))
+		{
+			dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.item[is_item(dungeon.pc.row, dungeon.pc.col)].symbol;
+		}
+		else
+		{
+			dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
+		}
+		
 		dungeon.pc.row += row_move;
 		dungeon.pc.col += col_move;
         dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;

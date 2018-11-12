@@ -43,7 +43,7 @@ int is_monster(int row, int col)
 
 int is_item(int row, int col)
 {
-	for (int i = 0; i < dungeon.num_mon; i++)
+	for (int i = 0; i < dungeon.num_item; i++)
 	{
 		if (row == dungeon.item[i].row &&
 			col == dungeon.item[i].col)
@@ -460,10 +460,9 @@ NPC new_NPC_desc(int birth)
 
 		//creating NPC with all four ability having 1/2 probability, clean unused bits
 		npc.ability = mons.ability;
-		std::cout << "npc.ability   ---------    " << npc.ability << std::endl;
-		std::cout << "mons.ability  ---------    " << mons.ability << std::endl;
 		npc.damage = mons.damage;
 		npc.symbol = mons.symbol;
+		npc.color = mons.color;
 		npc.speed = mons.speed.roll();
 
 		if (npc.ability & NPC_TELEPATH) //monster is telepath
@@ -524,7 +523,7 @@ Item new_item_desc()
 		item.on_floor = false;
 		item.inventory = false;
 		item.equip = false;
-		
+
 		item.name = &obj.name;
 		item.description = &obj.description;
 		item.damage = obj.damage;

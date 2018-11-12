@@ -107,7 +107,7 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symbol)
 
 int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string)
 {
-    // *color = //TODO
+    *color = get_random(6, 1);//TODO
     eat_blankspace(f);
 
     if (f.peek() == '\n')
@@ -220,7 +220,6 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     //this parser can only read description with no repeative field
     //the later repeative field will overried the previous one
     string ability_string, color_string;
-    //unsigned int color; //TODO
 
     string name, desc;
     char symbol;
@@ -268,8 +267,8 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "COLOR reading fail" << endl;
                 return 0;
             }
-            //m->color = *color; //TODO
-            m->color_int = color;
+            m->color = color; //TODO
+            //m->color_int = color;//TODO
             m->color_string = color_string;
             continue;
         }
@@ -621,8 +620,8 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
             {
                 return 0;
             }
-            //object->color = *color; //TODO
-            object->color_int = color;
+            object->color = color; //TODO
+            //object->color_int = color;
             object->color_string = color_string;
             continue;
         }

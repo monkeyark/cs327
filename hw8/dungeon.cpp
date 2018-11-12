@@ -394,15 +394,15 @@ void generate_dungeon()
 
 	//add stair
 	new_stair();
+	
+	//add pc
+	new_PC();
 
 	//add npc
 	for (i = 0; i < dungeon.num_mon; i++)
 	{
 		dungeon.monster[i] = new_NPC(i);
 	}
-	
-	//add pc
-	new_PC();
 }
 
 void new_PC_desc()
@@ -428,22 +428,38 @@ NPC new_NPC_desc(int birth)
 	if (dungeon.map[row][col].space == ROOM ||
 		dungeon.map[row][col].space == CORRIDOR)
 	{
+		int index;
+		bool is_unique;
+		Monster mons;
+		do
+		{
+			index = get_random(dungeon.mon.size(), 0);
+			mons = dungeon.mon.at(index);
+			dungeon.mon.at(index).seen = true;
+			is_unique = NPC_UNIQ & mons.ability;
+		}
+		while (is_unique && mons.seen);
+
 		npc.row = row;
 		npc.col = col;
 		npc.birth = birth;
-		//creating NPC with all four ability having 1/2 probability, clean unused bits
-		npc.ability = rand() & 0xf;
-		npc.speed = get_random(20, 5);
 		npc.dead = 0;
+
+		//creating NPC with all four ability having 1/2 probability, clean unused bits
+		npc.ability = mons.ability;
+		std::cout << "npc.ability   ---------    " << npc.ability << std::endl;
+		std::cout << "mons.ability  ---------    " << mons.ability << std::endl;
+		npc.damage = mons.damage;
+		npc.symbol = mons.symbol;
+		npc.speed = mons.speed.roll();
+
 		if (npc.ability & NPC_TELEPATH) //monster is telepath
 		{
 			npc.pc_row = dungeon.pc.row;
 			npc.pc_col = dungeon.pc.col;
 		}
 
-        sprintf(&npc.symbol, "%x", npc.ability);
 		dungeon.map[npc.row][npc.col].space = npc.symbol;
-		dungeon.map[npc.row][npc.col].hardness = 0;
 	}
 	else
 	{
@@ -453,28 +469,45 @@ NPC new_NPC_desc(int birth)
 	return npc;
 }
 
+bool is_inventory(Item item)
+{
+	/*
+	for (int i = 0; i < sizeof(dungeon.item)/sizeof(item); i++)
+	{
+		if (dungeon.item[i].inventory)
+		{
+			return true;
+		}
+	}
+	*/
+	return false;
+}
+
 Item new_item_desc()
 {
 	Item item;
 	int row = get_random(ROW, 0);
 	int col = get_random(COL, 0);
 	//add object into map
+
+	//TODO
 	if (dungeon.map[row][col].space == ROOM ||
 		dungeon.map[row][col].space == CORRIDOR)
 	{
-		item.row = row;
-		item.col = col;
-		
 		//get random index of object from description
-		int index = get_random(dungeon.obj.size(), 0);
+		//bool inventory = false;//TODO generated artifact
+		int index;
 		Object obj;
 		do
 		{
 			index = get_random(dungeon.obj.size(), 0);
 			obj = dungeon.obj.at(index);
 			dungeon.obj.at(index).seen = true;
-		} while(obj.seen);
+		}
+		while(obj.seen && obj.artifact);
 
+		item.row = row;
+		item.col = col;
 		item.name = &obj.name;
 		item.description = &obj.description;
 		item.damage = obj.damage;
@@ -490,10 +523,10 @@ Item new_item_desc()
 		item.rarity = obj.rarity;
 		item.type = &obj.type;
 		item.symbol = obj.symbol;
+		item.inventory = false;
+		item.equip = false;
 
 		dungeon.map[item.row][item.col].space = item.symbol;
-
-        //dungeon.map[item.row][item.col].space = dungeon.obj.at(index).symbol;
 	}
 	else
 	{
@@ -547,6 +580,9 @@ void generate_dungeon_desc()
 	//add stair
 	new_stair();
 
+	//add pc
+	new_PC_desc();
+
 	//add npc
 	for (i = 0; i < dungeon.num_mon; i++)
 	{
@@ -558,9 +594,6 @@ void generate_dungeon_desc()
 	{
 		dungeon.item[i] = new_item_desc();
 	}
-
-	//add pc
-	new_PC_desc();
 }
 
 void load_dungeon(FILE *f)

@@ -118,6 +118,9 @@ class Item
 		bool artifact;
 		int rarity;
 		std::string *type;
+
+		bool inventory;
+		bool equip;
 };
 
 class Character
@@ -163,8 +166,8 @@ class Monster
 		unsigned int ability;
 		std::string ability_string;
 		int rarity;
-
 		char symbol;
+		bool seen;
 };
 
 class Object
@@ -187,8 +190,7 @@ class Object
 		int rarity;
 		std::string type;
 		char symbol;
-
-		int seen;
+		bool seen;
 };
 
 class Dungeon

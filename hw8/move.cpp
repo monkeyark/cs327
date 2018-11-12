@@ -71,7 +71,9 @@ void npc_next_pos_05(NPC *npc, int index)
     dungeon.map[npc->row][npc->col].space = dungeon.map[npc->row][npc->col].terrain;
 	npc->row = next_row;
 	npc->col = next_col;
-    sprintf(&dungeon.map[npc->row][npc->col].space, "%x", npc->ability);
+	dungeon.map[npc->row][npc->col].space = npc->symbol;
+    //sprintf(&dungeon.map[npc->row][npc->col].space, "%x", npc->ability);
+	//std::cout << "npc->ability  ---------    " << npc->ability << std::endl;
 	dungeon.map[npc->row][npc->col].hardness = 0;
 
 	//check is npc in next terrain will be dead

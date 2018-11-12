@@ -83,7 +83,7 @@ int parse_monster_name(ifstream &f, string *lookahead, string *name)
     return parse_name(f, lookahead, name);
 }
 
-int parse_monster_symb(ifstream &f, string *lookahead, char *symb)
+int parse_monster_symb(ifstream &f, string *lookahead, char *symbol)
 {
     eat_blankspace(f);
 
@@ -92,7 +92,7 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symb)
         return 1;
     }
 
-    *symb = f.get();
+    *symbol = f.get();
 
     eat_blankspace(f);
     if (f.peek() != '\n')
@@ -223,7 +223,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     //unsigned int color; //TODO
 
     string name, desc;
-    char symb;
+    char symbol;
     unsigned int color, ability;//TODO
 
     dice speed, dam, hp;
@@ -253,12 +253,12 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         }
         else if (!(*lookahead).compare("SYMB"))
         {
-            if (parse_monster_symb(f, lookahead, &symb))
+            if (parse_monster_symb(f, lookahead, &symbol))
             {
                 cout << "SYMB reading fail" << endl;
                 return 0;
             }
-            m->symbol = symb;
+            m->symbol = symbol;
             continue;
         }
         else if (!(*lookahead).compare("COLOR"))

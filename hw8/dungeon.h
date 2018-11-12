@@ -119,6 +119,7 @@ class Item
 		int rarity;
 		std::string *type;
 
+		bool on_floor;
 		bool inventory;
 		bool equip;
 };
@@ -231,8 +232,9 @@ void move_dungeon();
 int get_random(int modulus, int min);
 int is_visible_terrain(int i, int j);
 int is_room_corridor_stair(int row, int col);
-int is_monster(int row, int col);
 int is_inside(int row, int col);
+int is_monster(int row, int col);
+int is_item(int row, int col);
 void remember_map_PC();
 
 #endif

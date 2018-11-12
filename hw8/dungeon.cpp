@@ -41,6 +41,19 @@ int is_monster(int row, int col)
 	return -1;
 }
 
+int is_item(int row, int col)
+{
+	for (int i = 0; i < dungeon.num_mon; i++)
+	{
+		if (row == dungeon.item[i].row &&
+			col == dungeon.item[i].col)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 void print_dungeon()
 {
 	printf("   ");
@@ -508,6 +521,10 @@ Item new_item_desc()
 
 		item.row = row;
 		item.col = col;
+		item.on_floor = false;
+		item.inventory = false;
+		item.equip = false;
+		
 		item.name = &obj.name;
 		item.description = &obj.description;
 		item.damage = obj.damage;
@@ -523,8 +540,6 @@ Item new_item_desc()
 		item.rarity = obj.rarity;
 		item.type = &obj.type;
 		item.symbol = obj.symbol;
-		item.inventory = false;
-		item.equip = false;
 
 		dungeon.map[item.row][item.col].space = item.symbol;
 	}

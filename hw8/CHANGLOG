@@ -19,3 +19,9 @@ Nov 9
 
 Nov 10
     add item in dungeon
+    add monster in dungeon
+    BUGFIX: monster was printed as 0, print monster symbol was based on monster ablity
+            using printf("%x", unsigned int), now changed to printf("%c", char)
+    BUGFIX: once pc walk on item, item symbol is gone after pc leave the terrain
+
+

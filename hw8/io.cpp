@@ -151,8 +151,11 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 			}
 			else if (!(is_monster((i-1), j) < 0))
 			{
-				//mvwprintw(game, i, j, "%x", dungeon.monster[is_monster((i-1), j)].ability);
 				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i-1), j)].symbol);
+			}
+			else if (!(is_item((i-1), j) < 0))
+			{
+				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i-1), j)].symbol);
 			}
 			else
 			{

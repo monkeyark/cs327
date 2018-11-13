@@ -42,6 +42,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
                     mvwprintw(game, i, j, " ");
                 }
             }
+			mvwprintw(game, i+TERMINAL_ROW, j, "%c", dungeon.map[i-1][j].space);//DEBUG
 		}
 	}
 }
@@ -77,7 +78,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
-			int color;
+			short color;
 			if (!(is_item(dungeon.pc.row, dungeon.pc.col) < 0))
 			{
 				color = dungeon.item[is_item((i-1), j)].color;
@@ -90,13 +91,14 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 			{
 				color = COLOR_WHITE;
 			}
-
+			//color = COLOR_RED;
 			init_pair(color, color, COLOR_BLACK);
 			wattron(game, COLOR_PAIR(color));
 			//attron(COLOR_PAIR(COLOR_RED));
             mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].space);
 			wattroff(game, COLOR_PAIR(color));
 			//attroff(COLOR_PAIR(COLOR_RED));
+			mvwprintw(game, i+TERMINAL_ROW, j, "%c", dungeon.map[i-1][j].space);
 			refresh();
 		}
 	}
@@ -150,22 +152,27 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
             if ((i-1) == dungeon.teleport_row && j == dungeon.teleport_col)
             {
                 mvwprintw(game, i, j, "*");
+				mvwprintw(game, i+TERMINAL_ROW, j, "*");//DEBUG
             }
 			else if ((i-1) == dungeon.pc.row && j == dungeon.pc.col)
 			{
 				mvwprintw(game, i, j, "@");
+				mvwprintw(game, i+TERMINAL_ROW, j, "@");//DEBUG
 			}
 			else if (!(is_monster((i-1), j) < 0))
 			{
 				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i-1), j)].symbol);
+				mvwprintw(game, i+TERMINAL_ROW, j, "%c", dungeon.monster[is_monster((i-1), j)].symbol);//DEBUG
 			}
 			else if (!(is_item((i-1), j) < 0))
 			{
 				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i-1), j)].symbol);
+				mvwprintw(game, i+TERMINAL_ROW, j, "%c", dungeon.item[is_item((i-1), j)].symbol);//DEBUG
 			}
 			else
 			{
 				mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].terrain);
+				mvwprintw(game, i+TERMINAL_ROW, j, "%c", dungeon.map[i-1][j].terrain);//DEBUG
 			}
 
 		}
@@ -275,7 +282,8 @@ const char *move_pc_teleport(int row_move, int col_move)
 
 void teleport()
 {
-    WINDOW *teleport = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+    WINDOW *teleport = newwin(TERMINAL_ROW*2, TERMINAL_COL, 0, 0);//BEBUG
+	//WINDOW *teleport = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 	keypad(teleport, true);
 	bool run = true;
     dungeon.teleport_row = dungeon.pc.row;
@@ -431,12 +439,12 @@ void dungeon_ncurses()
 	start_color();
 	noecho();
 	cbreak();
-	WINDOW *game = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	//WINDOW *game = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	WINDOW *game = newwin(TERMINAL_ROW*2, TERMINAL_COL, 0, 0); //DEBUG
 
 	keypad(game, true);
 	bool run = true;
     bool fog = true;
-
 
 
     char random_seed[10];

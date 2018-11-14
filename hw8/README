@@ -1,1 +1,10 @@
 update compiler to std=c++11
+
+The project I spent the longest time this semester.
+
+Data struct was change most 10 times, however, it still need improve in future
+if travel to different level of dungeon.
+
+NPC and item are now loaded from description on disk and and they are show
+in colors with in dungeon.
+

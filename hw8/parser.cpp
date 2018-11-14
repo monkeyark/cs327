@@ -107,7 +107,23 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symbol)
 
 int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string)
 {
+    /*
     *color = get_random(6, 1);//TODO
+    eat_blankspace(f);
+
+    if (f.peek() == '\n')
+    {
+        return 1;
+    }
+
+    getline(f, *lookahead);
+    *color_string = *lookahead;
+
+    f >> *lookahead;
+
+    return 0;
+    */
+
     eat_blankspace(f);
 
     if (f.peek() == '\n')
@@ -398,7 +414,7 @@ int parse_object_type(ifstream &f, string *lookahead, string *type, char *symbol
     {
         return 1;
     }
-    
+
     if (*type == "WEAPON")
     {
         *symbol = '|';

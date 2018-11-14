@@ -29,4 +29,7 @@ Nov 12
     print monster and item in color
     TODO some items are not added to dungeon.map[i][j].space
     print parsed item and npc with correct color
-    fix memory leak by valgrind
+    
+Nov 13
+    fix valgrind memory leak
+    fix valgrind - onditional jump or move depends on uninitialised value

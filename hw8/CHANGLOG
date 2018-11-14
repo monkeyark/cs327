@@ -25,3 +25,7 @@ Nov 10
     BUGFIX: once pc walk on item, item symbol is gone after pc leave the terrain
     fix dungoen printing issue
 
+Nov 12
+    print monster and item in color
+    TODO some items are not added to dungeon.map[i][j].space
+

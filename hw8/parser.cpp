@@ -398,6 +398,7 @@ int parse_object_type(ifstream &f, string *lookahead, string *type, char *symbol
     {
         return 1;
     }
+    
     if (*type == "WEAPON")
     {
         *symbol = '|';

@@ -107,7 +107,8 @@ class Item
 		std::string *name;
 		std::string *description;
 		dice damage;
-		int color;
+		unsigned int color;
+		int color_display;
 		int hit;
 		int dodge;
 		int defence;
@@ -144,7 +145,8 @@ class NPC : public Character
 		int pc_row;
 		int pc_col;
 		int dist[ROW * COL];
-		int color;
+		unsigned int color;
+		int color_display;
 };
 
 class PC : public Character
@@ -160,7 +162,7 @@ class Monster
 		std::string name;
 		std::string description;
 		unsigned int color;
-		int color_int;
+		int color_display;
 		std::string color_string;
 		dice damage;
 		dice hitpoints;
@@ -178,7 +180,7 @@ class Object
 		std::string name;
 		std::string description;
 		unsigned int color;
-		int color_int;
+		int color_display;
 		std::string color_string;
 		dice hit;
 		dice damage;
@@ -228,6 +230,7 @@ void print_dungeon();
 void load_dungeon(FILE *f);
 void save_dungeon(FILE *f);
 void delete_dungeon();
+void delete_dungeon_desc();
 void move_dungeon();
 
 int get_random(int modulus, int min);

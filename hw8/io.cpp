@@ -39,23 +39,23 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 				}
 				else if (!(is_monster((i - 1), j) < 0))
 				{
-					color = dungeon.monster[is_monster((i - 1), j)].color;
+					color = dungeon.monster[is_monster((i - 1), j)].color_display;
 					init_pair(color, color, COLOR_BLACK);
 					wattron(game, COLOR_PAIR(color));
 					mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol);
 					wattroff(game, COLOR_PAIR(color));
 
-					mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol); //DEBUG
+					mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[is_monster((i - 1), j)].color_display); //DEBUG
 				}
 				else if (!(is_item((i - 1), j) < 0))
 				{
-					color = dungeon.item[is_item((i - 1), j)].color;
+					color = dungeon.item[is_item((i - 1), j)].color_display;
 					init_pair(color, color, COLOR_BLACK);
 					wattron(game, COLOR_PAIR(color));
 					mvwprintw(game, i, j, "%c", dungeon.item[is_item((i - 1), j)].symbol);
 					wattroff(game, COLOR_PAIR(color));
 
-					mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.item[is_item((i - 1), j)].symbol); //DEBUG
+					mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[is_item((i - 1), j)].color_display); //DEBUG
 				}
 				else
 				{
@@ -112,23 +112,23 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 			}
 			else if (!(is_monster((i - 1), j) < 0))
 			{
-				color = dungeon.monster[is_monster((i - 1), j)].color;
+				color = dungeon.monster[is_monster((i - 1), j)].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
 				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol); //DEBUG
+				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[is_monster((i - 1), j)].color_display); //DEBUG
 			}
 			else if (!(is_item((i - 1), j) < 0))
 			{
-				color = dungeon.item[is_item((i - 1), j)].color;
+				color = dungeon.item[is_item((i - 1), j)].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
 				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i - 1), j)].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.item[is_item((i - 1), j)].symbol); //DEBUG
+				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[is_item((i - 1), j)].color_display); //DEBUG
 			}
 			else
 			{
@@ -176,23 +176,23 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 			}
 			else if (!(is_monster((i - 1), j) < 0))
 			{
-				color = dungeon.monster[is_monster((i - 1), j)].color;
+				color = dungeon.monster[is_monster((i - 1), j)].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
 				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol); //DEBUG
+				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[is_monster((i - 1), j)].color_display); //DEBUG
 			}
 			else if (!(is_item((i - 1), j) < 0))
 			{
-				color = dungeon.item[is_item((i - 1), j)].color;
+				color = dungeon.item[is_item((i - 1), j)].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
 				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i - 1), j)].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.item[is_item((i - 1), j)].symbol); //DEBUG
+				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[is_item((i - 1), j)].color_display); //DEBUG
 			}
 			else
 			{
@@ -523,8 +523,11 @@ void dungeon_ncurses()
 		case '<':
 			if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == STAIR_UP)
 			{
-				delete_dungeon();
-				generate_dungeon();
+				//delete_dungeon();
+				//generate_dungeon();
+
+				delete_dungeon_desc();
+				generate_dungeon_desc();
 				message = "You went up stair";
 			}
 			else
@@ -535,8 +538,11 @@ void dungeon_ncurses()
 		case '>':
 			if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == STAIR_DOWN)
 			{
-				delete_dungeon();
-				generate_dungeon();
+				//delete_dungeon();
+				//generate_dungeon();
+
+				delete_dungeon_desc();
+				generate_dungeon_desc();
 				message = "You went down stair";
 			}
 			else

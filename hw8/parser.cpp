@@ -7,6 +7,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include <curses.h>
+
 #include "parser.h"
 #include "dice.h"
 #include "limits.h"
@@ -106,25 +108,8 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symbol)
     return 0;
 }
 
-int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string)
+int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string, int *color_display)
 {
-    /*
-    *color = get_random(6, 1);//TODO
-    eat_blankspace(f);
-
-    if (f.peek() == '\n')
-    {
-        return 1;
-    }
-
-    getline(f, *lookahead);
-    *color_string = *lookahead;
-
-    f >> *lookahead;
-
-    return 0;
-    */
-
     eat_blankspace(f);
 
     if (f.peek() == '\n')
@@ -141,6 +126,48 @@ int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *col
     *color = 0;
 
     char *token = strtok(c_color_string, " ");
+
+//TODO >>>>>>>>>>>>>>>>>>>>>>
+//use the first read color as display color
+    if (strcmp(token, "RED") == 0)
+    {
+        *color_display = COLOR_RED;
+    }
+    else if (strcmp(token, "GREEN") == 0)
+    {
+        *color_display = COLOR_GREEN;
+    }
+    else if (strcmp(token, "YELLOW") == 0)
+    {
+        *color_display = COLOR_YELLOW;
+    }
+    else if (strcmp(token, "BLUE") == 0)
+    {
+        *color_display = COLOR_BLUE;
+    }
+    else if (strcmp(token, "MAGENTA") == 0)
+    {
+        *color_display = COLOR_MAGENTA;
+    }
+    else if (strcmp(token, "CYAN") == 0)
+    {
+        *color_display = COLOR_CYAN;
+    }
+    else if (strcmp(token, "WHITE") == 0)
+    {
+        *color_display = COLOR_WHITE;
+    }
+    else if (strcmp(token, "BLACK") == 0)
+    {
+        *color_display = COLOR_BLACK;
+    }
+    else
+    {
+        cout << "reading illegal color" << endl;
+        return 1;
+    }
+//TODO <<<<<<<<<<<<<<<<<<<<<
+
     while (token != 0)
     {
         if (strcmp(token, "RED") == 0)
@@ -188,9 +215,9 @@ int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *col
     return 0;
 }
 
-int parse_monster_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string)
+int parse_monster_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string, int *color_display)
 {
-    return parse_color(f, lookahead, color, color_string);
+    return parse_color(f, lookahead, color, color_string, color_display);
 }
 
 int parse_desc(ifstream &f, string *lookahead, string *desc)
@@ -266,7 +293,6 @@ int parse_monster_ability(ifstream &f, string *lookahead, unsigned int *ability,
     strcpy(c_ability_string, (*ability_string).c_str());
 
     *ability = 0;
-    cout << "(*ability_string).c_str() --------->" << (*ability_string).c_str() << endl;
 
     char *token = strtok(c_ability_string, " ");
     while (token != 0)
@@ -274,47 +300,38 @@ int parse_monster_ability(ifstream &f, string *lookahead, unsigned int *ability,
         if (strcmp(token, "SMART") == 0)
         {
             *ability |= NPC_SMART;
-            printf("ability %s %x\n", token, *ability);
         }
         else if (strcmp(token, "TELE") == 0)
         {
             *ability |= NPC_TELEPATH;
-            printf("ability %s %x\n", token, *ability);
         }
         else if (strcmp(token, "TUNNEL") == 0)
         {
             *ability |= NPC_TUNNEL;
-            printf("ability %s %x\n", token, *ability);
         }
         else if (strcmp(token, "ERRATIC") == 0)
         {
             *ability |= NPC_ERRATIC;
-            printf("ability %s %x\n", token, *ability);
         }
         else if (strcmp(token, "PASS") == 0)
         {
             *ability |= NPC_PASS_WALL;
-            printf("ability %s %x\n", token, *ability);
         }
         else if (strcmp(token, "DESTROY") == 0)
         {
             *ability |= NPC_DESTROY_OBJ;
-            printf("ability %s %x\n", token, *ability);
         }
         else if (strcmp(token, "PICKUP") == 0)
         {
             *ability |= NPC_PICKUP_OBJ;
-            printf("ability %s %x\n", token, *ability);
         }
         else if (strcmp(token, "UNIQ") == 0)
         {
             *ability |= NPC_UNIQ;
-            printf("ability %s %x\n", token, *ability);
         }
         else if (strcmp(token, "BOSS") == 0)
         {
             *ability |= NPC_BOSS;
-            printf("ability %s %x\n", token, *ability);
         }
         else
         {
@@ -357,6 +374,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     int rarity;
 
     int count;
+    int color_display;
     for (f >> *lookahead, count = 0; count < NUM_MONSTER_FIELDS; count++)
     {
         if (!(*lookahead).compare("BEGIN"))
@@ -390,14 +408,14 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         }
         else if (!(*lookahead).compare("COLOR"))
         {
-            if (parse_monster_color(f, lookahead, &color, &color_string))
+            if (parse_monster_color(f, lookahead, &color, &color_string, &color_display))
             {
                 cout << "COLOR reading fail" << endl;
                 return 0;
             }
-            m->color = color; //TODO
-            //m->color_int = color;//TODO
+            m->color = color;
             m->color_string = color_string;
+            m->color_display = color_display;
             continue;
         }
         else if (!(*lookahead).compare("DESC"))
@@ -615,9 +633,9 @@ int parse_object_type(ifstream &f, string *lookahead, string *type, char *symbol
     return 0;
 }
 
-int parse_object_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string)
+int parse_object_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string, int *color_display)
 {
-    return parse_color(f, lookahead, color, color_string);
+    return parse_color(f, lookahead, color, color_string, color_display);
 }
 
 int parse_object_weight(ifstream &f, string *lookahead, dice *weight)
@@ -712,6 +730,7 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
 
     unsigned int color;
     string color_string;
+    int color_display;
 
     int count;
     for (f >> *lookahead, count = 0; count < NUM_OBJECT_FIELDS; count++)
@@ -744,13 +763,13 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
         }
         else if (!(*lookahead).compare("COLOR"))
         {
-            if (parse_object_color(f, lookahead, &color, &color_string))
+            if (parse_object_color(f, lookahead, &color, &color_string, &color_display))
             {
                 return 0;
             }
-            object->color = color; //TODO
-            //object->color_int = color;
+            object->color = color;
             object->color_string = color_string;
+            object->color_display = color_display;
             continue;
         }
         else if (!(*lookahead).compare("WEIGHT"))

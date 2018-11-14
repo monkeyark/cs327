@@ -463,7 +463,10 @@ NPC new_NPC_desc(int birth)
 		npc.damage = mons.damage;
 		npc.symbol = mons.symbol;
 		npc.color = mons.color;
+		npc.color_display = mons.color_display;
 		npc.speed = mons.speed.roll();
+		//std::cout << "mons.symbol " << mons.symbol << " mons.color " << mons.color << std::endl;
+		//std::cout << "npc.symbol " << npc.symbol << " npc.color " << npc.color << std::endl;
 
 		if (npc.ability & NPC_TELEPATH) //monster is telepath
 		{
@@ -527,7 +530,8 @@ Item new_item_desc()
 		item.name = &obj.name;
 		item.description = &obj.description;
 		item.damage = obj.damage;
-		item.color = obj.color;//TODO
+		item.color = obj.color;
+		item.color_display = obj.color_display;
 		item.hit = obj.hit.roll();
 		item.dodge = obj.dodge.roll();
 		item.defence = obj.defence.roll();
@@ -738,11 +742,16 @@ void save_dungeon(FILE *f)
 void delete_dungeon()
 {
     free(dungeon.rooms);
+	free(dungeon.monster);	
+}
+
+void delete_dungeon_desc()
+{
+    free(dungeon.rooms);
 	free(dungeon.monster);
 	free(dungeon.item);
 	
 	//TODO memory leak 
-
 	/*
 	for (unsigned int i = 0; i < dungeon.mon.size(); i++)
 	{

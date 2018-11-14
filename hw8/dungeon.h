@@ -131,6 +131,7 @@ class Character
 		int speed;
 		int dead;
 
+		int hitpoints;
 		dice damage;
 };
 

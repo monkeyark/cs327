@@ -462,6 +462,7 @@ NPC new_NPC_desc(int birth)
 	npc.symbol = mons.symbol;
 	npc.color = mons.color;
 	npc.color_display = mons.color_display;
+	npc.hitpoints = mons.hitpoints.roll();
 	npc.speed = mons.speed.roll();
 
 	if (npc.ability & NPC_TELEPATH) //monster is telepath

@@ -436,15 +436,20 @@ NPC new_NPC_desc(int birth)
 	} while (dungeon.map[row][col].space != ROOM && dungeon.map[row][col].space != CORRIDOR);
 
 	int index, rarity;
-	bool is_unique = false;
+	bool is_unique_generated;
 	Monster mons;
 	do
 	{
 		index = get_random(dungeon.mon.size(), 0);
 		rarity = get_random(99, 0);
 		mons = dungeon.mon.at(index);
+		is_unique_generated = mons.seen && (mons.ability & NPC_UNIQ);
+		if (rarity >= mons.rarity)
+		{
+			continue;
+		}
 		dungeon.mon.at(index).seen = true;
-	} while ((rarity >= mons.rarity) || (dungeon.mon.at(index).seen && is_unique));
+	} while ((rarity >= mons.rarity) || is_unique_generated);
 
 	npc.row = row;
 	npc.col = col;
@@ -458,7 +463,6 @@ NPC new_NPC_desc(int birth)
 	npc.color = mons.color;
 	npc.color_display = mons.color_display;
 	npc.speed = mons.speed.roll();
-
 
 	if (npc.ability & NPC_TELEPATH) //monster is telepath
 	{
@@ -497,6 +501,7 @@ Item new_item_desc()
 	} while (dungeon.map[row][col].space != ROOM && dungeon.map[row][col].space != CORRIDOR);
 
 	int index, rarity;
+	bool is_artifact_generated;
 	Object obj;
 	do
 	{
@@ -504,9 +509,13 @@ Item new_item_desc()
 		index = get_random(dungeon.obj.size(), 0);
 		rarity = get_random(99, 0);
 		obj = dungeon.obj.at(index);
+		is_artifact_generated = dungeon.obj.at(index).seen && dungeon.obj.at(index).artifact;
+		if (rarity >= obj.rarity)
+		{
+			continue;
+		}
 		dungeon.obj.at(index).seen = true;
-	} while ((rarity >= obj.rarity) ||
-			 (dungeon.obj.at(index).seen && dungeon.obj.at(index).artifact));
+	} while ((rarity >= obj.rarity) || is_artifact_generated);
 
 	item.row = row;
 	item.col = col;

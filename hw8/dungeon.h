@@ -119,10 +119,6 @@ class Item
 		bool artifact;
 		int rarity;
 		std::string *type;
-
-		bool on_floor;
-		bool inventory;
-		bool equip;
 };
 
 class Character

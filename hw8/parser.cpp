@@ -126,7 +126,6 @@ int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *col
     *color = 0;
 
     char *token = strtok(c_color_string, " ");
-
 //TODO >>>>>>>>>>>>>>>>>>>>>>
 //use the first read color as display color
     if (strcmp(token, "RED") == 0)
@@ -164,6 +163,7 @@ int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *col
     else
     {
         cout << "reading illegal color" << endl;
+        delete [] c_color_string;
         return 1;
     }
 //TODO <<<<<<<<<<<<<<<<<<<<<
@@ -205,6 +205,7 @@ int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *col
         else
         {
             cout << "reading illegal color" << endl;
+            delete [] c_color_string;
             return 1;
         }
         token = strtok(NULL, " ");
@@ -212,6 +213,7 @@ int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *col
 
     f >> *lookahead;
 
+    delete [] c_color_string;
     return 0;
 }
 
@@ -336,6 +338,7 @@ int parse_monster_ability(ifstream &f, string *lookahead, unsigned int *ability,
         else
         {
             cout << "reading illegal ability" << endl;
+            delete [] c_ability_string;
             return 1;
         }
         token = strtok(NULL, " ");
@@ -343,6 +346,7 @@ int parse_monster_ability(ifstream &f, string *lookahead, unsigned int *ability,
 
     f >> *lookahead;
 
+    delete [] c_ability_string;
     return 0;
 }
 
@@ -525,6 +529,7 @@ void load_monster_desc(char *path)
         //(dungeon.mon)->push_back(*m);
         //(*dungeon.mon).push_back(*m);
     }
+    delete m;
 }
 
 int parse_object_begin(ifstream &f, string *lookahead)
@@ -917,6 +922,7 @@ void load_object_desc(char *path)
         //(dungeon.it)->push_back(*object);
         //(*(dungeon.it)).push_back(*object);
     }
+    delete object;
 }
 
 void print_monster_desc()

@@ -314,7 +314,8 @@ void remember_map_PC()
             if (row >= 0 && col >= 0 && row < ROW && col < COL)
             {
                 dungeon.pc.vision[row][col] = 1;
-                if (is_monster(row, col) && is_visible_terrain(row, col))
+				//if (is_monster(row, col) && is_visible_terrain(row, col))
+                if (is_visible_terrain(row, col))
                 {
                     dungeon.map[row][col].fog = dungeon.map[row][col].space;
                 }
@@ -441,17 +442,23 @@ NPC new_NPC_desc(int birth)
 	if (dungeon.map[row][col].space == ROOM ||
 		dungeon.map[row][col].space == CORRIDOR)
 	{
-		int index;
-		bool is_unique;
+		int index, rarity;
+		bool is_unique = false;
 		Monster mons;
 		do
 		{
 			index = get_random(dungeon.mon.size(), 0);
+			rarity = get_random(99, 0);
 			mons = dungeon.mon.at(index);
 			dungeon.mon.at(index).seen = true;
-			is_unique = NPC_UNIQ & mons.ability;
+			// is_unique = NPC_UNIQ & dungeon.mon.at(index).ability;
+			// std::cout << "rarity--------------- " << rarity << std::endl;
+			// std::cout << "mons.rarity---------- " << mons.rarity << std::endl;
+			// std::cout << "mons.seen------------ " << mons.seen << std::endl;
+			// std::cout << "is_unique------------ " << is_unique << std::endl;
+			// std::cout << std::endl;
 		}
-		while (is_unique && mons.seen);
+		while ((rarity >= mons.rarity) || (dungeon.mon.at(index).seen && is_unique));
 
 		npc.row = row;
 		npc.col = col;
@@ -465,8 +472,6 @@ NPC new_NPC_desc(int birth)
 		npc.color = mons.color;
 		npc.color_display = mons.color_display;
 		npc.speed = mons.speed.roll();
-		//std::cout << "mons.symbol " << mons.symbol << " mons.color " << mons.color << std::endl;
-		//std::cout << "npc.symbol " << npc.symbol << " npc.color " << npc.color << std::endl;
 
 		if (npc.ability & NPC_TELEPATH) //monster is telepath
 		{
@@ -511,21 +516,19 @@ Item new_item_desc()
 	{
 		//get random index of object from description
 		//bool inventory = false;//TODO generated artifact
-		int index;
+		int index, rarity;
 		Object obj;
 		do
 		{
 			index = get_random(dungeon.obj.size(), 0);
+			rarity = get_random(99, 0);
 			obj = dungeon.obj.at(index);
 			dungeon.obj.at(index).seen = true;
 		}
-		while(obj.seen && obj.artifact);
+		while((rarity >= obj.rarity) || (dungeon.obj.at(index).seen && dungeon.obj.at(index).artifact));
 
 		item.row = row;
 		item.col = col;
-		item.on_floor = false;
-		item.inventory = false;
-		item.equip = false;
 
 		item.name = &obj.name;
 		item.description = &obj.description;

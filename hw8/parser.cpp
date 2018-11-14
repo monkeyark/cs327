@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstring>
 #include <vector>
 
 #include <string.h>
@@ -11,7 +12,7 @@
 #include "limits.h"
 
 #define NUM_MONSTER_FIELDS 11
-#define NUM_object_FIELDS 16
+#define NUM_OBJECT_FIELDS 16
 
 using namespace std;
 
@@ -134,6 +135,54 @@ int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *col
     getline(f, *lookahead);
     *color_string = *lookahead;
 
+    char *c_color_string = new char[(*color_string).length() + 1];
+    strcpy(c_color_string, (*color_string).c_str());
+
+    *color = 0;
+
+    char *token = strtok(c_color_string, " ");
+    while (token != 0)
+    {
+        if (strcmp(token, "RED") == 0)
+        {
+            *color |= COLORS_RED;
+        }
+        else if (strcmp(token, "GREEN") == 0)
+        {
+            *color |= COLORS_GREEN;
+        }
+        else if (strcmp(token, "YELLOW") == 0)
+        {
+            *color |= COLORS_YELLOW;
+        }
+        else if (strcmp(token, "BLUE") == 0)
+        {
+            *color |= COLORS_BLUE;
+        }
+        else if (strcmp(token, "MAGENTA") == 0)
+        {
+            *color |= COLORS_MAGENTA;
+        }
+        else if (strcmp(token, "CYAN") == 0)
+        {
+            *color |= COLORS_CYAN;
+        }
+        else if (strcmp(token, "WHITE") == 0)
+        {
+            *color |= COLORS_WHITE;
+        }
+        else if (strcmp(token, "BLACK") == 0)
+        {
+            *color |= COLORS_BLACK;
+        }
+        else
+        {
+            cout << "reading illegal color" << endl;
+            return 1;
+        }
+        token = strtok(NULL, " ");
+    }
+
     f >> *lookahead;
 
     return 0;
@@ -212,6 +261,69 @@ int parse_monster_ability(ifstream &f, string *lookahead, unsigned int *ability,
     getline(f, *lookahead);
     *ability_string = *lookahead;
 
+
+    char *c_ability_string = new char[(*ability_string).length() + 1];
+    strcpy(c_ability_string, (*ability_string).c_str());
+
+    *ability = 0;
+    cout << "(*ability_string).c_str() --------->" << (*ability_string).c_str() << endl;
+
+    char *token = strtok(c_ability_string, " ");
+    while (token != 0)
+    {
+        if (strcmp(token, "SMART") == 0)
+        {
+            *ability |= NPC_SMART;
+            printf("ability %s %x\n", token, *ability);
+        }
+        else if (strcmp(token, "TELE") == 0)
+        {
+            *ability |= NPC_TELEPATH;
+            printf("ability %s %x\n", token, *ability);
+        }
+        else if (strcmp(token, "TUNNEL") == 0)
+        {
+            *ability |= NPC_TUNNEL;
+            printf("ability %s %x\n", token, *ability);
+        }
+        else if (strcmp(token, "ERRATIC") == 0)
+        {
+            *ability |= NPC_ERRATIC;
+            printf("ability %s %x\n", token, *ability);
+        }
+        else if (strcmp(token, "PASS") == 0)
+        {
+            *ability |= NPC_PASS_WALL;
+            printf("ability %s %x\n", token, *ability);
+        }
+        else if (strcmp(token, "DESTROY") == 0)
+        {
+            *ability |= NPC_DESTROY_OBJ;
+            printf("ability %s %x\n", token, *ability);
+        }
+        else if (strcmp(token, "PICKUP") == 0)
+        {
+            *ability |= NPC_PICKUP_OBJ;
+            printf("ability %s %x\n", token, *ability);
+        }
+        else if (strcmp(token, "UNIQ") == 0)
+        {
+            *ability |= NPC_UNIQ;
+            printf("ability %s %x\n", token, *ability);
+        }
+        else if (strcmp(token, "BOSS") == 0)
+        {
+            *ability |= NPC_BOSS;
+            printf("ability %s %x\n", token, *ability);
+        }
+        else
+        {
+            cout << "reading illegal ability" << endl;
+            return 1;
+        }
+        token = strtok(NULL, " ");
+    }
+
     f >> *lookahead;
 
     return 0;
@@ -239,7 +351,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
 
     string name, desc;
     char symbol;
-    unsigned int color, ability;//TODO
+    unsigned int color, ability; //TODO
 
     dice speed, dam, hp;
     int rarity;
@@ -397,7 +509,6 @@ void load_monster_desc(char *path)
     }
 }
 
-
 int parse_object_begin(ifstream &f, string *lookahead)
 {
     return parse_nextline(f, lookahead);
@@ -419,79 +530,79 @@ int parse_object_type(ifstream &f, string *lookahead, string *type, char *symbol
     {
         *symbol = '|';
     }
-    else if(*type == "OFFHAND")
+    else if (*type == "OFFHAND")
     {
         *symbol = ')';
     }
-    else if(*type == "RANGED")
+    else if (*type == "RANGED")
     {
         *symbol = '}';
     }
-    else if(*type == "ARMOR")
+    else if (*type == "ARMOR")
     {
         *symbol = '[';
     }
-    else if(*type == "HELMET")
+    else if (*type == "HELMET")
     {
         *symbol = ']';
     }
-    else if(*type == "CLOAK")
+    else if (*type == "CLOAK")
     {
         *symbol = '(';
     }
-    else if(*type == "GLOVES")
+    else if (*type == "GLOVES")
     {
         *symbol = '{';
     }
-    else if(*type == "BOOTS")
+    else if (*type == "BOOTS")
     {
         *symbol = '\\';
     }
-    else if(*type == "RING")
+    else if (*type == "RING")
     {
         *symbol = '=';
     }
-    else if(*type == "AMULET")
+    else if (*type == "AMULET")
     {
         *symbol = '"';
     }
-    else if(*type == "LIGHT")
+    else if (*type == "LIGHT")
     {
         *symbol = '_';
     }
-    else if(*type == "SCROLL")
+    else if (*type == "SCROLL")
     {
         *symbol = '~';
     }
-    else if(*type == "BOOK")
+    else if (*type == "BOOK")
     {
         *symbol = '?';
     }
-    else if(*type == "FLASK")
+    else if (*type == "FLASK")
     {
         *symbol = '!';
     }
-    else if(*type == "GOLD")
+    else if (*type == "GOLD")
     {
         *symbol = '$';
     }
-    else if(*type == "AMMUNITION")
+    else if (*type == "AMMUNITION")
     {
         *symbol = '/';
     }
-    else if(*type == "FOOD")
+    else if (*type == "FOOD")
     {
         *symbol = ',';
     }
-    else if(*type == "WAND")
+    else if (*type == "WAND")
     {
         *symbol = '-';
     }
-    else if(*type == "CONTAINER")
+    else if (*type == "CONTAINER")
     {
         *symbol = '%';
     }
-    else if(*type == "STACK")
+    else if (*type == "STACK")
     {
         *symbol = '&';
     }
@@ -500,7 +611,7 @@ int parse_object_type(ifstream &f, string *lookahead, string *type, char *symbol
         cout << "Fail to parse type to symbol" << endl;
         return 1;
     }
- 
+
     return 0;
 }
 
@@ -603,7 +714,7 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
     string color_string;
 
     int count;
-    for (f >> *lookahead, count = 0; count < NUM_object_FIELDS; count++)
+    for (f >> *lookahead, count = 0; count < NUM_OBJECT_FIELDS; count++)
     {
         if (!(*lookahead).compare("BEGIN"))
         {

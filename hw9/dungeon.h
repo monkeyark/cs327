@@ -82,18 +82,18 @@
 
 enum
 {
-	WEAPON = 97,
-	OFFHAND = 98,
-	RANGED = 99,
-	ARMOR = 100,
-	HELMET = 101,
-	CLOAK = 102,
-	GLOVES = 103,
-	BOOTS = 104,
-	AMULET = 105,
-	LIGHT = 106,
-	RINGLEFT = 107,
-	RINGRIGHT = 108,
+	WEAPON        =  97,
+	OFFHAND       =  98,
+	RANGED        =  99,
+	ARMOR         = 100,
+	HELMET        = 101,
+	CLOAK         = 102,
+	GLOVES        = 103,
+	BOOTS         = 104,
+	AMULET        = 105,
+	LIGHT         = 106,
+	RINGLEFT      = 107,
+	RINGRIGHT     = 108,
 	NUM_EQUIPMENT = RINGRIGHT - WEAPON + 1,
 };
 
@@ -167,6 +167,7 @@ class PC : public Character
 {
 	public:
 		int vision[ROW][COL];
+		int inventory_size;
 		Item *equipment;
 		Item *inventory;
 };
@@ -254,6 +255,7 @@ int is_room_corridor_stair(int row, int col);
 int is_inside(int row, int col);
 int is_monster(int row, int col);
 int is_item(int row, int col);
+bool is_inventory_open();
 void remember_map_PC();
 
 #endif

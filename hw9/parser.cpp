@@ -4,9 +4,6 @@
 #include <cstring>
 #include <vector>
 
-#include <string.h>
-#include <sys/stat.h>
-
 #include <curses.h>
 
 #include "parser.h"

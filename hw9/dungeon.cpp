@@ -114,7 +114,10 @@ int is_room(int row, int col)
 
 int is_room_corridor_stair(int row, int col)
 {
-	return dungeon.map[row][col].terrain == ROOM || dungeon.map[row][col].terrain == CORRIDOR || dungeon.map[row][col].terrain == STAIR_UP || dungeon.map[row][col].terrain == STAIR_DOWN;
+	return dungeon.map[row][col].terrain == ROOM ||
+			dungeon.map[row][col].terrain == CORRIDOR ||
+			dungeon.map[row][col].terrain == STAIR_UP ||
+			dungeon.map[row][col].terrain == STAIR_DOWN;
 }
 
 int is_valid_room(int row, int col, int width, int height)
@@ -204,7 +207,10 @@ int distance(int aRow, int aCol, int bRow, int bCol)
 
 int is_connected(int row, int col)
 {
-	return dungeon.map[row - 1][col].terrain == CORRIDOR || dungeon.map[row + 1][col].terrain == CORRIDOR || dungeon.map[row][col - 1].terrain == CORRIDOR || dungeon.map[row][col + 1].terrain == CORRIDOR;
+	return dungeon.map[row - 1][col].terrain == CORRIDOR ||
+			dungeon.map[row + 1][col].terrain == CORRIDOR ||
+			dungeon.map[row][col - 1].terrain == CORRIDOR ||
+			dungeon.map[row][col + 1].terrain == CORRIDOR;
 }
 
 void new_corridor(int aRow, int aCol, int bRow, int bCol)
@@ -394,7 +400,11 @@ void generate_dungeon()
 	//add corridors
 	for (i = 0; i < dungeon.num_room - 1; i++)
 	{
-		new_corridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
+		int row_from = dungeon.rooms[i].row;
+		int col_from = dungeon.rooms[i].col;
+		int row_to = dungeon.rooms[i + 1].row;
+		int col_to = dungeon.rooms[i + 1].col;
+		new_corridor(row_from, col_from, row_to, col_to);
 	}
 
 	//add stair
@@ -418,15 +428,16 @@ void new_PC_desc()
 	dungeon.pc.dead = 0;
 	dungeon.pc.row = dungeon.rooms[0].row;
 	dungeon.pc.col = dungeon.rooms[0].col;
+	dungeon.pc.inventory_size = 0;
 	dungeon.pc.hitpoints = 10000;
 	dungeon.pc.damage = dice(0, 1, 4);
 	//std::cout << dungeon.pc.damage.print_string() << std::endl;//DEBUG
 	dungeon.pc.equipment = (Item *)malloc(NUM_EQUIPMENT * sizeof(Item));
 	dungeon.pc.inventory = (Item *)malloc(PC_INVENTORY * sizeof(Item));
 	printf("%d %d %d %d %d %d %d %d %d %d %d %d\n",
-			WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);
+			WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);//DEBUG
 	printf("%c %c %c %c %c %c %c %c %c %c %c %c\n",
-			WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);
+			WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);//DEBUG
 	remember_map_PC();
 	dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
 }
@@ -485,16 +496,17 @@ NPC new_NPC_desc(int birth)
 
 bool is_inventory(Item item)
 {
-	/*
-	for (int i = 0; i < sizeof(dungeon.item)/sizeof(item); i++)
-	{
-		if (dungeon.item[i].inventory)
-		{
-			return true;
-		}
-	}
-	*/
+	// int i;
+	// for (i = 0; dungeon.pc.inventory[i], i < PC_INVENTORY; i++)
+	// {
+	// 	//TODO
+	// }
 	return false;
+}
+
+bool is_inventory_open()
+{
+	return dungeon.pc.inventory_size != PC_INVENTORY;
 }
 
 Item new_item_desc()
@@ -573,7 +585,7 @@ void generate_dungeon_desc()
 	{
 		dungeon.num_mon = get_random(5, 8);
 	}
-	dungeon.num_item = get_random(5, 10);
+	dungeon.num_item = get_random(5, 11);
 
 	dungeon.rooms = (Room *)malloc(dungeon.num_room * sizeof(Room));
 	dungeon.monster = (NPC *)malloc(dungeon.num_mon * sizeof(NPC));
@@ -589,7 +601,11 @@ void generate_dungeon_desc()
 	//add corridors
 	for (i = 0; i < dungeon.num_room - 1; i++)
 	{
-		new_corridor(dungeon.rooms[i].row, dungeon.rooms[i].col, dungeon.rooms[i + 1].row, dungeon.rooms[i + 1].col);
+		int row_from = dungeon.rooms[i].row;
+		int col_from = dungeon.rooms[i].col;
+		int row_to = dungeon.rooms[i + 1].row;
+		int col_to = dungeon.rooms[i + 1].col;
+		new_corridor(row_from, col_from, row_to, col_to);
 	}
 
 	//add stair

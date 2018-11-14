@@ -204,10 +204,26 @@ const char *move_pc(int row_move, int col_move)
 	else if (is_inside(dungeon.pc.row + row_move, dungeon.pc.col + col_move) &&
 		    is_room_corridor_stair(dungeon.pc.row + row_move, dungeon.pc.col + col_move))
 	{
-		
-		if (!(is_item(dungeon.pc.row, dungeon.pc.col) < 0))
+		int item_index = is_item(dungeon.pc.row, dungeon.pc.col);
+		if (!(item_index < 0))
 		{
-			dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.item[is_item(dungeon.pc.row, dungeon.pc.col)].symbol;
+			//if iventory has space to pick up new item
+			if (is_inventory_open())
+			{
+				//add item in current location to inventory
+				dungeon.pc.inventory[dungeon.pc.inventory_size] = dungeon.item[item_index];
+				dungeon.item[item_index].row = -1;
+				dungeon.item[item_index].col = -1;
+				dungeon.pc.inventory[dungeon.pc.inventory_size].row = -1;
+				dungeon.pc.inventory[dungeon.pc.inventory_size].col = -1;
+				dungeon.pc.inventory_size++;
+
+				dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
+			}
+			else
+			{
+				dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.item[item_index].symbol;
+			}
 		}
 		else
 		{
@@ -218,12 +234,13 @@ const char *move_pc(int row_move, int col_move)
 		dungeon.pc.col += col_move;
         dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
         dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
-		if (!(is_monster(dungeon.pc.row, dungeon.pc.col) < 0))
+
+		int npc_index = is_monster(dungeon.pc.row, dungeon.pc.col);
+		if (!(npc_index < 0))
 		{
-			int i = is_monster(dungeon.pc.row, dungeon.pc.col);
-			dungeon.monster[i].dead = true;
-			dungeon.monster[i].row = -1;
-			dungeon.monster[i].col = -1;
+			dungeon.monster[npc_index].dead = true;
+			dungeon.monster[npc_index].row = -1;
+			dungeon.monster[npc_index].col = -1;
 		}
 		move_npc();
         remember_map_PC();

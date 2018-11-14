@@ -421,8 +421,12 @@ void new_PC_desc()
 	dungeon.pc.hitpoints = 10000;
 	dungeon.pc.damage = dice(0, 1, 4);
 	//std::cout << dungeon.pc.damage.print_string() << std::endl;//DEBUG
-	dungeon.pc.item = (Item *)malloc(dungeon.num_item * sizeof(Item));
-
+	dungeon.pc.equipment = (Item *)malloc(NUM_EQUIPMENT * sizeof(Item));
+	dungeon.pc.inventory = (Item *)malloc(PC_INVENTORY * sizeof(Item));
+	printf("%d %d %d %d %d %d %d %d %d %d %d %d\n",
+			WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);
+	printf("%c %c %c %c %c %c %c %c %c %c %c %c\n",
+			WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);
 	remember_map_PC();
 	dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
 }
@@ -743,7 +747,8 @@ void delete_dungeon_desc()
 	free(dungeon.rooms);
 	free(dungeon.monster);
 	free(dungeon.item);
-	free(dungeon.pc.item);
+	free(dungeon.pc.equipment);
+	free(dungeon.pc.inventory);
 }
 
 void move_dungeon()

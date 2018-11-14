@@ -23,6 +23,7 @@
 #define CORRIDOR_H 0
 #define PC_H 0
 #define PC_VISION_RADIUS 2
+#define PC_INVENTORY 10
 
 #define MIN(a, b)           \
 ({                          \
@@ -79,6 +80,22 @@
 #define COLORS_CYAN        0x00000040
 #define COLORS_WHITE       0x00000080
 
+enum
+{
+	WEAPON = 97,
+	OFFHAND = 98,
+	RANGED = 99,
+	ARMOR = 100,
+	HELMET = 101,
+	CLOAK = 102,
+	GLOVES = 103,
+	BOOTS = 104,
+	AMULET = 105,
+	LIGHT = 106,
+	RINGLEFT = 107,
+	RINGRIGHT = 108,
+	NUM_EQUIPMENT = RINGRIGHT - WEAPON + 1,
+};
 
 class Terrain
 {
@@ -150,7 +167,8 @@ class PC : public Character
 {
 	public:
 		int vision[ROW][COL];
-		Item *item;
+		Item *equipment;
+		Item *inventory;
 };
 
 class Monster

@@ -30,6 +30,8 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 		for (j = 0; j < COL; j++)
 		{
 			short color;
+			int npc_index = is_monster((i - 1), j);
+			int item_index = is_item((i - 1), j);
 			if (is_visible_terrain((i - 1), j))
 			{
 				if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
@@ -37,25 +39,25 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 					mvwprintw(game, i, j, "@");
 					mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
 				}
-				else if (!(is_monster((i - 1), j) < 0))
+				else if (!(npc_index < 0))
 				{
-					color = dungeon.monster[is_monster((i - 1), j)].color_display;
+					color = dungeon.monster[npc_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
 					wattron(game, COLOR_PAIR(color));
-					mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol);
+					mvwprintw(game, i, j, "%c", dungeon.monster[npc_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 
-					mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[is_monster((i - 1), j)].color_display); //DEBUG
+					mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[npc_index].color_display); //DEBUG
 				}
-				else if (!(is_item((i - 1), j) < 0))
+				else if (!(item_index < 0))
 				{
-					color = dungeon.item[is_item((i - 1), j)].color_display;
+					color = dungeon.item[item_index].color_display;
 					init_pair(color, color, COLOR_BLACK);
 					wattron(game, COLOR_PAIR(color));
-					mvwprintw(game, i, j, "%c", dungeon.item[is_item((i - 1), j)].symbol);
+					mvwprintw(game, i, j, "%c", dungeon.item[item_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 
-					mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[is_item((i - 1), j)].color_display); //DEBUG
+					mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[item_index].color_display); //DEBUG
 				}
 				else
 				{
@@ -105,30 +107,32 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 		for (j = 0; j < COL; j++)
 		{
 			short color;
+			int npc_index = is_monster((i - 1), j);
+			int item_index = is_item((i - 1), j);
 			if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
 			{
 				mvwprintw(game, i, j, "@");
 				mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
 			}
-			else if (!(is_monster((i - 1), j) < 0))
+			else if (!(npc_index < 0))
 			{
-				color = dungeon.monster[is_monster((i - 1), j)].color_display;
+				color = dungeon.monster[npc_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
-				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol);
+				mvwprintw(game, i, j, "%c", dungeon.monster[npc_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[is_monster((i - 1), j)].color_display); //DEBUG
+				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[npc_index].color_display); //DEBUG
 			}
-			else if (!(is_item((i - 1), j) < 0))
+			else if (!(item_index < 0))
 			{
-				color = dungeon.item[is_item((i - 1), j)].color_display;
+				color = dungeon.item[item_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
-				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i - 1), j)].symbol);
+				mvwprintw(game, i, j, "%c", dungeon.item[item_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[is_item((i - 1), j)].color_display); //DEBUG
+				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[item_index].color_display); //DEBUG
 			}
 			else
 			{
@@ -164,6 +168,8 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 		for (j = 0; j < COL; j++)
 		{
 			short color;
+			int npc_index = is_monster((i - 1), j);
+			int item_index = is_item((i - 1), j);
 			if ((i - 1) == dungeon.teleport_row && j == dungeon.teleport_col)
 			{
 				mvwprintw(game, i, j, "*");
@@ -174,25 +180,25 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 				mvwprintw(game, i, j, "@");
 				mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
 			}
-			else if (!(is_monster((i - 1), j) < 0))
+			else if (!(npc_index < 0))
 			{
-				color = dungeon.monster[is_monster((i - 1), j)].color_display;
+				color = dungeon.monster[npc_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
-				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol);
+				mvwprintw(game, i, j, "%c", dungeon.monster[npc_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[is_monster((i - 1), j)].color_display); //DEBUG
+				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[npc_index].color_display); //DEBUG
 			}
-			else if (!(is_item((i - 1), j) < 0))
+			else if (!(item_index < 0))
 			{
-				color = dungeon.item[is_item((i - 1), j)].color_display;
+				color = dungeon.item[item_index].color_display;
 				init_pair(color, color, COLOR_BLACK);
 				wattron(game, COLOR_PAIR(color));
-				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i - 1), j)].symbol);
+				mvwprintw(game, i, j, "%c", dungeon.item[item_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[is_item((i - 1), j)].color_display); //DEBUG
+				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[item_index].color_display); //DEBUG
 			}
 			else
 			{

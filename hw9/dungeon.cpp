@@ -418,10 +418,13 @@ void new_PC_desc()
 	dungeon.pc.dead = 0;
 	dungeon.pc.row = dungeon.rooms[0].row;
 	dungeon.pc.col = dungeon.rooms[0].col;
-	dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
-	dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
+	dungeon.pc.hitpoints = 10000;
+	dungeon.pc.damage = dice(0, 1, 4);
+	//std::cout << dungeon.pc.damage.print_string() << std::endl;//DEBUG
 	dungeon.pc.item = (Item *)malloc(dungeon.num_item * sizeof(Item));
+
 	remember_map_PC();
+	dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
 }
 
 NPC new_NPC_desc(int birth)
@@ -462,6 +465,7 @@ NPC new_NPC_desc(int birth)
 	npc.symbol = mons.symbol;
 	npc.color = mons.color;
 	npc.color_display = mons.color_display;
+	npc.hitpoints = mons.hitpoints.roll();
 	npc.speed = mons.speed.roll();
 
 	if (npc.ability & NPC_TELEPATH) //monster is telepath
@@ -739,6 +743,7 @@ void delete_dungeon_desc()
 	free(dungeon.rooms);
 	free(dungeon.monster);
 	free(dungeon.item);
+	free(dungeon.pc.item);
 }
 
 void move_dungeon()

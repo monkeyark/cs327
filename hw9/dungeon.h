@@ -130,7 +130,8 @@ class Character
 		int birth;
 		int speed;
 		int dead;
-
+		
+		int hitpoints;
 		dice damage;
 };
 

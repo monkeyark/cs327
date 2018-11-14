@@ -209,6 +209,87 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 	}
 }
 
+void print_equipment_ncurses(WINDOW *list)
+{
+	const char *m = "equipment list";
+	int i, j;
+	for (i = 0, j = 0; *m; m++, j++)
+	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(list, COLOR_PAIR(COLOR_CYAN));
+		mvwprintw(list, i, j, m);
+		wattroff(list, COLOR_PAIR(COLOR_CYAN));
+	}
+}
+void print_iventory_ncurses(WINDOW *list)
+{
+	const char *m = "iventory list";
+	int i, j;
+	for (i = 0, j = 0; *m; m++, j++)
+	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(list, COLOR_PAIR(COLOR_CYAN));
+		mvwprintw(list, i, j, m);
+		wattroff(list, COLOR_PAIR(COLOR_CYAN));
+	}
+}
+
+void inventory_list()
+{
+	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(list, true);
+	bool run = true;
+	while (run)
+	{
+		print_iventory_ncurses(list);
+		int key = wgetch(list);
+		switch (key)
+		{
+		case 27:
+			run = false;
+			break;
+		case KEY_UP:
+
+			break;
+		case KEY_DOWN:
+
+			break;
+		}
+	}
+
+	wclrtoeol(list);
+	wrefresh(list);
+	delwin(list);
+}
+
+void equipment_list()
+{
+	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(list, true);
+	bool run = true;
+	while (run)
+	{
+		print_equipment_ncurses(list);
+		int key = wgetch(list);
+		switch (key)
+		{
+		case 27:
+			run = false;
+			break;
+		case KEY_UP:
+
+			break;
+		case KEY_DOWN:
+
+			break;
+		}
+	}
+
+	wclrtoeol(list);
+	wrefresh(list);
+	delwin(list);
+}
+
 void print_monster_list_ncurses(WINDOW *list, int start)
 {
 	int i, j;
@@ -596,7 +677,7 @@ void dungeon_ncurses()
 			//TODO
 			break;
 		case 'e':
-			//TODO
+			equipment_list();
 			break;
 		case 'f':
 			fog = !fog;
@@ -609,7 +690,7 @@ void dungeon_ncurses()
 			message = move_pc(0, -1); //move left
 			break;
 		case 'i':
-			//TODO
+			inventory_list();
 			break;
 		case 'j':
 			message = move_pc(1, 0); //move down

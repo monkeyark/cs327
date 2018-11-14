@@ -753,20 +753,6 @@ void delete_dungeon_desc()
     free(dungeon.rooms);
 	free(dungeon.monster);
 	free(dungeon.item);
-	
-	//TODO memory leak 
-	/*
-	for (unsigned int i = 0; i < dungeon.mon.size(); i++)
-	{
-		Monster m = dungeon.mon.at(i);
-		delete &m;
-	}
-	for (unsigned int i = 0; i < dungeon.obj.size(); i++)
-	{
-		Object object = dungeon.obj.at(i);
-		delete &object;
-	}
-	*/
 }
 
 void move_dungeon()

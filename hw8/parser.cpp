@@ -279,7 +279,6 @@ int parse_monster_hp(ifstream &f, string *lookahead, dice *d)
 
 int parse_monster_ability(ifstream &f, string *lookahead, unsigned int *ability, string *ability_string)
 {
-    //*ability = //TODO
     eat_blankspace(f);
 
     if (f.peek() == '\n')
@@ -469,6 +468,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
                 cout << "ABIL reading fail" << endl;
                 return 0;
             }
+            m->ability = ability;
             m->ability_string = ability_string;
             continue;
         }

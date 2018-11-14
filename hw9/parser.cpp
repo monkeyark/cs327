@@ -378,6 +378,8 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
 
     int count;
     int color_display;
+
+    m->seen = false;
     for (f >> *lookahead, count = 0; count < NUM_MONSTER_FIELDS; count++)
     {
         if (!(*lookahead).compare("BEGIN"))
@@ -737,6 +739,7 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
     string color_string;
     int color_display;
 
+    object->seen = false;
     int count;
     for (f >> *lookahead, count = 0; count < NUM_OBJECT_FIELDS; count++)
     {

@@ -5,7 +5,6 @@
 #include "move.h"
 #include "io.h"
 
-
 void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 {
 	int i, j;
@@ -19,7 +18,10 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 	const char *m = message;
 	for (i = 0, j = 0; *m; m++, j++)
 	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(game, COLOR_PAIR(COLOR_CYAN));
 		mvwprintw(game, i, j, m);
+		wattroff(game, COLOR_PAIR(COLOR_CYAN));
 	}
 
 	//print dungeon
@@ -27,22 +29,53 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
-            if (is_visible_terrain((i-1), j))
-            {
-                mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].space);
-            }
-            else
-            {
-                if (dungeon.pc.vision[i-1][j])
-                {
-                    mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].terrain);
-                }
-                else
-                {
-                    mvwprintw(game, i, j, " ");
-                }
-            }
-			mvwprintw(game, i+TERMINAL_ROW, j, "%c", dungeon.map[i-1][j].space);//DEBUG
+			short color;
+			if (is_visible_terrain((i - 1), j))
+			{
+				if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
+				{
+					mvwprintw(game, i, j, "@");
+					mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
+				}
+				else if (!(is_monster((i - 1), j) < 0))
+				{
+					color = dungeon.monster[is_monster((i - 1), j)].color;
+					init_pair(color, color, COLOR_BLACK);
+					wattron(game, COLOR_PAIR(color));
+					mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol);
+					wattroff(game, COLOR_PAIR(color));
+
+					mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol); //DEBUG
+				}
+				else if (!(is_item((i - 1), j) < 0))
+				{
+					color = dungeon.item[is_item((i - 1), j)].color;
+					init_pair(color, color, COLOR_BLACK);
+					wattron(game, COLOR_PAIR(color));
+					mvwprintw(game, i, j, "%c", dungeon.item[is_item((i - 1), j)].symbol);
+					wattroff(game, COLOR_PAIR(color));
+
+					mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.item[is_item((i - 1), j)].symbol); //DEBUG
+				}
+				else
+				{
+					mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
+					mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].terrain); //DEBUG
+				}
+			}
+			else
+			{
+				if (dungeon.pc.vision[i - 1][j])
+				{
+					mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
+				}
+				else
+				{
+					mvwprintw(game, i, j, " ");
+				}
+			}
+			//TODO some items are not added to dungeon.map[i][j].space
+			mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].space); //DEBUG
 		}
 	}
 }
@@ -53,12 +86,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 	//clean previous message
 	for (i = 0, j = 0; j < TERMINAL_COL; j++)
 	{
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		wattron(game, COLOR_PAIR(COLOR_CYAN));
-		//attron(COLOR_PAIR(COLOR_RED));
 		mvwprintw(game, i, j, " ");
-		wattroff(game, COLOR_PAIR(COLOR_CYAN));
-		//attroff(COLOR_PAIR(COLOR_RED));
 	}
 
 	//print current message
@@ -66,10 +94,8 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 	for (i = 0, j = 0; *m; m++, j++)
 	{
 		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		//attron(COLOR_PAIR(COLOR_RED));
 		wattron(game, COLOR_PAIR(COLOR_CYAN));
 		mvwprintw(game, i, j, m);
-		//attroff(COLOR_PAIR(COLOR_RED));
 		wattroff(game, COLOR_PAIR(COLOR_CYAN));
 	}
 
@@ -79,27 +105,36 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 		for (j = 0; j < COL; j++)
 		{
 			short color;
-			if (!(is_item(dungeon.pc.row, dungeon.pc.col) < 0))
+			if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
 			{
-				color = dungeon.item[is_item((i-1), j)].color;
+				mvwprintw(game, i, j, "@");
+				mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
 			}
-			else if (!(is_monster(dungeon.pc.row, dungeon.pc.col) < 0))
+			else if (!(is_monster((i - 1), j) < 0))
 			{
-				color = dungeon.monster[is_monster((i-1), j)].color;
+				color = dungeon.monster[is_monster((i - 1), j)].color;
+				init_pair(color, color, COLOR_BLACK);
+				wattron(game, COLOR_PAIR(color));
+				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol);
+				wattroff(game, COLOR_PAIR(color));
+
+				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol); //DEBUG
+			}
+			else if (!(is_item((i - 1), j) < 0))
+			{
+				color = dungeon.item[is_item((i - 1), j)].color;
+				init_pair(color, color, COLOR_BLACK);
+				wattron(game, COLOR_PAIR(color));
+				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i - 1), j)].symbol);
+				wattroff(game, COLOR_PAIR(color));
+
+				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.item[is_item((i - 1), j)].symbol); //DEBUG
 			}
 			else
 			{
-				color = COLOR_WHITE;
+				mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
+				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].terrain); //DEBUG
 			}
-			//color = COLOR_RED;
-			init_pair(color, color, COLOR_BLACK);
-			wattron(game, COLOR_PAIR(color));
-			//attron(COLOR_PAIR(COLOR_RED));
-            mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].space);
-			wattroff(game, COLOR_PAIR(color));
-			//attroff(COLOR_PAIR(COLOR_RED));
-			mvwprintw(game, i+TERMINAL_ROW, j, "%c", dungeon.map[i-1][j].space);
-			refresh();
 		}
 	}
 }
@@ -117,7 +152,10 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 	const char *m = message;
 	for (i = 0, j = 0; *m; m++, j++)
 	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(game, COLOR_PAIR(COLOR_CYAN));
 		mvwprintw(game, i, j, m);
+		wattroff(game, COLOR_PAIR(COLOR_CYAN));
 	}
 
 	//print dungeon
@@ -125,56 +163,42 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
-			/*
-			int color;
-			if (!(is_item(dungeon.pc.row, dungeon.pc.col) < 0))
+			short color;
+			if ((i - 1) == dungeon.teleport_row && j == dungeon.teleport_col)
 			{
-				color = dungeon.item[is_item((i-1), j)].color;
+				mvwprintw(game, i, j, "*");
+				mvwprintw(game, i + TERMINAL_ROW, j, "*"); //DEBUG
 			}
-			else if (!(is_monster(dungeon.pc.row, dungeon.pc.col) < 0))
-			{
-				color = dungeon.monster[is_monster((i-1), j)].color;
-			}
-			else
-			{
-				color = COLOR_WHITE;
-			}
-
-			init_pair(color, color, COLOR_BLACK);
-			wattron(game, COLOR_PAIR(color));
-			//attron(COLOR_PAIR(COLOR_RED));
-            mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].space);
-			wattroff(game, COLOR_PAIR(color));
-			//attroff(COLOR_PAIR(COLOR_RED));
-			refresh();
-			*/
-
-            if ((i-1) == dungeon.teleport_row && j == dungeon.teleport_col)
-            {
-                mvwprintw(game, i, j, "*");
-				mvwprintw(game, i+TERMINAL_ROW, j, "*");//DEBUG
-            }
-			else if ((i-1) == dungeon.pc.row && j == dungeon.pc.col)
+			else if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
 			{
 				mvwprintw(game, i, j, "@");
-				mvwprintw(game, i+TERMINAL_ROW, j, "@");//DEBUG
+				mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
 			}
-			else if (!(is_monster((i-1), j) < 0))
+			else if (!(is_monster((i - 1), j) < 0))
 			{
-				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i-1), j)].symbol);
-				mvwprintw(game, i+TERMINAL_ROW, j, "%c", dungeon.monster[is_monster((i-1), j)].symbol);//DEBUG
+				color = dungeon.monster[is_monster((i - 1), j)].color;
+				init_pair(color, color, COLOR_BLACK);
+				wattron(game, COLOR_PAIR(color));
+				mvwprintw(game, i, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol);
+				wattroff(game, COLOR_PAIR(color));
+
+				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.monster[is_monster((i - 1), j)].symbol); //DEBUG
 			}
-			else if (!(is_item((i-1), j) < 0))
+			else if (!(is_item((i - 1), j) < 0))
 			{
-				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i-1), j)].symbol);
-				mvwprintw(game, i+TERMINAL_ROW, j, "%c", dungeon.item[is_item((i-1), j)].symbol);//DEBUG
+				color = dungeon.item[is_item((i - 1), j)].color;
+				init_pair(color, color, COLOR_BLACK);
+				wattron(game, COLOR_PAIR(color));
+				mvwprintw(game, i, j, "%c", dungeon.item[is_item((i - 1), j)].symbol);
+				wattroff(game, COLOR_PAIR(color));
+
+				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.item[is_item((i - 1), j)].symbol); //DEBUG
 			}
 			else
 			{
-				mvwprintw(game, i, j, "%c", dungeon.map[i-1][j].terrain);
-				mvwprintw(game, i+TERMINAL_ROW, j, "%c", dungeon.map[i-1][j].terrain);//DEBUG
+				mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
+				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].terrain); //DEBUG
 			}
-
 		}
 	}
 }
@@ -225,16 +249,15 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 			mvwprintw(list, i, n, m);
 		}
 	}
-
 }
 
 const char *move_tp_pointer(int row_move, int col_move)
 {
 	const char *message = "teleporting";
-    if (is_inside(dungeon.teleport_row + row_move, dungeon.teleport_col + col_move))
+	if (is_inside(dungeon.teleport_row + row_move, dungeon.teleport_col + col_move))
 	{
-        dungeon.teleport_row += row_move;
-        dungeon.teleport_col += col_move;
+		dungeon.teleport_row += row_move;
+		dungeon.teleport_col += col_move;
 	}
 	else
 	{
@@ -254,11 +277,11 @@ const char *move_pc_teleport(int row_move, int col_move)
 	}
 	else
 	{
-        dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
+		dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
 		dungeon.pc.row += row_move;
 		dungeon.pc.col += col_move;
-        dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
-        dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
+		dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
+		dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
 
 		if (!(is_monster(dungeon.pc.row, dungeon.pc.col) < 0))
 		{
@@ -267,13 +290,13 @@ const char *move_pc_teleport(int row_move, int col_move)
 			dungeon.monster[i].row = -1;
 			dungeon.monster[i].col = -1;
 		}
-        if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == ROCK)
-        {
-            dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain = CORRIDOR;
-            dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = CORRIDOR_H;
-        }
+		if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == ROCK)
+		{
+			dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain = CORRIDOR;
+			dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = CORRIDOR_H;
+		}
 		move_npc();
-        remember_map_PC();
+		remember_map_PC();
 		message = "";
 	}
 
@@ -282,118 +305,117 @@ const char *move_pc_teleport(int row_move, int col_move)
 
 void teleport()
 {
-    WINDOW *teleport = newwin(TERMINAL_ROW*2, TERMINAL_COL, 0, 0);//BEBUG
+	WINDOW *teleport = newwin(TERMINAL_ROW * 2, TERMINAL_COL, 0, 0); //BEBUG
 	//WINDOW *teleport = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 	keypad(teleport, true);
 	bool run = true;
-    dungeon.teleport_row = dungeon.pc.row;
-    dungeon.teleport_col = dungeon.pc.col;
+	dungeon.teleport_row = dungeon.pc.row;
+	dungeon.teleport_col = dungeon.pc.col;
 
-    char random_seed[10];
-    sprintf(random_seed, "%d", dungeon.seed);
-    char seed_message[20] = "seed = ";
-    strcat(seed_message, random_seed);
-    char seed_message_suffix[2] = ";";
-    strcat(seed_message, seed_message_suffix);
-    const char *message = seed_message;
+	char random_seed[10];
+	sprintf(random_seed, "%d", dungeon.seed);
+	char seed_message[20] = "seed = ";
+	strcat(seed_message, random_seed);
+	char seed_message_suffix[2] = ";";
+	strcat(seed_message, seed_message_suffix);
+	const char *message = seed_message;
 
-	while(run)
+	while (run)
 	{
-        print_dungeon_teleport_ncurses(teleport, message);
-        int row_move = dungeon.teleport_row - dungeon.pc.row;
-        int col_move = dungeon.teleport_col - dungeon.pc.col;
+		print_dungeon_teleport_ncurses(teleport, message);
+		int row_move = dungeon.teleport_row - dungeon.pc.row;
+		int col_move = dungeon.teleport_col - dungeon.pc.col;
 		int key = wgetch(teleport);
-		switch(key)
+		switch (key)
 		{
-            case KEY_HOME:
-				message = move_tp_pointer(-1, -1);//move up-left
-				break;
-			case KEY_UP:
-				message = move_tp_pointer(-1, 0);//move up
-				break;
-			case KEY_PPAGE:
-				message = move_tp_pointer(-1, 1);//move up-right
-				break;
-			case KEY_RIGHT:
-				message = move_tp_pointer(0, 1);//move right
-				break;
-			case KEY_NPAGE:
-				message = move_tp_pointer(1, 1);//move down-right
-				break;
-			case KEY_DOWN:
-				message = move_tp_pointer(1, 0);//move down
-				break;
-			case KEY_END:
-				message = move_tp_pointer(1, -1);//move down-left
-				break;
-			case KEY_LEFT:
-				message = move_tp_pointer(0, -1);//move left
-				break;
-            case '1':
-				message = move_tp_pointer(1, -1);//move down-left
-				break;
-			case '2':
-				message = move_tp_pointer(1, 0);//move down
-				break;
-			case '3':
-				message = move_tp_pointer(1, 1);//move down-right
-				break;
-			case '4':
-				message = move_tp_pointer(0, -1);//move left
-				break;
-			case '6':
-				message = move_tp_pointer(0, 1);//move right
-				break;
-			case '7':
-				message = move_tp_pointer(-1, -1);//move up-left
-				break;
-			case '8':
-				message = move_tp_pointer(-1, 0);//move up
-				break;
-			case '9':
-				message = move_tp_pointer(-1, 1);//move up-right
-				break;
-			case 'b':
-				message = move_tp_pointer(1, -1);//move down-left
-				break;
-			case 'g':
-                message = move_pc_teleport(row_move, col_move);
-				run = false;
-				break;
-			case 'h':
-				message = move_tp_pointer(0, -1);//move left
-				break;
-			case 'j':
-				message = move_tp_pointer(1, 0);//move down
-				break;
-			case 'k':
-				message = move_tp_pointer(-1, 0);//move up
-				break;
-			case 'l':
-				message = move_tp_pointer(0, 1);//move right
-				break;
-			case 'n':
-				message = move_tp_pointer(1, 1);//move down-right
-				break;
-			case 'r':
-                do
-                {
-                    dungeon.teleport_row = get_random(ROW, 0);
-                    dungeon.teleport_col = get_random(COL, 0);
-                }
-                while (!is_inside(dungeon.teleport_row, dungeon.teleport_col));
+		case KEY_HOME:
+			message = move_tp_pointer(-1, -1); //move up-left
+			break;
+		case KEY_UP:
+			message = move_tp_pointer(-1, 0); //move up
+			break;
+		case KEY_PPAGE:
+			message = move_tp_pointer(-1, 1); //move up-right
+			break;
+		case KEY_RIGHT:
+			message = move_tp_pointer(0, 1); //move right
+			break;
+		case KEY_NPAGE:
+			message = move_tp_pointer(1, 1); //move down-right
+			break;
+		case KEY_DOWN:
+			message = move_tp_pointer(1, 0); //move down
+			break;
+		case KEY_END:
+			message = move_tp_pointer(1, -1); //move down-left
+			break;
+		case KEY_LEFT:
+			message = move_tp_pointer(0, -1); //move left
+			break;
+		case '1':
+			message = move_tp_pointer(1, -1); //move down-left
+			break;
+		case '2':
+			message = move_tp_pointer(1, 0); //move down
+			break;
+		case '3':
+			message = move_tp_pointer(1, 1); //move down-right
+			break;
+		case '4':
+			message = move_tp_pointer(0, -1); //move left
+			break;
+		case '6':
+			message = move_tp_pointer(0, 1); //move right
+			break;
+		case '7':
+			message = move_tp_pointer(-1, -1); //move up-left
+			break;
+		case '8':
+			message = move_tp_pointer(-1, 0); //move up
+			break;
+		case '9':
+			message = move_tp_pointer(-1, 1); //move up-right
+			break;
+		case 'b':
+			message = move_tp_pointer(1, -1); //move down-left
+			break;
+		case 'g':
+			message = move_pc_teleport(row_move, col_move);
+			run = false;
+			break;
+		case 'h':
+			message = move_tp_pointer(0, -1); //move left
+			break;
+		case 'j':
+			message = move_tp_pointer(1, 0); //move down
+			break;
+		case 'k':
+			message = move_tp_pointer(-1, 0); //move up
+			break;
+		case 'l':
+			message = move_tp_pointer(0, 1); //move right
+			break;
+		case 'n':
+			message = move_tp_pointer(1, 1); //move down-right
+			break;
+		case 'r':
+			do
+			{
+				dungeon.teleport_row = get_random(ROW, 0);
+				dungeon.teleport_col = get_random(COL, 0);
+			} while (!is_inside(dungeon.teleport_row, dungeon.teleport_col));
 
-                row_move = dungeon.teleport_row - dungeon.pc.row;
-                col_move = dungeon.teleport_col - dungeon.pc.col;
-                message = move_pc_teleport(row_move, col_move);
-                run = false;
-				break;
-			case 'u':
-				message = move_tp_pointer(-1, 1);//move up-right
-				break;
-			case 'y':
-				message = move_tp_pointer(-1, -1);//move up-left
-				break;
+			row_move = dungeon.teleport_row - dungeon.pc.row;
+			col_move = dungeon.teleport_col - dungeon.pc.col;
+			message = move_pc_teleport(row_move, col_move);
+			run = false;
+			break;
+		case 'u':
+			message = move_tp_pointer(-1, 1); //move up-right
+			break;
+		case 'y':
+			message = move_tp_pointer(-1, -1); //move up-left
+			break;
 		}
 	}
 
@@ -408,23 +430,23 @@ void monster_list()
 	keypad(list, true);
 	bool run = true;
 	int index = 0;
-	while(run)
+	while (run)
 	{
 		print_monster_list_ncurses(list, index);
 		int key = wgetch(list);
-		switch(key)
+		switch (key)
 		{
-			case 27:
-				run = false;
-				break;
-			case KEY_UP:
-				index++;
-				index = MIN(index, dungeon.num_mon);
-				break;
-			case KEY_DOWN:
-				index--;
-				index = MAX(index, 0);
-				break;
+		case 27:
+			run = false;
+			break;
+		case KEY_UP:
+			index++;
+			index = MIN(index, dungeon.num_mon);
+			break;
+		case KEY_DOWN:
+			index--;
+			index = MAX(index, 0);
+			break;
 		}
 	}
 
@@ -440,199 +462,198 @@ void dungeon_ncurses()
 	noecho();
 	cbreak();
 	//WINDOW *game = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
-	WINDOW *game = newwin(TERMINAL_ROW*2, TERMINAL_COL, 0, 0); //DEBUG
+	WINDOW *game = newwin(TERMINAL_ROW * 2, TERMINAL_COL, 0, 0); //DEBUG
 
 	keypad(game, true);
 	bool run = true;
-    bool fog = true;
+	bool fog = true;
 
+	char random_seed[10];
+	sprintf(random_seed, "%d", dungeon.seed);
+	char seed_message[20] = "seed = ";
+	strcat(seed_message, random_seed);
+	char seed_message_suffix[2] = ";";
+	strcat(seed_message, seed_message_suffix);
 
-    char random_seed[10];
-    sprintf(random_seed, "%d", dungeon.seed);
-    char seed_message[20] = "seed = ";
-    strcat(seed_message, random_seed);
-    char seed_message_suffix[2] = ";";
-    strcat(seed_message, seed_message_suffix);
-
-    const char *message = seed_message;
-	while(run)
+	const char *message = seed_message;
+	while (run)
 	{
-        if (fog)
-        {
-            print_dungeon_fog_ncurses(game, message);
-        }
-        else
-        {
-            print_dungeon_ncurses(game, message);
-        }
-        
-		int key = wgetch(game);
-		switch(key)
+		if (fog)
 		{
-			case KEY_HOME:
-				message = move_pc(-1, -1);//move up-left
-				break;
-			case KEY_UP:
-				message = move_pc(-1, 0);//move up
-				break;
-			case KEY_PPAGE:
-				message = move_pc(-1, 1);//move up-right
-				break;
-			case KEY_RIGHT:
-				message = move_pc(0, 1);//move right
-				break;
-			case KEY_NPAGE:
-				message = move_pc(1, 1);//move down-right
-				break;
-			case KEY_DOWN:
-				message = move_pc(1, 0);//move down
-				break;
-			case KEY_END:
-				message = move_pc(1, -1);//move down-left
-				break;
-			case KEY_LEFT:
-				message = move_pc(0, -1);//move left
-				break;
-			case KEY_B2:
-				message = move_pc(0, 0);//rest
-				break;
-			case ' ':
-				message = move_pc(0, 0);//rest
-				break;
-			case '<':
-				if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == STAIR_UP)
-				{
-                    delete_dungeon();
-					generate_dungeon();
-					message = "You went up stair";
-				}
-				else
-				{
-					message = "You are not standing on up stair";
-				}
-				break;
-			case '>':
-				if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == STAIR_DOWN)
-				{
-                    delete_dungeon();
-					generate_dungeon();
-					message = "You went down stair";
-				}
-				else
-				{
-					message = "You are not standing on down stair";
-				}
-				break;
-			case '.':
-				message = move_pc(0, 0);//rest
-				break;
-			case '1':
-				message = move_pc(1, -1);//move down-left
-				break;
-			case '2':
-				message = move_pc(1, 0);//move down
-				break;
-			case '3':
-				message = move_pc(1, 1);//move down-right
-				break;
-			case '4':
-				message = move_pc(0, -1);//move left
-				break;
-			case '5':
-				message = move_pc(0, 0);//rest
-				break;
-			case '6':
-				message = move_pc(0, 1);//move right
-				break;
-			case '7':
-				message = move_pc(-1, -1);//move up-left
-				break;
-			case '8':
-				message = move_pc(-1, 0);//move up
-				break;
-			case '9':
-				message = move_pc(-1, 1);//move up-right
-				break;
-			case 'b':
-				message = move_pc(1, -1);//move down-left
-				break;
-			case 'c':
+			print_dungeon_fog_ncurses(game, message);
+		}
+		else
+		{
+			print_dungeon_ncurses(game, message);
+		}
+
+		int key = wgetch(game);
+		switch (key)
+		{
+		case KEY_HOME:
+			message = move_pc(-1, -1); //move up-left
+			break;
+		case KEY_UP:
+			message = move_pc(-1, 0); //move up
+			break;
+		case KEY_PPAGE:
+			message = move_pc(-1, 1); //move up-right
+			break;
+		case KEY_RIGHT:
+			message = move_pc(0, 1); //move right
+			break;
+		case KEY_NPAGE:
+			message = move_pc(1, 1); //move down-right
+			break;
+		case KEY_DOWN:
+			message = move_pc(1, 0); //move down
+			break;
+		case KEY_END:
+			message = move_pc(1, -1); //move down-left
+			break;
+		case KEY_LEFT:
+			message = move_pc(0, -1); //move left
+			break;
+		case KEY_B2:
+			message = move_pc(0, 0); //rest
+			break;
+		case ' ':
+			message = move_pc(0, 0); //rest
+			break;
+		case '<':
+			if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == STAIR_UP)
+			{
+				delete_dungeon();
+				generate_dungeon();
+				message = "You went up stair";
+			}
+			else
+			{
+				message = "You are not standing on up stair";
+			}
+			break;
+		case '>':
+			if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == STAIR_DOWN)
+			{
+				delete_dungeon();
+				generate_dungeon();
+				message = "You went down stair";
+			}
+			else
+			{
+				message = "You are not standing on down stair";
+			}
+			break;
+		case '.':
+			message = move_pc(0, 0); //rest
+			break;
+		case '1':
+			message = move_pc(1, -1); //move down-left
+			break;
+		case '2':
+			message = move_pc(1, 0); //move down
+			break;
+		case '3':
+			message = move_pc(1, 1); //move down-right
+			break;
+		case '4':
+			message = move_pc(0, -1); //move left
+			break;
+		case '5':
+			message = move_pc(0, 0); //rest
+			break;
+		case '6':
+			message = move_pc(0, 1); //move right
+			break;
+		case '7':
+			message = move_pc(-1, -1); //move up-left
+			break;
+		case '8':
+			message = move_pc(-1, 0); //move up
+			break;
+		case '9':
+			message = move_pc(-1, 1); //move up-right
+			break;
+		case 'b':
+			message = move_pc(1, -1); //move down-left
+			break;
+		case 'c':
 			//TODO
-				break;
-			case 'd':
+			break;
+		case 'd':
 			//TODO
-				break;
-			case 'e':
+			break;
+		case 'e':
 			//TODO
-				break;
-			case 'f':
-                fog = !fog;
-				break;
-			case 'g':
-				teleport();
-				refresh();
-				break;
-			case 'h':
-				message = move_pc(0, -1);//move left
-				break;
-			case 'i':
+			break;
+		case 'f':
+			fog = !fog;
+			break;
+		case 'g':
+			teleport();
+			refresh();
+			break;
+		case 'h':
+			message = move_pc(0, -1); //move left
+			break;
+		case 'i':
 			//TODO
-				break;
-			case 'j':
-				message = move_pc(1, 0);//move down
-				break;
-			case 'k':
-				message = move_pc(-1, 0);//move up
-				break;
-			case 'l':
-				message = move_pc(0, 1);//move right
-				break;
-			case 'm':
-				monster_list();
-				refresh();
-				break;
-			case 'n':
-				message = move_pc(1, 1);//move down-right
-				break;
-			case 's':
+			break;
+		case 'j':
+			message = move_pc(1, 0); //move down
+			break;
+		case 'k':
+			message = move_pc(-1, 0); //move up
+			break;
+		case 'l':
+			message = move_pc(0, 1); //move right
+			break;
+		case 'm':
+			monster_list();
+			refresh();
+			break;
+		case 'n':
+			message = move_pc(1, 1); //move down-right
+			break;
+		case 's':
 			//TODO
-				break;
-			case 't':
+			break;
+		case 't':
 			//TODO
-				break;
-			case 'u':
-				message = move_pc(-1, 1);//move up-right
-				break;
-			case 'w':
+			break;
+		case 'u':
+			message = move_pc(-1, 1); //move up-right
+			break;
+		case 'w':
 			//TODO
-				break;
-			case 'x':
+			break;
+		case 'x':
 			//TODO
-				break;
-			case 'y':
-				message = move_pc(-1, -1);//move up-left
-				break;
-			case 'D':
+			break;
+		case 'y':
+			message = move_pc(-1, -1); //move up-left
+			break;
+		case 'D':
 			//TODO
-				break;
-			case 'E':
+			break;
+		case 'E':
 			//TODO
-				break;
-			case 'H':
+			break;
+		case 'H':
 			//TODO
-				break;
-			case 'I':
+			break;
+		case 'I':
 			//TODO
-				break;
-			case 'L':
+			break;
+		case 'L':
 			//TODO
-				break;
-			case 'Q':
-				run = false;
-				break;
-			case 'T':
+			break;
+		case 'Q':
+			run = false;
+			break;
+		case 'T':
 			//TODO
-				break;
+			break;
 		}
 
 		if (dungeon.pc.dead)
@@ -645,4 +666,3 @@ void dungeon_ncurses()
 	refresh();
 	endwin();
 }
-

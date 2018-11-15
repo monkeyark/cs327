@@ -137,6 +137,12 @@ class Item
 		int rarity;
 		int type;
 		const char *type_string;
+
+		int birth;
+		bool is_inventory;
+		bool is_equipment;
+		bool is_item;
+		bool is_onfloor;
 };
 
 class Character

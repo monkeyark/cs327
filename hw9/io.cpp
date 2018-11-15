@@ -243,6 +243,7 @@ void print_equipment_ncurses(WINDOW *list, const char *message)
 		}
 	}
 }
+
 void print_iventory_ncurses(WINDOW *list, const char *message)
 {
 	int i, j;
@@ -307,6 +308,7 @@ const char *equip_item(int index)
 				dungeon.pc.inventory_size--;
 				//set inventory memory block of indexed item to 0, match calloc 0
 				memset(inventory_item, 0, sizeof(Item));
+
 				message = "you have equiped - " + item_name;
 			}
 			else
@@ -329,6 +331,102 @@ const char *equip_item(int index)
 			{
 				message = "no place for second item";
 			}
+		}
+	}
+	else
+	{
+		message = "invaild selection";
+	}
+
+	return message.c_str();
+}
+
+const char *drop_item(int index)
+{
+	std::string message;
+	if ((dungeon.pc.inventory[index]).rarity)
+	{
+		Item *inventory_item = &(dungeon.pc.inventory[index]);
+		std::string item_name(inventory_item->name);
+		int birth = inventory_item->birth;
+		if ((is_item(dungeon.pc.row, dungeon.pc.col) < 0))//check if current terrain open
+		{
+			dungeon.item[birth].row = dungeon.pc.row;
+			dungeon.item[birth].col = dungeon.pc.col;
+		}
+		else //random drop item
+		{
+			do
+			{
+				dungeon.item[birth].row = get_random(ROW, 0);
+				dungeon.item[birth].col = get_random(COL, 0);
+			}
+			while (dungeon.map[dungeon.item[birth].row][dungeon.item[birth].col].space != ROOM &&
+					dungeon.map[dungeon.item[birth].row][dungeon.item[birth].col].space != CORRIDOR);
+		}
+
+		dungeon.pc.inventory_size--;
+		memset(inventory_item, 0, sizeof(Item));
+
+		message = "you have dropped - " + item_name;
+	}
+	else
+	{
+		message = "nothing to drop";
+	}
+
+	return message.c_str();
+}
+
+const char *takeoff_item(int index)
+{
+	std::string message;
+	if (dungeon.pc.equipment[index].rarity)
+	{
+		Item *equip_item = &(dungeon.pc.equipment[index]);
+		std::string item_name(equip_item->name);
+
+		if (dungeon.pc.inventory_size != PC_INVENTORY)
+		{
+			for (int i = 0; i < PC_INVENTORY; i++)
+			{
+				if ((dungeon.pc.inventory[i]).rarity == 0)
+				{
+					Item item = dungeon.pc.inventory[i];
+					dungeon.pc.inventory[index] = dungeon.pc.equipment[i];
+					dungeon.pc.inventory_size++;
+					dungeon.pc.equipment_open[index] = false;
+					break;
+				}
+			}
+
+			//set inventory memory block of indexed item to 0, match calloc 0
+			memset(equip_item, 0, sizeof(Item));
+			message = "you have took off - " + item_name;
+		}
+		else
+		{
+			int birth = equip_item->birth;
+			if ((is_item(dungeon.pc.row, dungeon.pc.col) < 0)) //check if current terrain open
+			{
+				dungeon.item[birth].row = dungeon.pc.row;
+				dungeon.item[birth].col = dungeon.pc.col;
+			}
+			else //random drop item
+			{
+				do
+				{
+					dungeon.item[birth].row = get_random(ROW, 0);
+					dungeon.item[birth].col = get_random(COL, 0);
+				}
+				while (dungeon.map[dungeon.item[birth].row][dungeon.item[birth].col].space != ROOM &&
+						dungeon.map[dungeon.item[birth].row][dungeon.item[birth].col].space != CORRIDOR);
+			}
+
+			dungeon.pc.equipment_open[index] = false;
+			memset(equip_item, 0, sizeof(Item));
+
+			message = "inventory is full, you have dropped - " + item_name;
 		}
 	}
 	else
@@ -454,71 +552,6 @@ void item_expunge()
 	delwin(list);
 }
 
-const char *drop_item(int index)
-{
-	std::string message;
-	if ((dungeon.pc.inventory[index]).rarity)
-	{
-		Item *inventory_item = &(dungeon.pc.inventory[index]);
-		int item_type = inventory_item->type;
-		std::string item_name(inventory_item->name);
-		//check if item is ring
-
-		
-
-
-		if (item_type == RING)
-		{
-			if (dungeon.pc.equipment_open[RING]) //first ring slot open
-			{
-				//pass item from inventory to equipment
-				dungeon.pc.equipment[RING] = dungeon.pc.inventory[index];
-				dungeon.pc.equipment_open[RING] = false;
-				dungeon.pc.inventory_size--;
-				//set inventory memory block of indexed item to 0, match calloc 0
-				memset(inventory_item, 0, sizeof(Item));
-				
-				message = "you have equiped - " + item_name;
-			}
-			else if (dungeon.pc.equipment_open[RING_SEC]) //second ring slot open
-			{
-				dungeon.pc.equipment[RING_SEC] = dungeon.pc.inventory[index];
-				dungeon.pc.equipment_open[RING_SEC] = false;
-				dungeon.pc.inventory_size--;
-				//set inventory memory block of indexed item to 0, match calloc 0
-				memset(inventory_item, 0, sizeof(Item));
-				message = "you have equiped - " + item_name;
-			}
-			else
-			{
-				message = "no place for third ring";
-			}
-		}
-		else //item is not ring
-		{
-			if (dungeon.pc.equipment_open[item_type])
-			{
-				dungeon.pc.equipment[item_type] = dungeon.pc.inventory[index];
-				dungeon.pc.equipment_open[item_type] = false;
-				dungeon.pc.inventory_size--;
-				//set inventory memory block of indexed item to 0, match calloc 0
-				memset(inventory_item, 0, sizeof(Item));
-				message = "you have equiped - " + item_name;
-			}
-			else
-			{
-				message = "no place for second item";
-			}
-		}
-	}
-	else
-	{
-		message = "nothing to drop";
-	}
-
-	return message.c_str();
-}
-
 void item_drop()
 {
 	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
@@ -581,6 +614,7 @@ void item_drop()
 	wrefresh(list);
 	delwin(list);
 }
+
 void item_inspect()
 {
 	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
@@ -654,67 +688,6 @@ void inventory_list()
 	wclrtoeol(list);
 	wrefresh(list);
 	delwin(list);
-}
-
-const char *takeoff_item(int index)
-{
-	std::string message;
-	if (dungeon.pc.equipment[index].rarity)
-	{
-		Item *equip_item = &(dungeon.pc.equipment[index]);
-		int item_type = equip_item->type;
-		std::string item_name(equip_item->name);
-		//check if item is ring
-		if (item_type == RING)
-		{
-			if (dungeon.pc.equipment_open[RING]) //first ring slot open
-			{
-				//pass item from inventory to equipment
-				dungeon.pc.equipment[RING] = dungeon.pc.inventory[index];
-				dungeon.pc.equipment_open[RING] = false;
-				dungeon.pc.inventory_size--;
-				//set inventory memory block of indexed item to 0, match calloc 0
-				memset(equip_item, 0, sizeof(Item));
-				
-				message = "you have equiped - " + item_name;
-			}
-			else if (dungeon.pc.equipment_open[RING_SEC]) //second ring slot open
-			{
-				dungeon.pc.equipment[RING_SEC] = dungeon.pc.inventory[index];
-				dungeon.pc.equipment_open[RING_SEC] = false;
-				dungeon.pc.inventory_size--;
-				//set inventory memory block of indexed item to 0, match calloc 0
-				memset(equip_item, 0, sizeof(Item));
-				message = "you have equiped - " + item_name;
-			}
-			else
-			{
-				message = "no place for third ring";
-			}
-		}
-		else //item is not ring
-		{
-			if (dungeon.pc.equipment_open[item_type])
-			{
-				dungeon.pc.equipment[item_type] = dungeon.pc.inventory[index];
-				dungeon.pc.equipment_open[item_type] = false;
-				dungeon.pc.inventory_size--;
-				//set inventory memory block of indexed item to 0, match calloc 0
-				memset(equip_item, 0, sizeof(Item));
-				message = "you have equiped - " + item_name;
-			}
-			else
-			{
-				message = "no place for second item";
-			}
-		}
-	}
-	else
-	{
-		message = "invaild selection";
-	}
-
-	return message.c_str();
 }
 
 void item_takeoff()

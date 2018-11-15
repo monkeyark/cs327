@@ -511,7 +511,7 @@ bool is_inventory_open()
 	return dungeon.pc.inventory_size != PC_INVENTORY;
 }
 
-Item new_item_desc()
+Item new_item_desc(int birth)
 {
 	Item item;
 	int row, col;
@@ -541,6 +541,7 @@ Item new_item_desc()
 
 	item.row = row;
 	item.col = col;
+	item.birth = birth;
 
 	item.name = obj.name.c_str();
 	item.description = obj.description.c_str();
@@ -630,7 +631,7 @@ void generate_dungeon_desc()
 	//add object
 	for (i = 0; i < dungeon.num_item; i++)
 	{
-		dungeon.item[i] = new_item_desc();
+		dungeon.item[i] = new_item_desc(i);
 	}
 }
 

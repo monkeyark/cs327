@@ -212,6 +212,9 @@ const char *move_pc(int row_move, int col_move)
 			{
 				//add item in current location to inventory
 				dungeon.pc.inventory[dungeon.pc.inventory_size] = dungeon.item[item_index];
+
+				//TODO
+
 				dungeon.item[item_index].row = -1;
 				dungeon.item[item_index].col = -1;
 				dungeon.pc.inventory[dungeon.pc.inventory_size].row = -1;

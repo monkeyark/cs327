@@ -392,7 +392,6 @@ const char *takeoff_item(int index)
 			{
 				if ((dungeon.pc.inventory[i]).rarity == 0)
 				{
-					Item item = dungeon.pc.inventory[i];
 					dungeon.pc.inventory[index] = dungeon.pc.equipment[i];
 					dungeon.pc.inventory_size++;
 					dungeon.pc.equipment_open[index] = false;
@@ -706,39 +705,52 @@ void item_takeoff()
 				run = false;
 				break;
 			case 'a':
-				message = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+				clear_message(list);
+				message = takeoff_item(WEAPON);
 				break;
 			case 'b':
-
+				clear_message(list);
+				message = takeoff_item(OFFHAND);
 				break;
 			case 'c':
-
+				clear_message(list);
+				message = takeoff_item(RANGED);
 				break;
 			case 'd':
-
+				clear_message(list);
+				message = takeoff_item(ARMOR);
 				break;
 			case 'e':
-
+				clear_message(list);
+				message = takeoff_item(HELMET);
 				break;
 			case 'f':
+				clear_message(list);
+				message = takeoff_item(CLOAK);
 				break;
 			case 'g':
-
+				clear_message(list);
+				message = takeoff_item(GLOVES);
 				break;
 			case 'h':
-
+				clear_message(list);
+				message = takeoff_item(BOOTS);
 				break;
 			case 'i':
-
+				clear_message(list);
+				message = takeoff_item(AMULET);
 				break;
 			case 'j':
-
+				clear_message(list);
+				message = takeoff_item(LIGHT);
 				break;
 			case 'k':
-
+				clear_message(list);
+				message = takeoff_item(RING);
 				break;
 			case 'l':
-
+				clear_message(list);
+				message = takeoff_item(RING_SEC);
 				break;
 		}
 	}

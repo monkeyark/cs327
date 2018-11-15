@@ -431,13 +431,17 @@ void new_PC_desc()
 	dungeon.pc.inventory_size = 0;
 	dungeon.pc.hitpoints = 10000;
 	dungeon.pc.damage = dice(0, 1, 4);
-	//std::cout << dungeon.pc.damage.print_string() << std::endl;//DEBUG
-	dungeon.pc.equipment = (Item *)malloc(NUM_EQUIPMENT * sizeof(Item));
-	dungeon.pc.inventory = (Item *)malloc(PC_INVENTORY * sizeof(Item));
-	printf("%d %d %d %d %d %d %d %d %d %d %d %d\n",
-			WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);//DEBUG
-	printf("%c %c %c %c %c %c %c %c %c %c %c %c\n",
-			WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK, GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);//DEBUG
+
+	//dungeon.pc.equipment = (Item *)malloc(NUM_EQUIPMENT * sizeof(Item));
+	//dungeon.pc.inventory = (Item *)malloc(PC_INVENTORY * sizeof(Item));
+	dungeon.pc.equipment = (Item *)calloc(NUM_EQUIPMENT, sizeof(Item));
+	dungeon.pc.inventory = (Item *)calloc(PC_INVENTORY, sizeof(Item));
+	// printf("%d %d %d %d %d %d %d %d %d %d %d %d\n",
+	// 		WEAPON, OFFHAND, RANGED, ARMOR, HELMET,CLOAK,
+	// 		GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);//DEBUG
+	// printf("%c %c %c %c %c %c %c %c %c %c %c %c\n",
+	// 		WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK,
+	// 		GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);//DEBUG
 	remember_map_PC();
 	dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
 }
@@ -482,7 +486,8 @@ NPC new_NPC_desc(int birth)
 	npc.color_display = mons.color_display;
 	npc.hitpoints = mons.hitpoints.roll();
 	npc.speed = mons.speed.roll();
-
+	npc.name = mons.name.c_str();
+	npc.description = mons.description.c_str();
 	if (npc.ability & NPC_TELEPATH) //monster is telepath
 	{
 		npc.pc_row = dungeon.pc.row;
@@ -540,8 +545,8 @@ Item new_item_desc()
 	item.row = row;
 	item.col = col;
 
-	item.name = &obj.name;
-	item.description = &obj.description;
+	item.name = obj.name.c_str();
+	item.description = obj.description.c_str();
 	item.damage = obj.damage;
 	item.color = obj.color;
 	item.color_display = obj.color_display;
@@ -554,7 +559,7 @@ Item new_item_desc()
 	item.value = obj.value.roll();
 	item.artifact = obj.artifact;
 	item.rarity = obj.rarity;
-	item.type = &obj.type;
+	item.type = obj.type.c_str();
 	item.symbol = obj.symbol;
 
 	dungeon.map[item.row][item.col].space = item.symbol;
@@ -585,11 +590,15 @@ void generate_dungeon_desc()
 	{
 		dungeon.num_mon = get_random(5, 8);
 	}
+	dungeon.num_mon = 1;//DEBUG
 	dungeon.num_item = get_random(5, 11);
 
-	dungeon.rooms = (Room *)malloc(dungeon.num_room * sizeof(Room));
-	dungeon.monster = (NPC *)malloc(dungeon.num_mon * sizeof(NPC));
-	dungeon.item = (Item *)malloc(dungeon.num_item * sizeof(Item));
+	// dungeon.rooms = (Room *)malloc(dungeon.num_room * sizeof(Room));
+	// dungeon.monster = (NPC *)malloc(dungeon.num_mon * sizeof(NPC));
+	// dungeon.item = (Item *)malloc(dungeon.num_item * sizeof(Item));
+	dungeon.rooms = (Room *)calloc(dungeon.num_room, sizeof(Room));
+	dungeon.monster = (NPC *)calloc(dungeon.num_mon, sizeof(NPC));
+	dungeon.item = (Item *)calloc(dungeon.num_item, sizeof(Item));
 
 	int i;
 	//add rooms

@@ -37,7 +37,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 				if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
 				{
 					mvwprintw(game, i, j, "@");
-					mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
+					//mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
 				}
 				else if (!(npc_index < 0))
 				{
@@ -47,7 +47,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 					mvwprintw(game, i, j, "%c", dungeon.monster[npc_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 
-					mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[npc_index].color_display); //DEBUG
+					//mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[npc_index].color_display); //DEBUG
 				}
 				else if (!(item_index < 0))
 				{
@@ -57,12 +57,12 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 					mvwprintw(game, i, j, "%c", dungeon.item[item_index].symbol);
 					wattroff(game, COLOR_PAIR(color));
 
-					mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[item_index].color_display); //DEBUG
+					//mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[item_index].color_display); //DEBUG
 				}
 				else
 				{
 					mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
-					mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].terrain); //DEBUG
+					//mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].terrain); //DEBUG
 				}
 			}
 			else
@@ -77,7 +77,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 				}
 			}
 			//TODO some items are not added to dungeon.map[i][j].space
-			mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].space); //DEBUG
+			//mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].space); //DEBUG
 		}
 	}
 }
@@ -112,7 +112,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 			if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
 			{
 				mvwprintw(game, i, j, "@");
-				mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
+				//mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
 			}
 			else if (!(npc_index < 0))
 			{
@@ -122,7 +122,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 				mvwprintw(game, i, j, "%c", dungeon.monster[npc_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[npc_index].color_display); //DEBUG
+				//mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[npc_index].color_display); //DEBUG
 			}
 			else if (!(item_index < 0))
 			{
@@ -132,12 +132,12 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 				mvwprintw(game, i, j, "%c", dungeon.item[item_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[item_index].color_display); //DEBUG
+				//mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[item_index].color_display); //DEBUG
 			}
 			else
 			{
 				mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
-				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].terrain); //DEBUG
+				//mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].terrain); //DEBUG
 			}
 		}
 	}
@@ -173,12 +173,12 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 			if ((i - 1) == dungeon.teleport_row && j == dungeon.teleport_col)
 			{
 				mvwprintw(game, i, j, "*");
-				mvwprintw(game, i + TERMINAL_ROW, j, "*"); //DEBUG
+				//mvwprintw(game, i + TERMINAL_ROW, j, "*"); //DEBUG
 			}
 			else if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
 			{
 				mvwprintw(game, i, j, "@");
-				mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
+				//mvwprintw(game, i + TERMINAL_ROW, j, "@"); //DEBUG
 			}
 			else if (!(npc_index < 0))
 			{
@@ -188,7 +188,7 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 				mvwprintw(game, i, j, "%c", dungeon.monster[npc_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[npc_index].color_display); //DEBUG
+				//mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.monster[npc_index].color_display); //DEBUG
 			}
 			else if (!(item_index < 0))
 			{
@@ -198,12 +198,12 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 				mvwprintw(game, i, j, "%c", dungeon.item[item_index].symbol);
 				wattroff(game, COLOR_PAIR(color));
 
-				mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[item_index].color_display); //DEBUG
+				//mvwprintw(game, i + TERMINAL_ROW, j, "%d", dungeon.item[item_index].color_display); //DEBUG
 			}
 			else
 			{
 				mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
-				mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].terrain); //DEBUG
+				//mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].terrain); //DEBUG
 			}
 		}
 	}
@@ -211,28 +211,85 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 
 void print_equipment_ncurses(WINDOW *list)
 {
-	const char *m = "equipment list";
+	const char *message = "equipment list";
 	int i, j;
-	for (i = 0, j = 0; *m; m++, j++)
+	for (i = 0, j = 0; *message; message++, j++)
 	{
 		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
 		wattron(list, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(list, i, j, m);
+		mvwprintw(list, i, j, message);
 		wattroff(list, COLOR_PAIR(COLOR_CYAN));
+	}
+
+	char str[TERMINAL_COL];
+	char *m;
+	for (i = 1, j = 0; i < NUM_EQUIPMENT + 1; i++, j++)
+	{
+		if (dungeon.pc.equipment[j].rarity != 0)
+		{
+			Item item = dungeon.pc.equipment[j];
+			sprintf(str, "%c) %s - hit:%d, defence:%d, dodge:%d, weight:%d, speed:%d", j+'a',
+					item.name, item.hit, item.defence, item.dodge, item.weight, item.speed);
+		}
+		else
+		{
+			sprintf(str, "%c)" , j+'a');
+		}
+		m = str;
+
+		for (int n = 0; *m; m++, n++)
+		{
+			mvwprintw(list, i, n, m);
+		}
 	}
 }
 void print_iventory_ncurses(WINDOW *list)
 {
-	const char *m = "iventory list";
+	const char *message = "iventory list";
 	int i, j;
-	for (i = 0, j = 0; *m; m++, j++)
+	for (i = 0, j = 0; *message; message++, j++)
 	{
 		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
 		wattron(list, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(list, i, j, m);
+		mvwprintw(list, i, j, message);
 		wattroff(list, COLOR_PAIR(COLOR_CYAN));
 	}
+
+	char str[TERMINAL_COL];
+	char *m;
+	for (i = 1, j = 0; i < PC_INVENTORY + 1; i++, j++)
+	{
+		if ((dungeon.pc.inventory[j]).rarity != 0)
+		//if (&(dungeon.pc.inventory[j]) != NULL)//TODO
+		{
+			Item item = dungeon.pc.inventory[j];
+			sprintf(str, "%2d) %s - hit:%d, defence:%d, dodge:%d, weight:%d, speed:%d", j,
+					item.name, item.hit, item.defence, item.dodge, item.weight, item.speed);
+		}
+		else
+		{
+			sprintf(str, "%2d)" , j);
+		}
+		m = str;
+
+		for (int n = 0; *m; m++, n++)
+		{
+			mvwprintw(list, i, n, m);
+		}
+	}
 }
+
+void item_wear()
+{
+
+}
+
+void item_takeoff()
+{}
+void item_expunge()
+{}
+void item_drop()
+{}
 
 void inventory_list()
 {
@@ -249,10 +306,8 @@ void inventory_list()
 			run = false;
 			break;
 		case KEY_UP:
-
 			break;
 		case KEY_DOWN:
-
 			break;
 		}
 	}
@@ -277,10 +332,8 @@ void equipment_list()
 			run = false;
 			break;
 		case KEY_UP:
-
 			break;
 		case KEY_DOWN:
-
 			break;
 		}
 	}

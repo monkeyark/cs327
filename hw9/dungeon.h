@@ -82,19 +82,19 @@
 
 enum
 {
-	WEAPON        =  97,
-	OFFHAND       =  98,
-	RANGED        =  99,
-	ARMOR         = 100,
-	HELMET        = 101,
-	CLOAK         = 102,
-	GLOVES        = 103,
-	BOOTS         = 104,
-	AMULET        = 105,
-	LIGHT         = 106,
-	RINGLEFT      = 107,
-	RINGRIGHT     = 108,
-	NUM_EQUIPMENT = RINGRIGHT - WEAPON + 1,
+	WEAPON,
+	OFFHAND,
+	RANGED,
+	ARMOR,
+	HELMET,
+	CLOAK,
+	GLOVES,
+	BOOTS,
+	AMULET,
+	LIGHT,
+	RINGLEFT,
+	RINGRIGHT,
+	NUM_EQUIPMENT,
 };
 
 class Terrain
@@ -121,8 +121,8 @@ class Item
 		int row;
 		int col;
 		char symbol;
-		std::string *name;
-		std::string *description;
+		const char *name;
+		const char *description;
 		dice damage;
 		unsigned int color;
 		int color_display;
@@ -135,7 +135,7 @@ class Item
 		int value;
 		bool artifact;
 		int rarity;
-		std::string *type;
+		const char *type;
 };
 
 class Character
@@ -161,6 +161,8 @@ class NPC : public Character
 		int dist[ROW * COL];
 		unsigned int color;
 		int color_display;
+		const char *name;
+		const char *description;
 };
 
 class PC : public Character

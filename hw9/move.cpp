@@ -207,7 +207,7 @@ const char *move_pc(int row_move, int col_move)
 		int item_index = is_item(dungeon.pc.row, dungeon.pc.col);
 		if (!(item_index < 0))
 		{
-			//if iventory has space to pick up new item
+			//iventory has space to pick up new item
 			if (is_inventory_open())
 			{
 				//add item in current location to inventory
@@ -216,17 +216,21 @@ const char *move_pc(int row_move, int col_move)
 				dungeon.item[item_index].col = -1;
 				dungeon.pc.inventory[dungeon.pc.inventory_size].row = -1;
 				dungeon.pc.inventory[dungeon.pc.inventory_size].col = -1;
+				
 				dungeon.pc.inventory_size++;
 
 				dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
+				message = "You picked up one item";
 			}
 			else
 			{
+				message = "Iventory is full, no space to pickup";
 				dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.item[item_index].symbol;
 			}
 		}
 		else
 		{
+			message = "";
 			dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
 		}
 		
@@ -241,10 +245,10 @@ const char *move_pc(int row_move, int col_move)
 			dungeon.monster[npc_index].dead = true;
 			dungeon.monster[npc_index].row = -1;
 			dungeon.monster[npc_index].col = -1;
+			message = "You kill monster - ";
 		}
 		move_npc();
         remember_map_PC();
-		message = "";
 	}
 	else
 	{

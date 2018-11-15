@@ -5,15 +5,22 @@
 #include "move.h"
 #include "io.h"
 
-void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
+void clear_message(WINDOW *win)
 {
-	int i, j;
 	//clean previous message
+	int i, j;
 	for (i = 0, j = 0; j < TERMINAL_COL; j++)
 	{
-		mvwprintw(game, i, j, " ");
+		mvwprintw(win, i, j, " ");
 	}
+}
 
+void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
+{
+	//clean previous message
+	clear_message(game);
+
+	int i, j;
 	//print current message
 	const char *m = message;
 	for (i = 0, j = 0; *m; m++, j++)
@@ -84,13 +91,10 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 
 void print_dungeon_ncurses(WINDOW *game, const char *message)
 {
-	int i, j;
 	//clean previous message
-	for (i = 0, j = 0; j < TERMINAL_COL; j++)
-	{
-		mvwprintw(game, i, j, " ");
-	}
+	clear_message(game);
 
+	int i, j;
 	//print current message
 	const char *m = message;
 	for (i = 0, j = 0; *m; m++, j++)
@@ -145,13 +149,10 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 
 void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 {
-	int i, j;
 	//clean previous message
-	for (i = 0, j = 0; j < TERMINAL_COL; j++)
-	{
-		mvwprintw(game, i, j, " ");
-	}
+	clear_message(game);
 
+	int i, j;
 	//print current message
 	const char *m = message;
 	for (i = 0, j = 0; *m; m++, j++)
@@ -227,12 +228,12 @@ void print_equipment_ncurses(WINDOW *list, const char *message)
 		if (dungeon.pc.equipment[j].rarity != 0)
 		{
 			Item item = dungeon.pc.equipment[j];
-			sprintf(str, "%c) %s - hit:%d, defence:%d, dodge:%d, weight:%d, speed:%d", j+'a',
-					item.name, item.hit, item.defence, item.dodge, item.weight, item.speed);
+			sprintf(str, "%c) %s - type:%s hit:%d, defence:%d, dodge:%d, weight:%d, speed:%d", j + 'a',
+					item.name, item.type_string, item.hit, item.defence, item.dodge, item.weight, item.speed);
 		}
 		else
 		{
-			sprintf(str, "%c)" , j+'a');
+			sprintf(str, "%c)", j + 'a');
 		}
 		m = str;
 
@@ -257,16 +258,16 @@ void print_iventory_ncurses(WINDOW *list, const char *message)
 	char *m;
 	for (i = 1, j = 0; i < PC_INVENTORY + 1; i++, j++)
 	{
-		if ((dungeon.pc.inventory[j]).rarity != 0)
+		if ((dungeon.pc.inventory[j]).rarity)
 		//if (&(dungeon.pc.inventory[j]) != NULL)//TODO
 		{
 			Item item = dungeon.pc.inventory[j];
-			sprintf(str, "%2d) %s - hit:%d, defence:%d, dodge:%d, weight:%d, speed:%d", j,
-					item.name, item.hit, item.defence, item.dodge, item.weight, item.speed);
+			sprintf(str, "%2d) %s - type:%s hit:%d, defence:%d, dodge:%d, weight:%d, speed:%d", j,
+					item.name, item.type_string, item.hit, item.defence, item.dodge, item.weight, item.speed);
 		}
 		else
 		{
-			sprintf(str, "%2d)" , j);
+			sprintf(str, "%2d)", j);
 		}
 		m = str;
 
@@ -275,6 +276,67 @@ void print_iventory_ncurses(WINDOW *list, const char *message)
 			mvwprintw(list, i, n, m);
 		}
 	}
+}
+
+const char *equip_item(int index)
+{
+	std::string message;
+	if ((dungeon.pc.inventory[index]).rarity)
+	{
+		Item *inventory_item = &(dungeon.pc.inventory[index]);
+		int item_type = inventory_item->type;
+		std::string item_name(inventory_item->name);
+		//check if item is ring
+		if (item_type == RING)
+		{
+			if (dungeon.pc.equipment_open[RING]) //first ring slot open
+			{
+				//pass item from inventory to equipment
+				dungeon.pc.equipment[RING] = dungeon.pc.inventory[index];
+				dungeon.pc.equipment_open[RING] = false;
+				dungeon.pc.inventory_size--;
+				//set inventory memory block of indexed item to 0, match calloc 0
+				memset(inventory_item, 0, sizeof(Item));
+				
+				message = "you have equiped - " + item_name;
+			}
+			else if (dungeon.pc.equipment_open[RING_SEC]) //second ring slot open
+			{
+				dungeon.pc.equipment[RING_SEC] = dungeon.pc.inventory[index];
+				dungeon.pc.equipment_open[RING_SEC] = false;
+				dungeon.pc.inventory_size--;
+				//set inventory memory block of indexed item to 0, match calloc 0
+				memset(inventory_item, 0, sizeof(Item));
+				message = "you have equiped - " + item_name;
+			}
+			else
+			{
+				message = "no place for third ring";
+			}
+		}
+		else //item is not ring
+		{
+			if (dungeon.pc.equipment_open[item_type])
+			{
+				dungeon.pc.equipment[item_type] = dungeon.pc.inventory[index];
+				dungeon.pc.equipment_open[item_type] = false;
+				dungeon.pc.inventory_size--;
+				//set inventory memory block of indexed item to 0, match calloc 0
+				memset(inventory_item, 0, sizeof(Item));
+				message = "you have equiped - " + item_name;
+			}
+			else
+			{
+				message = "no place for second item";
+			}
+		}
+	}
+	else
+	{
+		message = "invaild selection";
+	}
+
+	return message.c_str();
 }
 
 void item_wear()
@@ -293,33 +355,44 @@ void item_wear()
 				run = false;
 				break;
 			case '0':
-				message = "0";
+				clear_message(list);
+				message = equip_item(0);
 				break;
 			case '1':
-
+				clear_message(list);
+				message = equip_item(1);
 				break;
 			case '2':
-				
+				clear_message(list);
+				message = equip_item(2);
 				break;
 			case '3':
-				
+				clear_message(list);
+				message = equip_item(3);
 				break;
 			case '4':
-				
+				clear_message(list);
+				message = equip_item(4);
 				break;
 			case '5':
-				
+				clear_message(list);
+				message = equip_item(5);
 				break;
 			case '6':
-				
+				clear_message(list);
+				message = equip_item(6);
 				break;
 			case '7':
-				
+				clear_message(list);
+				message = equip_item(7);
 				break;
 			case '8':
-				
+				clear_message(list);
+				message = equip_item(8);
 				break;
 			case '9':
+				clear_message(list);
+				message = equip_item(9);
 				break;
 		}
 	}
@@ -351,25 +424,25 @@ void item_expunge()
 
 				break;
 			case '2':
-				
+
 				break;
 			case '3':
-				
+
 				break;
 			case '4':
-				
+
 				break;
 			case '5':
-				
+
 				break;
 			case '6':
-				
+
 				break;
 			case '7':
-				
+
 				break;
 			case '8':
-				
+
 				break;
 			case '9':
 				break;
@@ -402,25 +475,25 @@ void item_drop()
 
 				break;
 			case '2':
-				
+
 				break;
 			case '3':
-				
+
 				break;
 			case '4':
-				
+
 				break;
 			case '5':
-				
+
 				break;
 			case '6':
-				
+
 				break;
 			case '7':
-				
+
 				break;
 			case '8':
-				
+
 				break;
 			case '9':
 				break;
@@ -453,25 +526,25 @@ void item_inspect()
 
 				break;
 			case '2':
-				
+
 				break;
 			case '3':
-				
+
 				break;
 			case '4':
-				
+
 				break;
 			case '5':
-				
+
 				break;
 			case '6':
-				
+
 				break;
 			case '7':
-				
+
 				break;
 			case '8':
-				
+
 				break;
 			case '9':
 				break;
@@ -518,44 +591,44 @@ void item_takeoff()
 		int key = wgetch(list);
 		switch (key)
 		{
-		case 27:
-			run = false;
-			break;
-		case 'a':
-			message = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-			break;
-		case 'b':
+			case 27:
+				run = false;
+				break;
+			case 'a':
+				message = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+				break;
+			case 'b':
 
-			break;
-		case 'c':
-			
-			break;
-		case 'd':
+				break;
+			case 'c':
 
-			break;
-		case 'e':
+				break;
+			case 'd':
 
-			break;
-		case 'f':
-			break;
-		case 'g':
+				break;
+			case 'e':
 
-			break;
-		case 'h':
+				break;
+			case 'f':
+				break;
+			case 'g':
 
-			break;
-		case 'i':
+				break;
+			case 'h':
 
-			break;
-		case 'j':
+				break;
+			case 'i':
 
-			break;
-		case 'k':
+				break;
+			case 'j':
 
-			break;
-		case 'l':
+				break;
+			case 'k':
 
-			break;
+				break;
+			case 'l':
+
+				break;
 		}
 	}
 
@@ -689,8 +762,8 @@ const char *move_pc_teleport(int row_move, int col_move)
 
 void teleport()
 {
-	WINDOW *teleport = newwin(TERMINAL_ROW * 2, TERMINAL_COL, 0, 0); //BEBUG
-	//WINDOW *teleport = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	//WINDOW *teleport = newwin(TERMINAL_ROW * 2, TERMINAL_COL, 0, 0); //DEBUG
+	WINDOW *teleport = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 	keypad(teleport, true);
 	bool run = true;
 	dungeon.teleport_row = dungeon.pc.row;
@@ -845,8 +918,8 @@ void dungeon_ncurses()
 	start_color();
 	noecho();
 	cbreak();
-	//WINDOW *game = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
-	WINDOW *game = newwin(TERMINAL_ROW * 2, TERMINAL_COL, 0, 0); //DEBUG
+	WINDOW *game = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	//WINDOW *game = newwin(TERMINAL_ROW * 2, TERMINAL_COL, 0, 0); //DEBUG
 
 	keypad(game, true);
 	bool run = true;

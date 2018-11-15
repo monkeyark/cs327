@@ -431,17 +431,14 @@ void new_PC_desc()
 	dungeon.pc.inventory_size = 0;
 	dungeon.pc.hitpoints = 10000;
 	dungeon.pc.damage = dice(0, 1, 4);
-
+	for (int i = 0; i < NUM_EQUIPMENT; i++)
+	{
+		dungeon.pc.equipment_open[i] = true;
+	}
 	//dungeon.pc.equipment = (Item *)malloc(NUM_EQUIPMENT * sizeof(Item));
 	//dungeon.pc.inventory = (Item *)malloc(PC_INVENTORY * sizeof(Item));
 	dungeon.pc.equipment = (Item *)calloc(NUM_EQUIPMENT, sizeof(Item));
 	dungeon.pc.inventory = (Item *)calloc(PC_INVENTORY, sizeof(Item));
-	// printf("%d %d %d %d %d %d %d %d %d %d %d %d\n",
-	// 		WEAPON, OFFHAND, RANGED, ARMOR, HELMET,CLOAK,
-	// 		GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);//DEBUG
-	// printf("%c %c %c %c %c %c %c %c %c %c %c %c\n",
-	// 		WEAPON, OFFHAND, RANGED, ARMOR, HELMET, CLOAK,
-	// 		GLOVES, BOOTS, AMULET, LIGHT, RINGLEFT, RINGRIGHT);//DEBUG
 	remember_map_PC();
 	dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
 }
@@ -559,7 +556,8 @@ Item new_item_desc()
 	item.value = obj.value.roll();
 	item.artifact = obj.artifact;
 	item.rarity = obj.rarity;
-	item.type = obj.type.c_str();
+	item.type = obj.type;
+	item.type_string = obj.type_string.c_str();
 	item.symbol = obj.symbol;
 
 	dungeon.map[item.row][item.col].space = item.symbol;

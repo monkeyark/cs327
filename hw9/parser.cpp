@@ -541,90 +541,101 @@ int parse_object_name(ifstream &f, string *lookahead, string *name)
     return parse_name(f, lookahead, name);
 }
 
-int parse_object_type(ifstream &f, string *lookahead, string *type, char *symbol)
+int parse_object_type(ifstream &f, string *lookahead, int *type, string *type_string, char *symbol)
 {
-    if (parse_name(f, lookahead, type))
+    if (parse_name(f, lookahead, type_string))
     {
         return 1;
     }
 
-    if (*type == "WEAPON")
+    if (*type_string == "WEAPON")
     {
         *symbol = '|';
+        *type = WEAPON;
     }
-    else if (*type == "OFFHAND")
+    else if (*type_string == "OFFHAND")
     {
         *symbol = ')';
+        *type = OFFHAND;
     }
-    else if (*type == "RANGED")
+    else if (*type_string == "RANGED")
     {
         *symbol = '}';
+        *type = RANGED;
     }
-    else if (*type == "ARMOR")
+    else if (*type_string == "ARMOR")
     {
         *symbol = '[';
+        *type = ARMOR;
     }
-    else if (*type == "HELMET")
+    else if (*type_string == "HELMET")
     {
         *symbol = ']';
+        *type = HELMET;
     }
-    else if (*type == "CLOAK")
+    else if (*type_string == "CLOAK")
     {
         *symbol = '(';
+        *type = CLOAK;
     }
-    else if (*type == "GLOVES")
+    else if (*type_string == "GLOVES")
     {
         *symbol = '{';
+        *type = GLOVES;
     }
-    else if (*type == "BOOTS")
+    else if (*type_string == "BOOTS")
     {
         *symbol = '\\';
+        *type = BOOTS;
     }
-    else if (*type == "RING")
-    {
-        *symbol = '=';
-    }
-    else if (*type == "AMULET")
+    else if (*type_string == "AMULET")
     {
         *symbol = '"';
+        *type = AMULET;
     }
-    else if (*type == "LIGHT")
+    else if (*type_string == "LIGHT")
     {
         *symbol = '_';
+        *type = LIGHT;
     }
-    else if (*type == "SCROLL")
+    else if (*type_string == "RING")
+    {
+        *symbol = '=';
+        *type = RING;
+    }
+    else if (*type_string == "SCROLL")
     {
         *symbol = '~';
     }
-    else if (*type == "BOOK")
+    else if (*type_string == "BOOK")
     {
         *symbol = '?';
     }
-    else if (*type == "FLASK")
+    else if (*type_string == "FLASK")
     {
         *symbol = '!';
     }
-    else if (*type == "GOLD")
+    else if (*type_string == "GOLD")
     {
         *symbol = '$';
     }
-    else if (*type == "AMMUNITION")
+    else if (*type_string == "AMMUNITION")
     {
         *symbol = '/';
     }
-    else if (*type == "FOOD")
+    else if (*type_string == "FOOD")
     {
         *symbol = ',';
     }
-    else if (*type == "WAND")
+    else if (*type_string == "WAND")
     {
         *symbol = '-';
     }
-    else if (*type == "CONTAINER")
+    else if (*type_string == "CONTAINER")
     {
         *symbol = '%';
     }
-    else if (*type == "STACK")
+    else if (*type_string == "STACK")
     {
         *symbol = '&';
     }
@@ -730,7 +741,8 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
     bool artifact;
     int rarity;
     char symbol;
-    string type;
+    int type;
+    string type_string;
 
     unsigned int color;
     string color_string;
@@ -759,11 +771,12 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
         }
         else if (!(*lookahead).compare("TYPE"))
         {
-            if (parse_object_type(f, lookahead, &type, &symbol))
+            if (parse_object_type(f, lookahead, &type, &type_string, &symbol))
             {
                 return 0;
             }
             object->type = type;
+            object->type_string = type_string;
             object->symbol = symbol;
         }
         else if (!(*lookahead).compare("COLOR"))
@@ -968,7 +981,7 @@ void print_object_desc()
         Object object = dungeon.obj.at(i);
         cout << object.name << endl;
         cout << object.description << endl;
-        cout << object.type << endl;
+        cout << object.type_string << endl;
         cout << object.color_string << endl;
         cout << object.weight.print_string() << endl;
         cout << object.hit.print_string() << endl;
@@ -991,7 +1004,7 @@ void print_object_desc_with_type()
         Object object = dungeon.obj.at(i);
         cout << "NAME: " << object.name << endl;
         cout << "DESCRIPTION: " << object.description << endl;
-        cout << "TYPE: " << object.type << endl;
+        cout << "TYPE: " << object.type_string << endl;
         cout << "COLOR: " << object.color_string << endl;
         cout << "WEIGHT: " << object.weight.print_string() << endl;
         cout << "HITPOINTS: " << object.hit.print_string() << endl;

@@ -92,8 +92,8 @@ enum
 	BOOTS,
 	AMULET,
 	LIGHT,
-	RINGLEFT,
-	RINGRIGHT,
+	RING,
+	RING_SEC,
 	NUM_EQUIPMENT,
 };
 
@@ -135,7 +135,8 @@ class Item
 		int value;
 		bool artifact;
 		int rarity;
-		const char *type;
+		int type;
+		const char *type_string;
 };
 
 class Character
@@ -170,6 +171,7 @@ class PC : public Character
 	public:
 		int vision[ROW][COL];
 		int inventory_size;
+		bool equipment_open[NUM_EQUIPMENT];
 		Item *equipment;
 		Item *inventory;
 };
@@ -210,7 +212,8 @@ class Object
 		dice value;
 		bool artifact;
 		int rarity;
-		std::string type;
+		int type;
+		std::string type_string;
 		char symbol;
 		bool seen;
 };

@@ -228,8 +228,7 @@ void print_equipment_ncurses(WINDOW *list, const char *message)
 		if (dungeon.pc.equipment[j].rarity != 0)
 		{
 			Item item = dungeon.pc.equipment[j];
-			sprintf(str, "%c) %s - type:%s hit:%d, defence:%d, dodge:%d, weight:%d, speed:%d", j + 'a',
-					item.name, item.type_string, item.hit, item.defence, item.dodge, item.weight, item.speed);
+			sprintf(str, "%c) %6s --- %s", j + 'a', item.type_string, item.name);
 		}
 		else
 		{
@@ -263,8 +262,7 @@ void print_iventory_ncurses(WINDOW *list, const char *message)
 		//if (&(dungeon.pc.inventory[j]) != NULL)//TODO
 		{
 			Item item = dungeon.pc.inventory[j];
-			sprintf(str, "%2d) %s - type:%s hit:%d, defence:%d, dodge:%d, weight:%d, speed:%d", j,
-					item.name, item.type_string, item.hit, item.defence, item.dodge, item.weight, item.speed);
+			sprintf(str, "%2d) %6s --- %s", j, item.type_string, item.name);
 		}
 		else
 		{
@@ -515,7 +513,7 @@ void item_expunge()
 				run = false;
 				break;
 			case '0':
-				message = "0";
+
 				break;
 			case '1':
 
@@ -542,6 +540,7 @@ void item_expunge()
 
 				break;
 			case '9':
+
 				break;
 		}
 	}
@@ -614,15 +613,61 @@ void item_drop()
 	delwin(list);
 }
 
+void print_item_descr(WINDOW *list, const char *message, int index)
+{
+	int i, j;
+	for (i = 0, j = 0; *message; message++, j++)
+	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(list, COLOR_PAIR(COLOR_CYAN));
+		mvwprintw(list, i, j, message);
+		wattroff(list, COLOR_PAIR(COLOR_CYAN));
+	}
+	/*
+	char str[TERMINAL_COL];
+	char *m;
+	const char *description = dungeon.pc.inventory[index].description;
+
+	for (i = 1, j = 0; *description; i++, j++)
+	{
+		if ((dungeon.pc.inventory[index]).rarity)
+		//if (&(dungeon.pc.inventory[j]) != NULL)//TODO
+		{
+			sprintf(str, description);
+		}
+		else
+		{
+			sprintf(str, "not a valid item");
+		}
+
+		m = str;
+		for (int n = 0; *m; m++, n++)
+		{
+			mvwprintw(list, i, n, m);
+		}
+	}
+	*/
+}
+
 void item_inspect()
 {
 	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 	keypad(list, true);
 	bool run = true;
-	const char *message = "press number key to inspect item, ESC to return";
+	bool desc = false;
+	int index;
+	const char *message = "press number to inspect item, i to inventory, ESC to return";
 	while (run)
 	{
-		print_iventory_ncurses(list, message);
+		if (desc)
+		{
+			print_item_descr(list, message, index);
+		}
+		else
+		{
+			print_iventory_ncurses(list, message);
+		}
+		
 		int key = wgetch(list);
 		switch (key)
 		{
@@ -630,33 +675,58 @@ void item_inspect()
 				run = false;
 				break;
 			case '0':
-				message = "0";
+				clear_message(list);
+				index = 0;
+				desc = !desc;
 				break;
 			case '1':
-
+				clear_message(list);
+				index = 1;
+				desc = !desc;
 				break;
 			case '2':
-
+				clear_message(list);
+				index = 2;
+				desc = !desc;
 				break;
 			case '3':
-
+				clear_message(list);
+				index = 3;
+				desc = !desc;
 				break;
 			case '4':
-
+				clear_message(list);
+				index = 4;
+				desc = !desc;
 				break;
 			case '5':
-
+				clear_message(list);
+				index = 5;
+				desc = !desc;
 				break;
 			case '6':
-
+				clear_message(list);
+				index = 6;
+				desc = !desc;
 				break;
 			case '7':
-
+				clear_message(list);
+				index = 7;
+				desc = !desc;
 				break;
 			case '8':
-
+				clear_message(list);
+				index = 8;
+				desc = !desc;
 				break;
 			case '9':
+				clear_message(list);
+				index = 9;
+				desc = !desc;
+				break;
+			case 'i':
+				clear_message(list);
+				message = "choose one item";
 				break;
 		}
 	}

@@ -209,9 +209,8 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 	}
 }
 
-void print_equipment_ncurses(WINDOW *list)
+void print_equipment_ncurses(WINDOW *list, const char *message)
 {
-	const char *message = "equipment list";
 	int i, j;
 	for (i = 0, j = 0; *message; message++, j++)
 	{
@@ -243,9 +242,8 @@ void print_equipment_ncurses(WINDOW *list)
 		}
 	}
 }
-void print_iventory_ncurses(WINDOW *list)
+void print_iventory_ncurses(WINDOW *list, const char *message)
 {
-	const char *message = "iventory list";
 	int i, j;
 	for (i = 0, j = 0; *message; message++, j++)
 	{
@@ -281,33 +279,282 @@ void print_iventory_ncurses(WINDOW *list)
 
 void item_wear()
 {
+	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(list, true);
+	bool run = true;
+	const char *message = "press number key to select item to wear, ESC to return";
+	while (run)
+	{
+		print_iventory_ncurses(list, message);
+		int key = wgetch(list);
+		switch (key)
+		{
+			case 27:
+				run = false;
+				break;
+			case '0':
+				message = "0";
+				break;
+			case '1':
 
+				break;
+			case '2':
+				
+				break;
+			case '3':
+				
+				break;
+			case '4':
+				
+				break;
+			case '5':
+				
+				break;
+			case '6':
+				
+				break;
+			case '7':
+				
+				break;
+			case '8':
+				
+				break;
+			case '9':
+				break;
+		}
+	}
+
+	wclrtoeol(list);
+	wrefresh(list);
+	delwin(list);
 }
 
-void item_takeoff()
-{}
 void item_expunge()
-{}
+{
+	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(list, true);
+	bool run = true;
+	const char *message = "press number key to expunge item, ESC to return";
+	while (run)
+	{
+		print_iventory_ncurses(list, message);
+		int key = wgetch(list);
+		switch (key)
+		{
+			case 27:
+				run = false;
+				break;
+			case '0':
+				message = "0";
+				break;
+			case '1':
+
+				break;
+			case '2':
+				
+				break;
+			case '3':
+				
+				break;
+			case '4':
+				
+				break;
+			case '5':
+				
+				break;
+			case '6':
+				
+				break;
+			case '7':
+				
+				break;
+			case '8':
+				
+				break;
+			case '9':
+				break;
+		}
+	}
+
+	wclrtoeol(list);
+	wrefresh(list);
+	delwin(list);
+}
 void item_drop()
-{}
+{
+	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(list, true);
+	bool run = true;
+	const char *message = "press number key to drop item, ESC to return";
+	while (run)
+	{
+		print_iventory_ncurses(list, message);
+		int key = wgetch(list);
+		switch (key)
+		{
+			case 27:
+				run = false;
+				break;
+			case '0':
+				message = "0";
+				break;
+			case '1':
+
+				break;
+			case '2':
+				
+				break;
+			case '3':
+				
+				break;
+			case '4':
+				
+				break;
+			case '5':
+				
+				break;
+			case '6':
+				
+				break;
+			case '7':
+				
+				break;
+			case '8':
+				
+				break;
+			case '9':
+				break;
+		}
+	}
+
+	wclrtoeol(list);
+	wrefresh(list);
+	delwin(list);
+}
+void item_inspect()
+{
+	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(list, true);
+	bool run = true;
+	const char *message = "press number key to inspect item, ESC to return";
+	while (run)
+	{
+		print_iventory_ncurses(list, message);
+		int key = wgetch(list);
+		switch (key)
+		{
+			case 27:
+				run = false;
+				break;
+			case '0':
+				message = "0";
+				break;
+			case '1':
+
+				break;
+			case '2':
+				
+				break;
+			case '3':
+				
+				break;
+			case '4':
+				
+				break;
+			case '5':
+				
+				break;
+			case '6':
+				
+				break;
+			case '7':
+				
+				break;
+			case '8':
+				
+				break;
+			case '9':
+				break;
+		}
+	}
+
+	wclrtoeol(list);
+	wrefresh(list);
+	delwin(list);
+}
 
 void inventory_list()
 {
 	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 	keypad(list, true);
 	bool run = true;
+	const char *message = "inventory list, ESC to return";
 	while (run)
 	{
-		print_iventory_ncurses(list);
+		print_iventory_ncurses(list, message);
 		int key = wgetch(list);
 		switch (key)
 		{
 		case 27:
 			run = false;
 			break;
-		case KEY_UP:
+		}
+	}
+
+	wclrtoeol(list);
+	wrefresh(list);
+	delwin(list);
+}
+
+void item_takeoff()
+{
+	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(list, true);
+	bool run = true;
+	const char *message = "press key to take of item, ESC to return";
+	while (run)
+	{
+		print_equipment_ncurses(list, message);
+		int key = wgetch(list);
+		switch (key)
+		{
+		case 27:
+			run = false;
 			break;
-		case KEY_DOWN:
+		case 'a':
+			message = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+			break;
+		case 'b':
+
+			break;
+		case 'c':
+			
+			break;
+		case 'd':
+
+			break;
+		case 'e':
+
+			break;
+		case 'f':
+			break;
+		case 'g':
+
+			break;
+		case 'h':
+
+			break;
+		case 'i':
+
+			break;
+		case 'j':
+
+			break;
+		case 'k':
+
+			break;
+		case 'l':
+
 			break;
 		}
 	}
@@ -322,18 +569,15 @@ void equipment_list()
 	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 	keypad(list, true);
 	bool run = true;
+	const char *message = "equipment list, ESC to return";
 	while (run)
 	{
-		print_equipment_ncurses(list);
+		print_equipment_ncurses(list, message);
 		int key = wgetch(list);
 		switch (key)
 		{
 		case 27:
 			run = false;
-			break;
-		case KEY_UP:
-			break;
-		case KEY_DOWN:
 			break;
 		}
 	}
@@ -727,7 +971,7 @@ void dungeon_ncurses()
 			//TODO
 			break;
 		case 'd':
-			//TODO
+			item_drop();
 			break;
 		case 'e':
 			equipment_list();
@@ -765,16 +1009,16 @@ void dungeon_ncurses()
 			//TODO
 			break;
 		case 't':
-			//TODO
+			item_takeoff();
 			break;
 		case 'u':
 			message = move_pc(-1, 1); //move up-right
 			break;
 		case 'w':
-			//TODO
+			item_wear();
 			break;
 		case 'x':
-			//TODO
+			item_expunge();
 			break;
 		case 'y':
 			message = move_pc(-1, -1); //move up-left
@@ -789,7 +1033,7 @@ void dungeon_ncurses()
 			//TODO
 			break;
 		case 'I':
-			//TODO
+			item_inspect();
 			break;
 		case 'L':
 			//TODO

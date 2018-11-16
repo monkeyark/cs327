@@ -30,13 +30,13 @@ void (*npc_move_func[])(NPC *c) =
 };
 */
 
-void npc_next_pos_00(NPC *npc, int index);
-void npc_next_pos_01(NPC *npc, int index);
-void npc_next_pos_02(NPC *npc, int index);
-void npc_next_pos_03(NPC *npc, int index);
-void npc_next_pos_04(NPC *npc, int index);
+void npc_next_pos_00(NPC *npc);
+void npc_next_pos_01(NPC *npc);
+void npc_next_pos_02(NPC *npc);
+void npc_next_pos_03(NPC *npc);
+void npc_next_pos_04(NPC *npc);
 
-void npc_next_pos_05(NPC *npc, int index)
+void npc_next_pos_05(NPC *npc)
 {
 	memset(npc->dist, 0, sizeof (npc->dist));
 
@@ -77,13 +77,15 @@ void npc_next_pos_05(NPC *npc, int index)
 	//check is npc in next terrain will be dead
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
-		if (i == index) continue;
 		NPC *next_npc = &dungeon.monster[i];
+		if (next_npc->birth == npc->birth) continue;
+
 		if (next_npc->row == next_row && next_npc->col == next_col)
 		{
-			next_npc->dead = true;
-			next_npc->row = -1;
-			next_npc->col = -1;
+			//swap location of two npc if collide
+			
+			next_npc->row = npc->row;
+			next_npc->col = npc->col;
 		}
 		else if (dungeon.pc.row == next_row && dungeon.pc.col == next_col)
 		{
@@ -94,9 +96,9 @@ void npc_next_pos_05(NPC *npc, int index)
 	}
 }
 
-void npc_next_pos_06(NPC *npc, int index){}
+void npc_next_pos_06(NPC *npc){}
 
-void npc_next_pos_07(NPC *npc, int index)
+void npc_next_pos_07(NPC *npc)
 {
 	memset(npc->dist, 0, sizeof (npc->dist));
 
@@ -151,8 +153,9 @@ void npc_next_pos_07(NPC *npc, int index)
 	//check is npc in next terrain will be dead
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
-		if (i == index) continue;
 		NPC *next_npc = &dungeon.monster[i];
+		if (next_npc->birth == npc->birth) continue;
+
 		if (next_npc->row == next_row && next_npc->col == next_col)
 		{
 			next_npc->dead = true;
@@ -168,14 +171,14 @@ void npc_next_pos_07(NPC *npc, int index)
 	}
 }
 
-void npc_next_pos_08(NPC *npc, int index);
-void npc_next_pos_09(NPC *npc, int index);
-void npc_next_pos_0a(NPC *npc, int index);
-void npc_next_pos_0b(NPC *npc, int index);
-void npc_next_pos_0c(NPC *npc, int index);
-void npc_next_pos_0d(NPC *npc, int index);
-void npc_next_pos_0e(NPC *npc, int index);
-void npc_next_pos_0f(NPC *npc, int index);
+void npc_next_pos_08(NPC *npc);
+void npc_next_pos_09(NPC *npc);
+void npc_next_pos_0a(NPC *npc);
+void npc_next_pos_0b(NPC *npc);
+void npc_next_pos_0c(NPC *npc);
+void npc_next_pos_0d(NPC *npc);
+void npc_next_pos_0e(NPC *npc);
+void npc_next_pos_0f(NPC *npc);
 
 void move_npc()
 {
@@ -187,7 +190,7 @@ void move_npc()
 			NPC *npc = &dungeon.monster[i];
 			if (!npc->dead)
 			{
-				npc_next_pos_05(npc, i);
+				npc_next_pos_05(npc);
 			}
 		}
 	}

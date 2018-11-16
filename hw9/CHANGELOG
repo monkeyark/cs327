@@ -4,6 +4,7 @@ Nov 14
 	add PC damage dice
 	add equipment and inventory item on PC
 	ncures print equipment list and inventory list
+
 Nov 15
 	add inventory and equipment list
 	add key menu for inventory and equipment
@@ -11,3 +12,5 @@ Nov 15
 	add drop, take off, drop item functionality
 	add item inspect and print
 
+Nov 16
+	add item description print

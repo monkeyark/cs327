@@ -275,6 +275,27 @@ void print_iventory_ncurses(WINDOW *list, const char *message)
 			mvwprintw(list, i, n, m);
 		}
 	}
+	
+/*
+	for (i = 1, j = 0; i < PC_INVENTORY + 1; i++, j++)
+	{
+		char str[TERMINAL_COL];
+		if ((dungeon.pc.inventory[j]).rarity)
+		//if (&(dungeon.pc.inventory[j]) != NULL)//TODO
+		{
+			Item item = dungeon.pc.inventory[j];
+			sprintf(str, "%d) %6s --- %s", j, item.type_string, item.name);
+		}
+		else
+		{
+			sprintf(str, "%d)", j);
+		}
+		for (int n = 0; str[n]; n++)
+		{
+			mvwprintw(list, i, n, str);
+		}
+	}
+	*/
 }
 
 const char *equip_item(int index)
@@ -613,9 +634,28 @@ void item_drop()
 	delwin(list);
 }
 
-void print_item_descr(WINDOW *list, const char *message, int index)
+void print_item_descr(WINDOW *list, int index)
 {
 	int i, j;
+	const char *message;
+	if ((dungeon.pc.inventory[index]).rarity)
+	{
+		message = "press number key to return";
+		wprintw(list, "\n");
+		const char *description = dungeon.pc.inventory[index].description;
+		for (; *description;)
+		{
+			std::string s(1, *description);
+			const char *m = s.c_str();
+			wprintw(list, m);
+			description++;
+		}
+	}
+	else
+	{
+		message = "there is no such item";
+	}
+
 	for (i = 0, j = 0; *message; message++, j++)
 	{
 		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
@@ -623,30 +663,6 @@ void print_item_descr(WINDOW *list, const char *message, int index)
 		mvwprintw(list, i, j, message);
 		wattroff(list, COLOR_PAIR(COLOR_CYAN));
 	}
-	/*
-	char str[TERMINAL_COL];
-	char *m;
-	const char *description = dungeon.pc.inventory[index].description;
-
-	for (i = 1, j = 0; *description; i++, j++)
-	{
-		if ((dungeon.pc.inventory[index]).rarity)
-		//if (&(dungeon.pc.inventory[j]) != NULL)//TODO
-		{
-			sprintf(str, description);
-		}
-		else
-		{
-			sprintf(str, "not a valid item");
-		}
-
-		m = str;
-		for (int n = 0; *m; m++, n++)
-		{
-			mvwprintw(list, i, n, m);
-		}
-	}
-	*/
 }
 
 void item_inspect()
@@ -656,12 +672,12 @@ void item_inspect()
 	bool run = true;
 	bool desc = false;
 	int index;
-	const char *message = "press number to inspect item, i to inventory, ESC to return";
+	const char *message = "press number key to inspect item, i to inventory, ESC to return";
 	while (run)
 	{
 		if (desc)
 		{
-			print_item_descr(list, message, index);
+			print_item_descr(list, index);
 		}
 		else
 		{

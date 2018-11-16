@@ -236,8 +236,8 @@ class Dungeon
 		NPC *monster;
 		Item *item;
 		PC pc;
-		int teleport_row;
-		int teleport_col;
+		int cursor_row;
+		int cursor_col;
 		Terrain map[ROW][COL];
 		Queue pq_tunel;
 		Queue pq_nontunel;

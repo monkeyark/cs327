@@ -666,12 +666,10 @@ void print_item_descr(WINDOW *list, int index)
 		message = "press number key to return";
 		wprintw(list, "\n");
 		const char *description = dungeon.pc.inventory[index].description;
-		for (; *description;)
+		for (; *description; description++)
 		{
-			std::string s(1, *description);
-			const char *m = s.c_str();
-			wprintw(list, m);
-			description++;
+			std::string item_desc(1, *description);
+			wprintw(list, item_desc.c_str());
 		}
 	}
 	else
@@ -1098,11 +1096,9 @@ const char *print_monster_descr(WINDOW *lookup, int row_move, int col_move)
 		message = "press t return to lookup, ESC return to game";
 		wprintw(lookup, "\n");
 
-		//const char *m;
 		for (; *npc.name; npc.name++)
 		{
 			std::string npc_name(1, *npc.name);
-			//m = npc_name.c_str();
 			wprintw(lookup, npc_name.c_str());
 		}
 		wprintw(lookup, "\n");

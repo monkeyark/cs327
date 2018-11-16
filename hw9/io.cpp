@@ -463,6 +463,7 @@ void item_wear()
 	const char *message = "press number key to select item to wear, ESC to return";
 	while (run)
 	{
+		clear_message(list);
 		print_iventory_ncurses(list, message);
 		int key = wgetch(list);
 		switch (key)
@@ -518,6 +519,27 @@ void item_wear()
 	delwin(list);
 }
 
+const char *expunge_item(int index)
+{
+	std::string message;
+	if ((dungeon.pc.inventory[index]).rarity)
+	{
+		Item *inventory_item = &(dungeon.pc.inventory[index]);
+		std::string item_name(inventory_item->name);
+
+		dungeon.pc.inventory_size--;
+		memset(inventory_item, 0, sizeof(Item));
+
+		message = "you have expunge - " + item_name;
+	}
+	else
+	{
+		message = "nothing to expunge";
+	}
+
+	return message.c_str();
+}
+
 void item_expunge()
 {
 	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
@@ -526,6 +548,7 @@ void item_expunge()
 	const char *message = "press number key to expunge item, ESC to return";
 	while (run)
 	{
+		clear_message(list);
 		print_iventory_ncurses(list, message);
 		int key = wgetch(list);
 		switch (key)
@@ -534,34 +557,34 @@ void item_expunge()
 				run = false;
 				break;
 			case '0':
-
+				message = expunge_item(0);
 				break;
 			case '1':
-
+				message = expunge_item(1);
 				break;
 			case '2':
-
+				message = expunge_item(2);
 				break;
 			case '3':
-
+				message = expunge_item(3);
 				break;
 			case '4':
-
+				message = expunge_item(4);
 				break;
 			case '5':
-
+				message = expunge_item(5);
 				break;
 			case '6':
-
+				message = expunge_item(6);
 				break;
 			case '7':
-
+				message = expunge_item(7);
 				break;
 			case '8':
-
+				message = expunge_item(8);
 				break;
 			case '9':
-
+				message = expunge_item(9);
 				break;
 		}
 	}
@@ -672,11 +695,13 @@ void item_inspect()
 	bool run = true;
 	bool desc = false;
 	int index;
-	const char *message = "press number key to inspect item, i to inventory, ESC to return";
+	const char *message = "press number key to inspect item, ESC to return";
 	while (run)
 	{
 		if (desc)
 		{
+			print_iventory_ncurses(list, message);
+			clear_message(list);
 			print_item_descr(list, index);
 		}
 		else
@@ -739,10 +764,6 @@ void item_inspect()
 				clear_message(list);
 				index = 9;
 				desc = !desc;
-				break;
-			case 'i':
-				clear_message(list);
-				message = "choose one item";
 				break;
 		}
 	}

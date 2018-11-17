@@ -23,5 +23,5 @@ Nov 16
 	BUGFIX: segfault - incorrect index of inventory and equipment in take off item
 	BUGFIX: cannot wear item after take off
 	add player and monster combat
-
+	add item position enum
 	

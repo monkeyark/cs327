@@ -19,5 +19,4 @@ Nov 16
 	swap location of two npc if collide
 	add and subtract item bonus to pc
 	item cannot be drop if space is not open
-	
-	
+	print player information in window

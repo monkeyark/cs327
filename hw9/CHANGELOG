@@ -20,3 +20,5 @@ Nov 16
 	add and subtract item bonus to pc
 	item cannot be drop if space is not open
 	print player information in window
+	BUGFIX: segfault - incorrect index of inventory and equipment in take off item
+

@@ -68,12 +68,6 @@ void npc_next_pos_05(NPC *npc)
 		}
 	}
 
-    dungeon.map[npc->row][npc->col].space = dungeon.map[npc->row][npc->col].terrain;
-	npc->row = next_row;
-	npc->col = next_col;
-	dungeon.map[npc->row][npc->col].space = npc->symbol;
-	dungeon.map[npc->row][npc->col].hardness = 0;
-
 	//check is npc in next terrain will be dead
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
@@ -83,7 +77,6 @@ void npc_next_pos_05(NPC *npc)
 		if (next_npc->row == next_row && next_npc->col == next_col)
 		{
 			//swap location of two npc if collide
-			
 			next_npc->row = npc->row;
 			next_npc->col = npc->col;
 		}
@@ -93,7 +86,17 @@ void npc_next_pos_05(NPC *npc)
 			dungeon.pc.row = -1;
 			dungeon.pc.col = -1;
 		}
+		else
+		{
+			dungeon.map[npc->row][npc->col].space = dungeon.map[npc->row][npc->col].terrain;
+		}
 	}
+
+
+	npc->row = next_row;
+	npc->col = next_col;
+	dungeon.map[npc->row][npc->col].space = npc->symbol;
+	dungeon.map[npc->row][npc->col].hardness = 0;
 }
 
 void npc_next_pos_06(NPC *npc){}
@@ -150,7 +153,7 @@ void npc_next_pos_07(NPC *npc)
 		dungeon.map[next_row][next_col].hardness -= 85;
 	}
 
-	//check is npc in next terrain will be dead
+	//check if next terrain is npc
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
 		NPC *next_npc = &dungeon.monster[i];

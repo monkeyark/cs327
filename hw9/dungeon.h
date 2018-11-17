@@ -23,7 +23,7 @@
 #define CORRIDOR_H 0
 #define PC_H 0
 #define PC_VISION_RADIUS 2
-#define PC_INVENTORY 10
+#define PC_INVENTORY_SIZE 10
 
 #define MIN(a, b)           \
 ({                          \
@@ -97,6 +97,15 @@ enum
 	NUM_EQUIPMENT,
 };
 
+enum
+{
+	NOT_EXSIT,
+	DUNGEON_FLOOR,
+	PC_INVENTORY,
+	PC_EQUIPMENT,
+	NUM_ITEM_POS,
+};
+
 class Terrain
 {
 	public:
@@ -140,10 +149,7 @@ class Item
 		const char *type_string;
 
 		int birth;
-		bool is_inventory;
-		bool is_equipment;
-		bool is_item;
-		bool is_onfloor;
+		int position;
 };
 
 class Character

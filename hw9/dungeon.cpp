@@ -439,7 +439,7 @@ void new_PC_desc()
 	//dungeon.pc.equipment = (Item *)malloc(NUM_EQUIPMENT * sizeof(Item));
 	//dungeon.pc.inventory = (Item *)malloc(PC_INVENTORY * sizeof(Item));
 	dungeon.pc.equipment = (Item *)calloc(NUM_EQUIPMENT, sizeof(Item));
-	dungeon.pc.inventory = (Item *)calloc(PC_INVENTORY, sizeof(Item));
+	dungeon.pc.inventory = (Item *)calloc(PC_INVENTORY_SIZE, sizeof(Item));
 	remember_map_PC();
 	dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
 }
@@ -499,7 +499,7 @@ NPC new_NPC_desc(int birth)
 
 bool is_inventory_open()
 {
-	return dungeon.pc.inventory_size != PC_INVENTORY;
+	return dungeon.pc.inventory_size != PC_INVENTORY_SIZE;
 }
 
 Item new_item_desc(int birth)
@@ -533,6 +533,7 @@ Item new_item_desc(int birth)
 	item.row = row;
 	item.col = col;
 	item.birth = birth;
+	item.position = DUNGEON_FLOOR;
 
 	item.name = obj.name.c_str();
 	item.description = obj.description.c_str();

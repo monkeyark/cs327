@@ -246,9 +246,9 @@ void print_iventory_ncurses(WINDOW *list, const char *message)
 
 	char str[TERMINAL_COL];
 	char *m;
-	for (i = 1, j = 0; i < PC_INVENTORY + 1; i++, j++)
+	for (i = 1, j = 0; i < PC_INVENTORY_SIZE + 1; i++, j++)
 	{
-		if ((dungeon.pc.inventory[j]).rarity)
+		if ((dungeon.pc.inventory[j]).position == PC_INVENTORY)
 		//if (&(dungeon.pc.inventory[j]) != NULL)//TODO
 		{
 			Item item = dungeon.pc.inventory[j];
@@ -380,9 +380,9 @@ const char *takeoff_item(int index)
 		Item *equip_item = &(dungeon.pc.equipment[index]);
 		std::string item_name(equip_item->name);
 
-		if (dungeon.pc.inventory_size != PC_INVENTORY)
+		if (dungeon.pc.inventory_size != PC_INVENTORY_SIZE)
 		{
-			for (int i = 0; i < PC_INVENTORY; i++)
+			for (int i = 0; i < PC_INVENTORY_SIZE; i++)
 			{
 				if ((dungeon.pc.inventory[i]).rarity == 0)
 				{

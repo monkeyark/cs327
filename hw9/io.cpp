@@ -87,6 +87,11 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 			//mvwprintw(game, i + TERMINAL_ROW, j, "%c", dungeon.map[i - 1][j].space); //DEBUG
 		}
 	}
+
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
+					dungeon.pc.hitpoints, dungeon.pc.speed, dungeon.pc.damage);
+    move(TERMINAL_ROW - 1, 0);
+    clrtoeol();
 }
 
 void print_dungeon_ncurses(WINDOW *game, const char *message)
@@ -145,6 +150,11 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 			}
 		}
 	}
+
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
+					dungeon.pc.hitpoints, dungeon.pc.speed, dungeon.pc.damage);
+    move(TERMINAL_ROW - 1, 0);
+    clrtoeol();
 }
 
 void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)

@@ -385,15 +385,9 @@ const char *drop_item(int index)
 			dungeon.item[birth].row = dungeon.pc.row;
 			dungeon.item[birth].col = dungeon.pc.col;
 		}
-		else //random drop item
+		else
 		{
-			do
-			{
-				dungeon.item[birth].row = get_random(ROW, 0);
-				dungeon.item[birth].col = get_random(COL, 0);
-			}
-			while (dungeon.map[dungeon.item[birth].row][dungeon.item[birth].col].space != ROOM &&
-					dungeon.map[dungeon.item[birth].row][dungeon.item[birth].col].space != CORRIDOR);
+			message = "you have to drop item on empty space";
 		}
 
 		dungeon.pc.inventory_size--;
@@ -446,22 +440,15 @@ const char *takeoff_item(int index)
 			{
 				dungeon.item[item_birth].row = dungeon.pc.row;
 				dungeon.item[item_birth].col = dungeon.pc.col;
+				dungeon.pc.equipment_open[index] = false;
+				memset(equip_item, 0, sizeof(Item));
+
+				message = "inventory is full, you have dropped - " + item_name;
 			}
-			else //random drop item
+			else
 			{
-				do
-				{
-					dungeon.item[item_birth].row = get_random(ROW, 0);
-					dungeon.item[item_birth].col = get_random(COL, 0);
-				}
-				while (dungeon.map[dungeon.item[item_birth].row][dungeon.item[item_birth].col].space != ROOM &&
-						dungeon.map[dungeon.item[item_birth].row][dungeon.item[item_birth].col].space != CORRIDOR);
+				message = "inventory is full but unable to drop, you have to drop on empty space";
 			}
-
-			dungeon.pc.equipment_open[index] = false;
-			memset(equip_item, 0, sizeof(Item));
-
-			message = "inventory is full, you have dropped - " + item_name;
 		}
 	}
 	else

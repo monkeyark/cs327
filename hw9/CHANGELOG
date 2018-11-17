@@ -22,3 +22,4 @@ Nov 16
 	print player information in window
 	BUGFIX: segfault - incorrect index of inventory and equipment in take off item
 	BUGFIX: cannot wear item after take off
+	add player and monster combat

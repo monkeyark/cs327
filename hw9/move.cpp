@@ -68,6 +68,30 @@ void npc_next_pos_05(NPC *npc)
 		}
 	}
 
+	if (dungeon.pc.row == next_row && dungeon.pc.col == next_col)
+	{
+		int damage = npc->damage.roll();
+		if (dungeon.pc.hitpoints <= damage)
+		{
+			dungeon.pc.hitpoints = 0;
+			dungeon.pc.dead = true;
+			dungeon.pc.row = -1;
+			dungeon.pc.col = -1;
+		}
+		else
+		{
+			dungeon.pc.hitpoints -= damage;
+		}
+	}
+	else
+	{
+		dungeon.map[npc->row][npc->col].space = dungeon.map[npc->row][npc->col].terrain;
+		npc->row = next_row;
+		npc->col = next_col;
+		dungeon.map[npc->row][npc->col].space = npc->symbol;
+		dungeon.map[npc->row][npc->col].hardness = 0;
+	}
+
 	//check is npc in next terrain will be dead
 	for (int i = 0; i < dungeon.num_mon; i++)
 	{
@@ -79,12 +103,6 @@ void npc_next_pos_05(NPC *npc)
 			//swap location of two npc if collide
 			next_npc->row = npc->row;
 			next_npc->col = npc->col;
-		}
-		else if (dungeon.pc.row == next_row && dungeon.pc.col == next_col)
-		{
-			dungeon.pc.dead = true;
-			dungeon.pc.row = -1;
-			dungeon.pc.col = -1;
 		}
 		else
 		{
@@ -239,22 +257,39 @@ const char *move_pc(int row_move, int col_move)
 			message = "";
 			dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
 		}
-		
-		dungeon.pc.row += row_move;
-		dungeon.pc.col += col_move;
-        dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
-        dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
 
-		int npc_index = is_monster(dungeon.pc.row, dungeon.pc.col);
+		int npc_index = is_monster(dungeon.pc.row + row_move, dungeon.pc.col + col_move);
 		if (!(npc_index < 0))
 		{
-			dungeon.monster[npc_index].dead = true;
-			dungeon.monster[npc_index].row = -1;
-			dungeon.monster[npc_index].col = -1;
-			message = "You kill monster - ";
+			int d = dungeon.pc.damage.roll();
+
+			if (dungeon.monster[npc_index].hitpoints <= d)
+			{
+				dungeon.monster[npc_index].dead = true;
+				dungeon.monster[npc_index].row = -1;
+				dungeon.monster[npc_index].col = -1;
+				message = "You kill monster - ";
+				dungeon.pc.row += row_move;
+				dungeon.pc.col += col_move;
+				dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
+				dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
+			}
+			else
+			{
+				dungeon.monster[npc_index].hitpoints -= d;
+				message = "PC is attacking";
+			}
 		}
+		else
+		{
+			dungeon.pc.row += row_move;
+			dungeon.pc.col += col_move;
+			dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
+			dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
+		}
+
 		move_npc();
-        remember_map_PC();
+		remember_map_PC();
 	}
 	else
 	{

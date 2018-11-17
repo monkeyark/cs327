@@ -388,7 +388,7 @@ const char *takeoff_item(int index)
 				{
 					dungeon.pc.inventory[i] = dungeon.pc.equipment[index];
 					dungeon.pc.inventory_size++;
-					dungeon.pc.equipment_open[index] = false;
+					dungeon.pc.equipment_open[index] = true;
 					break;
 				}
 			}
@@ -409,7 +409,7 @@ const char *takeoff_item(int index)
 			{
 				dungeon.item[item_birth].row = dungeon.pc.row;
 				dungeon.item[item_birth].col = dungeon.pc.col;
-				dungeon.pc.equipment_open[index] = false;
+				dungeon.pc.equipment_open[index] = true;
 				memset(equip_item, 0, sizeof(Item));
 
 				message = "inventory is full, you have dropped - " + item_name;

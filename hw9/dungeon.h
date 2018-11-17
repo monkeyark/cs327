@@ -123,9 +123,10 @@ class Item
 		char symbol;
 		const char *name;
 		const char *description;
-		dice damage;
 		unsigned int color;
 		int color_display;
+		dice damage;
+		int damage_bonus;
 		int hit;
 		int dodge;
 		int defence;
@@ -177,6 +178,7 @@ class PC : public Character
 	public:
 		int vision[ROW][COL];
 		int inventory_size;
+		int damage_bonus;
 		bool equipment_open[NUM_EQUIPMENT];
 		Item *equipment;
 		Item *inventory;

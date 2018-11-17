@@ -424,10 +424,11 @@ void new_PC_desc()
 {
 	//add initial player location
 	dungeon.pc.birth = -1;
-	dungeon.pc.speed = 10;
 	dungeon.pc.dead = 0;
 	dungeon.pc.row = dungeon.rooms[0].row;
 	dungeon.pc.col = dungeon.rooms[0].col;
+
+	dungeon.pc.speed = 10;
 	dungeon.pc.inventory_size = 0;
 	dungeon.pc.hitpoints = 10000;
 	dungeon.pc.damage = dice(0, 1, 4);
@@ -496,16 +497,6 @@ NPC new_NPC_desc(int birth)
 	return npc;
 }
 
-bool is_inventory(Item item)
-{
-	// int i;
-	// for (i = 0; dungeon.pc.inventory[i], i < PC_INVENTORY; i++)
-	// {
-	// 	//TODO
-	// }
-	return false;
-}
-
 bool is_inventory_open()
 {
 	return dungeon.pc.inventory_size != PC_INVENTORY;
@@ -545,9 +536,10 @@ Item new_item_desc(int birth)
 
 	item.name = obj.name.c_str();
 	item.description = obj.description.c_str();
-	item.damage = obj.damage;
 	item.color = obj.color;
 	item.color_display = obj.color_display;
+	item.damage = obj.damage;
+	item.damage_bonus = obj.damage.roll();
 	item.hit = obj.hit.roll();
 	item.dodge = obj.dodge.roll();
 	item.defence = obj.defence.roll();
@@ -589,7 +581,7 @@ void generate_dungeon_desc()
 	{
 		dungeon.num_mon = get_random(5, 8);
 	}
-	dungeon.num_mon = 1;//DEBUG
+	//dungeon.num_mon = 1;//DEBUG
 	dungeon.num_item = get_random(5, 11);
 
 	// dungeon.rooms = (Room *)malloc(dungeon.num_room * sizeof(Room));

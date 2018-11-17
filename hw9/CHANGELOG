@@ -17,6 +17,6 @@ Nov 16
 	add item expunge
 	add monster lookup functionality
 	swap location of two npc if collide
+	add and subtract item bonus to pc
 
-	
 	

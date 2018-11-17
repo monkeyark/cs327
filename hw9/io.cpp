@@ -315,6 +315,12 @@ const char *equip_item(int index)
 				dungeon.pc.equipment[RING] = dungeon.pc.inventory[index];
 				dungeon.pc.equipment_open[RING] = false;
 				dungeon.pc.inventory_size--;
+
+				//add item bonus to pc
+				dungeon.pc.speed += dungeon.pc.equipment[RING].speed;
+				dungeon.pc.hitpoints += dungeon.pc.equipment[RING].hit;
+				dungeon.pc.damage_bonus += dungeon.pc.equipment[RING].damage_bonus;
+
 				//set inventory memory block of indexed item to 0, match calloc 0
 				memset(inventory_item, 0, sizeof(Item));
 				
@@ -325,6 +331,12 @@ const char *equip_item(int index)
 				dungeon.pc.equipment[RING_SEC] = dungeon.pc.inventory[index];
 				dungeon.pc.equipment_open[RING_SEC] = false;
 				dungeon.pc.inventory_size--;
+
+				//add item bonus to pc
+				dungeon.pc.speed += dungeon.pc.equipment[RING_SEC].speed;
+				dungeon.pc.hitpoints += dungeon.pc.equipment[RING_SEC].hit;
+				dungeon.pc.damage_bonus += dungeon.pc.equipment[RING_SEC].damage_bonus;
+
 				//set inventory memory block of indexed item to 0, match calloc 0
 				memset(inventory_item, 0, sizeof(Item));
 
@@ -418,27 +430,32 @@ const char *takeoff_item(int index)
 				}
 			}
 
+			//deduct item bonus to pc
+			dungeon.pc.speed -= equip_item->speed;
+			dungeon.pc.hitpoints -= equip_item->hit;
+			dungeon.pc.damage_bonus -= equip_item->damage_bonus;
+
 			//set inventory memory block of indexed item to 0, match calloc 0
 			memset(equip_item, 0, sizeof(Item));
 			message = "you have took off - " + item_name;
 		}
 		else
 		{
-			int birth = equip_item->birth;
+			int item_birth = equip_item->birth;
 			if ((is_item(dungeon.pc.row, dungeon.pc.col) < 0)) //check if current terrain open
 			{
-				dungeon.item[birth].row = dungeon.pc.row;
-				dungeon.item[birth].col = dungeon.pc.col;
+				dungeon.item[item_birth].row = dungeon.pc.row;
+				dungeon.item[item_birth].col = dungeon.pc.col;
 			}
 			else //random drop item
 			{
 				do
 				{
-					dungeon.item[birth].row = get_random(ROW, 0);
-					dungeon.item[birth].col = get_random(COL, 0);
+					dungeon.item[item_birth].row = get_random(ROW, 0);
+					dungeon.item[item_birth].col = get_random(COL, 0);
 				}
-				while (dungeon.map[dungeon.item[birth].row][dungeon.item[birth].col].space != ROOM &&
-						dungeon.map[dungeon.item[birth].row][dungeon.item[birth].col].space != CORRIDOR);
+				while (dungeon.map[dungeon.item[item_birth].row][dungeon.item[item_birth].col].space != ROOM &&
+						dungeon.map[dungeon.item[item_birth].row][dungeon.item[item_birth].col].space != CORRIDOR);
 			}
 
 			dungeon.pc.equipment_open[index] = false;

@@ -635,6 +635,30 @@ void generate_dungeon_desc()
 	}
 }
 
+void delete_dungeon()
+{
+	free(dungeon.rooms);
+	free(dungeon.monster);
+}
+
+void delete_dungeon_desc()
+{
+	free(dungeon.rooms);
+	free(dungeon.monster);
+	free(dungeon.item);
+	free(dungeon.pc.equipment);
+	free(dungeon.pc.inventory);
+	dungeon.pc.hitpoints = 10000;
+	dungeon.pc.damage_bonus = 0;
+	dungeon.pc.speed = 10;
+}
+
+void move_dungeon()
+{
+	move_character();
+	//move_character_turn();
+}
+
 void load_dungeon(FILE *f)
 {
 	if (!f)
@@ -758,28 +782,4 @@ void save_dungeon(FILE *f)
 	free(hard);
 	free(loc);
 	fclose(f);
-}
-
-void delete_dungeon()
-{
-	free(dungeon.rooms);
-	free(dungeon.monster);
-}
-
-void delete_dungeon_desc()
-{
-	free(dungeon.rooms);
-	free(dungeon.monster);
-	free(dungeon.item);
-	free(dungeon.pc.equipment);
-	free(dungeon.pc.inventory);
-	dungeon.pc.hitpoints = 10000;
-	dungeon.pc.damage_bonus = 0;
-	dungeon.pc.speed = 10;
-}
-
-void move_dungeon()
-{
-	move_character();
-	//move_character_turn();
 }

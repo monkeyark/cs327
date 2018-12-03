@@ -125,7 +125,7 @@ void print_dungeon_terrian(WINDOW *game, const char *message)
 	clrtoeol();
 }
 
-void print_dungeon_tunnel(WINDOW *game, const char *message)
+void print_dungeon_dijkstra_path(WINDOW *game, const char *message)
 {
 	//clean previous message
 	clear_message(game);
@@ -142,58 +142,25 @@ void print_dungeon_tunnel(WINDOW *game, const char *message)
 	}
 
 	//print dungeon
-	for (i = i; i < ROW; i++)
+	for (i = 1; i < ROW; i++)
 	{
 		for (j = 0; j < COL; j++)
 		{
-			mvwprintw(game, i, j, " ");
-			if (dungeon.pc->row == i && dungeon.pc->col == j)
+			if (dungeon.pc->row == (i - 1) && dungeon.pc->col == j)
 			{		
 				mvwprintw(game, i, j, "@");
 			}
-			else if (dungeon.pc->dist[i * COL + j] != -1)
+			else if (dungeon.pc->dist[(i - 1) * COL + j] != -1)
 			{
-				int n = dungeon.pc->dist[i * COL + j] % 10;
-				printf("%d", n);
+				int n = dungeon.pc->dist[(i - 1) * COL + j] % 10;
+				std::string s = std::to_string(n);
+				char const *c = s.c_str();
+				mvwprintw(game, i, j, c);
 			}
 			else
 			{
 				mvwprintw(game, i, j, " ");
 			}
-		}
-		printf("\n");
-	}
-
-	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
-	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
-			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
-	move(TERMINAL_ROW - 1, 0);
-	clrtoeol();
-}
-
-void print_dungeon_non_tunnel(WINDOW *game, const char *message)
-{
-	//clean previous message
-	clear_message(game);
-
-	int i, j;
-	//print current message
-	const char *m = message;
-	for (i = 0, j = 0; *m; m++, j++)
-	{
-		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
-		wattron(game, COLOR_PAIR(COLOR_CYAN));
-		mvwprintw(game, i, j, m);
-		wattroff(game, COLOR_PAIR(COLOR_CYAN));
-	}
-
-	//print dungeon
-	for (i = 1; i < ROW + 1; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-			mvwprintw(game, i, j, " ");
-			mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
 		}
 	}
 
@@ -1537,13 +1504,9 @@ void dungeon_ncurses()
 		{
 			print_dungeon_terrian(game, message);
 		}
-		else if (tunnel)
+		else if (tunnel || non_tunnel)
 		{
-			print_dungeon_tunnel(game, message);
-		}
-		else if (non_tunnel)
-		{
-			print_dungeon_non_tunnel(game, message);
+			print_dungeon_dijkstra_path(game, message);
 		}
 		else if (fog)
 		{
@@ -1713,12 +1676,11 @@ void dungeon_ncurses()
 				message = move_pc(-1, -1); //move up-left
 				break;
 			case 'D':
-				//TODO
 				dijkstra_nontunneling((Character *) dungeon.pc);
+				message = "non-tunneling distance map view";
 				non_tunnel = !non_tunnel;
 				terrain = false;
 				tunnel = false;
-				message = "non-tunneling distance map view";
 				break;
 			case 'E':
 				//TODO
@@ -1737,10 +1699,10 @@ void dungeon_ncurses()
 				break;
 			case 'T':
 				dijkstra_tunneling((Character *) dungeon.pc);
+				message = "tunneling distance map view";
 				tunnel = !tunnel;
 				terrain = false;
 				non_tunnel = false;
-				message = "tunneling distance map view";
 				break;
 		}
 

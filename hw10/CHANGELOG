@@ -9,4 +9,6 @@ Nov 22
     change play to a pointer
     
 Nov 26
+    enable key control 'D': display non-tunneling distance map
+    enable key control 'T': display tunneling distance map
     add superman mode of game

@@ -220,18 +220,34 @@ void move_npc()
 const char *move_pc(int row_move, int col_move)
 {
 	const char *message;
-	
+
 	if (row_move == 0 && col_move == 0)
 	{
 		dungeon.pc.hitpoints = MIN(dungeon.pc.hitpoints + dungeon.pc.regen, PC_FULL_HP);
 		move_npc();
 		message = "PC is resting!";
 	}
+	else if ((dungeon.map[dungeon.pc.row + row_move][dungeon.pc.col + col_move].terrain == WATER) &&
+			dungeon.pc.equipment_open[CLOAK])
+	{
+		message = "PC cannot swim in water without cloak!";
+	}
+	else if ((dungeon.map[dungeon.pc.row + row_move][dungeon.pc.col + col_move].terrain == LAVA) &&
+			dungeon.pc.equipment_open[BOOTS])
+	{
+		message = "PC cannot walk on lava without boots!";
+	}
 	else if (is_inside(dungeon.pc.row + row_move, dungeon.pc.col + col_move) &&
-		    is_room_corridor_stair(dungeon.pc.row + row_move, dungeon.pc.col + col_move))
+			(dungeon.map[dungeon.pc.row + row_move][dungeon.pc.col + col_move].terrain == ROOM ||
+			dungeon.map[dungeon.pc.row + row_move][dungeon.pc.col + col_move].terrain == CORRIDOR ||
+			dungeon.map[dungeon.pc.row + row_move][dungeon.pc.col + col_move].terrain == STAIR_UP ||
+			dungeon.map[dungeon.pc.row + row_move][dungeon.pc.col + col_move].terrain == STAIR_DOWN ||
+			dungeon.map[dungeon.pc.row + row_move][dungeon.pc.col + col_move].terrain == WATER ||
+			dungeon.map[dungeon.pc.row + row_move][dungeon.pc.col + col_move].terrain == LAVA))
 	{
 		int item_index = is_item(dungeon.pc.row, dungeon.pc.col);
-		if (!(item_index < 0))
+		int npc_index = is_monster(dungeon.pc.row + row_move, dungeon.pc.col + col_move);
+		if (item_index >= 0)
 		{
 			//iventory has space to pick up new item
 			if (is_inventory_open())
@@ -239,15 +255,9 @@ const char *move_pc(int row_move, int col_move)
 				//add item in current location to inventory
 				dungeon.pc.inventory[dungeon.pc.inventory_size] = dungeon.item[item_index];
 				dungeon.pc.inventory[dungeon.pc.inventory_size].name = dungeon.item[item_index].name;
-				//std::cout <<"Name ::::: ::: "<< dungeon.item[item_index].name<< std:: endl;
-
-				//TODO
 				dungeon.item[item_index].row = -1;
 				dungeon.item[item_index].col = -1;
-				
 				dungeon.pc.inventory_size++;
-
-				//dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
 				message = "You picked up one item";
 			}
 			else
@@ -256,14 +266,7 @@ const char *move_pc(int row_move, int col_move)
 				dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.item[item_index].symbol;
 			}
 		}
-		else
-		{
-			message = "";
-			dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
-		}
-
-		int npc_index = is_monster(dungeon.pc.row + row_move, dungeon.pc.col + col_move);
-		if (!(npc_index < 0))
+		else if (npc_index >= 0)
 		{
 			int d = dungeon.pc.damage.roll();
 
@@ -286,13 +289,27 @@ const char *move_pc(int row_move, int col_move)
 		}
 		else
 		{
+			message = "";
+			dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
 			dungeon.pc.row += row_move;
 			dungeon.pc.col += col_move;
 			dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
 			dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
 		}
-		
-		dungeon.pc.hitpoints = MIN(dungeon.pc.hitpoints + dungeon.pc.regen, PC_FULL_HP);
+
+		if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == WATER)
+		{
+			dungeon.pc.hitpoints = MIN(dungeon.pc.hitpoints + 5*dungeon.pc.regen, PC_FULL_HP);
+		}
+		else if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == LAVA)
+		{
+			dungeon.pc.hitpoints = MAX(dungeon.pc.hitpoints - LAVA_DAMAGE, 0);
+		}
+		else
+		{
+			dungeon.pc.hitpoints = MIN(dungeon.pc.hitpoints + dungeon.pc.regen, PC_FULL_HP);
+		}
+
 		move_npc();
 		remember_map_PC();
 	}

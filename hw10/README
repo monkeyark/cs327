@@ -1,6 +1,7 @@
-Player now has auto health regeneration rate at 7 hitpoints.
+Player now has self health regeneration rate at 7 hitpoints.
 
-Add two more terrian water and lava. Character will speed down in water
-and will drop hitpoints in lava.
-Water is rendered with symbol ~
-Lava is rendered with symbol ^
+Add two more terrian in the map: water and lava. Water is rendered with symbol ~,
+Lava is rendered with symbol ^. Character will cannot swin in water without eqiupment
+of cloak and cannot walk on lava without boots. Play health regeneration will speed up
+by 5 times in water and will drop hitpoints when walking in lava.
+

@@ -118,6 +118,8 @@ void dijkstra_nontunneling(NPC *npc)
 		{
 			if (dungeon.map[i][j].terrain == ROOM ||
 				dungeon.map[i][j].terrain == CORRIDOR ||
+				dungeon.map[i][j].terrain == WATER ||
+				dungeon.map[i][j].terrain == LAVA ||
 				dungeon.map[i][j].terrain == STAIR_UP ||
 				dungeon.map[i][j].terrain == STAIR_DOWN)
 			{

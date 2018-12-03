@@ -22,6 +22,7 @@
 #define PLAYER '@'
 #define STAIR_UP '<'
 #define STAIR_DOWN '>'
+#define LAVA_DAMAGE 50
 #define ROCK_H 255
 #define ROOM_H 0
 #define CORRIDOR_H 0
@@ -305,7 +306,8 @@ void move_dungeon();
 
 int get_random(int modulus, int min);
 int is_visible_terrain(int i, int j);
-int is_room_corridor_stair(int row, int col);
+//int is_room_corridor_stair(int row, int col);
+//int is_water_lava(int row, int col);
 int is_inside(int row, int col);
 int is_monster(int row, int col);
 int is_item(int row, int col);

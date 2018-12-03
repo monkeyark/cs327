@@ -112,6 +112,12 @@ int is_room(int row, int col)
 	return dungeon.map[row][col].terrain == ROOM;
 }
 
+int is_water_lava(int row, int col)
+{
+	return dungeon.map[row][col].terrain == WATER ||
+		dungeon.map[row][col].terrain == LAVA;
+}
+
 int is_room_corridor_stair(int row, int col)
 {
 	return dungeon.map[row][col].terrain == ROOM ||
@@ -746,8 +752,6 @@ void generate_dungeon_desc()
 	{
 		dungeon.item[i] = new_item_desc(i);
 	}
-
-	print_dungeon();
 }
 
 void delete_dungeon()

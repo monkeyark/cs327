@@ -91,6 +91,39 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 	clrtoeol();
 }
 
+void print_dungeon_terrian(WINDOW *game, const char *message)
+{
+	//clean previous message
+	clear_message(game);
+
+	int i, j;
+	//print current message
+	const char *m = message;
+	for (i = 0, j = 0; *m; m++, j++)
+	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(game, COLOR_PAIR(COLOR_CYAN));
+		mvwprintw(game, i, j, m);
+		wattroff(game, COLOR_PAIR(COLOR_CYAN));
+	}
+
+	//print dungeon
+	for (i = 1; i < ROW + 1; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			mvwprintw(game, i, j, " ");
+			mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
+		}
+	}
+
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
+			dungeon.pc.hitpoints, dungeon.pc.speed, dungeon.pc.damage_bonus);
+	move(TERMINAL_ROW - 1, 0);
+	clrtoeol();
+}
+
 void print_dungeon_ncurses(WINDOW *game, const char *message)
 {
 	//clean previous message
@@ -1406,6 +1439,7 @@ void dungeon_ncurses()
 	keypad(game, true);
 	bool run = true;
 	bool fog = true;
+	bool terrain = false;
 
 	char random_seed[10];
 	sprintf(random_seed, "%d", dungeon.seed);
@@ -1417,7 +1451,11 @@ void dungeon_ncurses()
 	const char *message = seed_message;
 	while (run)
 	{
-		if (fog)
+		if (terrain)
+		{
+			print_dungeon_terrian(game, message);
+		}
+		else if (fog)
 		{
 			print_dungeon_fog_ncurses(game, message);
 		}
@@ -1561,7 +1599,8 @@ void dungeon_ncurses()
 				message = move_pc(1, 1); //move down-right
 				break;
 			case 's':
-				//TODO
+				terrain = !terrain;
+				message = "terrain map view";
 				break;
 			case 't':
 				item_takeoff();

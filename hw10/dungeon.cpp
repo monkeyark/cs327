@@ -501,6 +501,7 @@ void new_PC_desc()
 	dungeon.pc.hitpoints = PC_FULL_HP;
 	dungeon.pc.regen = 7;
 	dungeon.pc.damage = dice(0, 1, 4);
+	dungeon.pc.superman = false;
 	for (int i = 0; i < NUM_EQUIPMENT; i++)
 	{
 		dungeon.pc.equipment_open[i] = true;

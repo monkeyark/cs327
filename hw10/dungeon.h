@@ -223,6 +223,7 @@ class PC : public Character
 		bool equipment_open[NUM_EQUIPMENT];
 		Item *equipment;
 		Item *inventory;
+		bool superman;
 };
 
 class Monster

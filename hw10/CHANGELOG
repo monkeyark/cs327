@@ -12,4 +12,4 @@ Nov 26
     enable key control 'D': display non-tunneling distance map
     enable key control 'T': display tunneling distance map
     enable key control 'H': display hardness map
-    
+    enable key control 'E': inspect equipped item

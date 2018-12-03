@@ -771,8 +771,9 @@ void item_drop()
 	delwin(list);
 }
 
-void print_item_descr(WINDOW *list, int index)
+void print_inventory_descr(WINDOW *list, int index)
 {
+	wclear(list);
 	int i, j;
 	const char *message;
 	if ((dungeon.pc->inventory[index]).rarity)
@@ -800,7 +801,37 @@ void print_item_descr(WINDOW *list, int index)
 	}
 }
 
-void item_inspect()
+void print_equipment_descr(WINDOW *list, int index)
+{
+	wclear(list);
+	int i, j;
+	const char *message;
+	if ((dungeon.pc->equipment[index]).rarity)
+	{
+		message = "press letter key to return";
+		wprintw(list, "\n");
+		const char *description = dungeon.pc->equipment[index].description;
+		for (; *description; description++)
+		{
+			std::string item_desc(1, *description);
+			wprintw(list, item_desc.c_str());
+		}
+	}
+	else
+	{
+		message = "there is no such item";
+	}
+
+	for (i = 0, j = 0; *message; message++, j++)
+	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(list, COLOR_PAIR(COLOR_CYAN));
+		mvwprintw(list, i, j, message);
+		wattroff(list, COLOR_PAIR(COLOR_CYAN));
+	}
+}
+
+void inventory_inspect()
 {
 	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 	keypad(list, true);
@@ -810,15 +841,11 @@ void item_inspect()
 	const char *message = "press number key to inspect item, ESC to return";
 	while (run)
 	{
+		wclear(list);
+		print_iventory_ncurses(list, message);
 		if (desc)
 		{
-			print_iventory_ncurses(list, message);
-			clear_message(list);
-			print_item_descr(list, index);
-		}
-		else
-		{
-			print_iventory_ncurses(list, message);
+			print_inventory_descr(list, index);
 		}
 
 		int key = wgetch(list);
@@ -828,53 +855,122 @@ void item_inspect()
 				run = false;
 				break;
 			case '0':
-				clear_message(list);
 				index = 0;
 				desc = !desc;
 				break;
 			case '1':
-				clear_message(list);
 				index = 1;
 				desc = !desc;
 				break;
 			case '2':
-				clear_message(list);
 				index = 2;
 				desc = !desc;
 				break;
 			case '3':
-				clear_message(list);
 				index = 3;
 				desc = !desc;
 				break;
 			case '4':
-				clear_message(list);
 				index = 4;
 				desc = !desc;
 				break;
 			case '5':
-				clear_message(list);
 				index = 5;
 				desc = !desc;
 				break;
 			case '6':
-				clear_message(list);
 				index = 6;
 				desc = !desc;
 				break;
 			case '7':
-				clear_message(list);
 				index = 7;
 				desc = !desc;
 				break;
 			case '8':
-				clear_message(list);
 				index = 8;
 				desc = !desc;
 				break;
 			case '9':
-				clear_message(list);
 				index = 9;
+				desc = !desc;
+				break;
+		}
+	}
+
+	wclrtoeol(list);
+	wrefresh(list);
+	delwin(list);
+}
+
+void equipment_inspect()
+{
+	WINDOW *list = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
+	keypad(list, true);
+	bool run = true;
+	bool desc = false;
+	int index;
+	const char *message = "press letter key to inspect item, ESC to return";
+	while (run)
+	{
+		wclear(list);
+		print_equipment_ncurses(list, message);
+		if (desc)
+		{
+			print_equipment_descr(list, index);
+		}
+
+		int key = wgetch(list);
+		switch (key)
+		{
+			case 27:
+				run = false;
+				break;
+			case 'a':
+				index = WEAPON;
+				desc = !desc;
+				break;
+			case 'b':
+				index = OFFHAND;
+				desc = !desc;
+				break;
+			case 'c':
+				index = RANGED;
+				desc = !desc;
+				break;
+			case 'd':
+				index = ARMOR;
+				desc = !desc;
+				break;
+			case 'e':
+				index = HELMET;
+				desc = !desc;
+				break;
+			case 'f':
+				index = CLOAK;
+				desc = !desc;
+				break;
+			case 'g':
+				index = GLOVES;
+				desc = !desc;
+				break;
+			case 'h':
+				index = BOOTS;
+				desc = !desc;
+				break;
+			case 'i':
+				index = AMULET;
+				desc = !desc;
+				break;
+			case 'j':
+				index = LIGHT;
+				desc = !desc;
+				break;
+			case 'k':
+				index = RING;
+				desc = !desc;
+				break;
+			case 'l':
+				index = RING_SECONDARY;
 				desc = !desc;
 				break;
 		}
@@ -1725,6 +1821,7 @@ void dungeon_ncurses()
 				break;
 			case 'E':
 				//TODO
+				equipment_inspect();
 				break;
 			case 'H':
 				hardness = !hardness;
@@ -1734,7 +1831,7 @@ void dungeon_ncurses()
 				message = "hardness map view";
 				break;
 			case 'I':
-				item_inspect();
+				inventory_inspect();
 				break;
 			case 'L':
 				lookup();

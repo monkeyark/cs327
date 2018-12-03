@@ -10,3 +10,4 @@ Enable key control 'D': display non-tunneling distance map
 Enable key control 'T': display tunneling distance map
 Enable key control 'H': display hardness map
 Enable key control 's': display the default (terrain) map
+Enable key control 'E': inspect equipped item

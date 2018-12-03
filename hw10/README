@@ -6,6 +6,7 @@ of cloak and cannot walk on lava without boots. Play health regeneration will sp
 by 5 times in water and will drop hitpoints when walking in lava.
 
 Enable funcationality of object LIGHT, equip LIGHT will increase player vision.
+All key control listed in previous assignment is implemented.
 Enable key control 'D': display non-tunneling distance map
 Enable key control 'T': display tunneling distance map
 Enable key control 'H': display hardness map

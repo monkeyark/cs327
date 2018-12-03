@@ -71,7 +71,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 			}
 			else
 			{
-				if (dungeon.pc.vision[i - 1][j])
+				if (dungeon.pc.vision_map[i - 1][j])
 				{
 					mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
 				}
@@ -296,6 +296,7 @@ const char *equip_item(int index)
 				dungeon.pc.speed += dungeon.pc.equipment[RING].speed;
 				dungeon.pc.hitpoints += dungeon.pc.equipment[RING].hit;
 				dungeon.pc.damage_bonus += dungeon.pc.equipment[RING].damage_bonus;
+				dungeon.pc.vision_range += dungeon.pc.equipment[item_type].vision_bonus;
 
 				//set inventory memory block of indexed item to 0, match calloc 0
 				//memset(inventory_item, 0, sizeof(Item));
@@ -314,6 +315,7 @@ const char *equip_item(int index)
 				dungeon.pc.speed += dungeon.pc.equipment[RING_SECONDARY].speed;
 				dungeon.pc.hitpoints += dungeon.pc.equipment[RING_SECONDARY].hit;
 				dungeon.pc.damage_bonus += dungeon.pc.equipment[RING_SECONDARY].damage_bonus;
+				dungeon.pc.vision_range += dungeon.pc.equipment[item_type].vision_bonus;
 
 				//set inventory memory block of indexed item to 0, match calloc 0
 				//memset(inventory_item, 0, sizeof(Item));
@@ -337,6 +339,7 @@ const char *equip_item(int index)
 				dungeon.pc.speed += dungeon.pc.equipment[item_type].speed;
 				dungeon.pc.hitpoints += dungeon.pc.equipment[item_type].hit;
 				dungeon.pc.damage_bonus += dungeon.pc.equipment[item_type].damage_bonus;
+				dungeon.pc.vision_range += dungeon.pc.equipment[item_type].vision_bonus;
 
 				//set inventory memory block of indexed item to 0, match calloc 0
 				//memset(inventory_item, 0, sizeof(Item));
@@ -417,6 +420,7 @@ const char *takeoff_item(int index)
 			dungeon.pc.speed -= equip_item->speed;
 			dungeon.pc.hitpoints -= equip_item->hit;
 			dungeon.pc.damage_bonus -= equip_item->damage_bonus;
+			dungeon.pc.vision_range -= equip_item->vision_bonus;
 
 			//set inventory memory block of indexed item to 0, match calloc 0
 			//memset(equip_item, 0, sizeof(Item));
@@ -1040,7 +1044,7 @@ void print_dungeon_lookup_ncurses(WINDOW *game, const char *message)
 			}
 			else
 			{
-				if (dungeon.pc.vision[i - 1][j])
+				if (dungeon.pc.vision_map[i - 1][j])
 				{
 					mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
 				}

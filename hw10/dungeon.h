@@ -27,7 +27,7 @@
 #define ROOM_H 0
 #define CORRIDOR_H 0
 #define PC_H 0
-#define PC_VISION_RADIUS 2
+#define PC_BASE_VISION_RADIUS 2
 #define PC_INVENTORY 10
 #define PC_FULL_HP 100000
 
@@ -149,6 +149,7 @@ class Item
 			color = 0;
 			color_display = 0;
 			damage_bonus = 0;
+			vision_bonus = 0;
 			rarity = 0;
 			type = 0;
 		}
@@ -164,6 +165,7 @@ class Item
 		int color_display;
 		dice damage;
 		int damage_bonus;
+		int vision_bonus;
 		int hit;
 		int dodge;
 		int defence;
@@ -214,7 +216,8 @@ class NPC : public Character
 class PC : public Character
 {
 	public:
-		int vision[ROW][COL];
+		int vision_range;
+		int vision_map[ROW][COL];
 		int inventory_size;
 		int damage_bonus;
 		bool equipment_open[NUM_EQUIPMENT];
@@ -256,6 +259,7 @@ class Object
 		dice speed;
 		dice attribute;
 		dice value;
+		int vision_bonus;
 		bool artifact;
 		int rarity;
 		int type;

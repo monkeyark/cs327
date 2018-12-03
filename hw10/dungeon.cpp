@@ -16,7 +16,7 @@ void init_dungeon()
 			dungeon.map[i][j].space = ROCK;
 			dungeon.map[i][j].fog = ROCK;
 			dungeon.map[i][j].hardness = ROCK_H;
-			dungeon.pc.vision[i][j] = 0;
+			dungeon.pc.vision_map[i][j] = 0;
 		}
 	}
 }
@@ -362,22 +362,23 @@ void new_stair()
 
 int is_visible_terrain(int i, int j)
 {
-	return i >= dungeon.pc.row - PC_VISION_RADIUS &&
-		i <= dungeon.pc.row + PC_VISION_RADIUS &&
-		j >= dungeon.pc.col - PC_VISION_RADIUS &&
-		j <= dungeon.pc.col + PC_VISION_RADIUS;
+	
+	return i >= dungeon.pc.row - dungeon.pc.vision_range &&
+		i <= dungeon.pc.row + dungeon.pc.vision_range &&
+		j >= dungeon.pc.col - dungeon.pc.vision_range &&
+		j <= dungeon.pc.col + dungeon.pc.vision_range;
 }
 
 void remember_map_PC()
 {
 	int row, col;
-	for (row = dungeon.pc.row - PC_VISION_RADIUS; row < dungeon.pc.row + PC_VISION_RADIUS + 1; row++)
+	for (row = dungeon.pc.row - dungeon.pc.vision_range; row < dungeon.pc.row + dungeon.pc.vision_range + 1; row++)
 	{
-		for (col = dungeon.pc.col - PC_VISION_RADIUS; col < dungeon.pc.col + PC_VISION_RADIUS + 1; col++)
+		for (col = dungeon.pc.col - dungeon.pc.vision_range; col < dungeon.pc.col + dungeon.pc.vision_range + 1; col++)
 		{
 			if (row >= 0 && col >= 0 && row < ROW && col < COL)
 			{
-				dungeon.pc.vision[row][col] = 1;
+				dungeon.pc.vision_map[row][col] = 1;
 				//if (is_monster(row, col) && is_visible_terrain(row, col))
 				if (is_visible_terrain(row, col))
 				{
@@ -495,6 +496,7 @@ void new_PC_desc()
 	dungeon.pc.col = dungeon.rooms[0].col;
 
 	dungeon.pc.speed = 10;
+	dungeon.pc.vision_range = PC_BASE_VISION_RADIUS;
 	dungeon.pc.inventory_size = 0;
 	dungeon.pc.hitpoints = PC_FULL_HP;
 	dungeon.pc.regen = 7;
@@ -623,6 +625,11 @@ Item new_item_desc(int birth)
 	item.artifact = obj.artifact;
 	item.rarity = obj.rarity;
 	item.type = obj.type;
+	if (obj.type == LIGHT)//TODO
+	{
+		item.vision_bonus = 5;
+	}
+	
 	//item.type_string = obj.type_string.c_str();
 	item.type_string = new char [obj.type_string.length()+1];
 	strcpy(item.type_string,obj.type_string.c_str());

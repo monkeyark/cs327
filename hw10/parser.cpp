@@ -742,6 +742,7 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
     int rarity;
     char symbol;
     int type;
+    //int vision_bonus;//TODO
     string type_string;
 
     unsigned int color;

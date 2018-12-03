@@ -5,3 +5,4 @@ Lava is rendered with symbol ^. Character will cannot swin in water without eqiu
 of cloak and cannot walk on lava without boots. Play health regeneration will speed up
 by 5 times in water and will drop hitpoints when walking in lava.
 
+Enable funcationality of object LIGHT, equip LIGHT will increase player vision.

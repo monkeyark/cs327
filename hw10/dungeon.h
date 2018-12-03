@@ -16,6 +16,8 @@
 #define TERMINAL_COL 80
 #define ROCK ' '
 #define ROOM '.'
+#define WATER '~'
+#define LAVA '^'
 #define CORRIDOR '#'
 #define PLAYER '@'
 #define STAIR_UP '<'
@@ -26,6 +28,7 @@
 #define PC_H 0
 #define PC_VISION_RADIUS 2
 #define PC_INVENTORY 10
+#define PC_FULL_HP 100000
 
 #define MIN(a, b)				\
 	({						\
@@ -95,7 +98,7 @@ enum
 	AMULET,
 	LIGHT,
 	RING,
-	RING_SEC,
+	RING_SECONDARY,
 	NUM_EQUIPMENT,
 };
 
@@ -117,6 +120,24 @@ class Room
 		int height;
 };
 
+class Water
+{
+	public:
+		int row;
+		int col;
+		int width;
+		int height;
+};
+
+class Lava
+{
+	public:
+		int row;
+		int col;
+		int width;
+		int height;
+};
+
 class Item
 {
 	public :
@@ -124,27 +145,11 @@ class Item
 		{
 			row = 0;
 			col = 0;
-			symbol = '*';
 			color = 0;
 			color_display = 0;
 			damage_bonus = 0;
-			// int hit;
-			// int dodge;
-			// int defence;
-			// int weight;
-			// int speed;
-			// int attribute;
-			// int value;
-			// bool artifact;
 			rarity = 0;
 			type = 0;
-			//const char *type_string;
-
-			// int birth;
-			// bool is_inventory;
-			// bool is_equipment;
-			// bool is_item;
-			// bool is_onfloor;
 		}
 
 
@@ -189,6 +194,7 @@ class Character
 
 		int hitpoints;
 		dice damage;
+		int regen;
 };
 
 class NPC : public Character
@@ -264,8 +270,12 @@ class Dungeon
 		int num_mon;
 		int num_item;
 		int num_room;
+		int num_water;
+		int num_lava;
 		int version;
 		Room *rooms;
+		Water *waters;
+		Lava *lavas;
 		NPC *monster;
 		Item *item;
 		PC pc;

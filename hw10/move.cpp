@@ -220,8 +220,10 @@ void move_npc()
 const char *move_pc(int row_move, int col_move)
 {
 	const char *message;
+	
 	if (row_move == 0 && col_move == 0)
 	{
+		dungeon.pc.hitpoints = MIN(dungeon.pc.hitpoints + dungeon.pc.regen, PC_FULL_HP);
 		move_npc();
 		message = "PC is resting!";
 	}
@@ -289,7 +291,8 @@ const char *move_pc(int row_move, int col_move)
 			dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
 			dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
 		}
-
+		
+		dungeon.pc.hitpoints = MIN(dungeon.pc.hitpoints + dungeon.pc.regen, PC_FULL_HP);
 		move_npc();
 		remember_map_PC();
 	}

@@ -304,16 +304,16 @@ const char *equip_item(int index)
 
 				message = inventory_item->name;
 			}
-			else if (dungeon.pc.equipment_open[RING_SEC]) //second ring slot open
+			else if (dungeon.pc.equipment_open[RING_SECONDARY]) //second ring slot open
 			{
-				dungeon.pc.equipment[RING_SEC] = dungeon.pc.inventory[index];
-				dungeon.pc.equipment_open[RING_SEC] = false;
+				dungeon.pc.equipment[RING_SECONDARY] = dungeon.pc.inventory[index];
+				dungeon.pc.equipment_open[RING_SECONDARY] = false;
 				dungeon.pc.inventory_size--;
 
 				//add item bonus to pc
-				dungeon.pc.speed += dungeon.pc.equipment[RING_SEC].speed;
-				dungeon.pc.hitpoints += dungeon.pc.equipment[RING_SEC].hit;
-				dungeon.pc.damage_bonus += dungeon.pc.equipment[RING_SEC].damage_bonus;
+				dungeon.pc.speed += dungeon.pc.equipment[RING_SECONDARY].speed;
+				dungeon.pc.hitpoints += dungeon.pc.equipment[RING_SECONDARY].hit;
+				dungeon.pc.damage_bonus += dungeon.pc.equipment[RING_SECONDARY].damage_bonus;
 
 				//set inventory memory block of indexed item to 0, match calloc 0
 				//memset(inventory_item, 0, sizeof(Item));
@@ -851,7 +851,7 @@ void item_takeoff()
 				break;
 			case 'l':
 				clear_message(list);
-				message = takeoff_item(RING_SEC);
+				message = takeoff_item(RING_SECONDARY);
 				break;
 		}
 	}

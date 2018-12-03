@@ -154,6 +154,66 @@ int is_valid_room(int row, int col, int width, int height)
 	return 1;
 }
 
+Water new_water_random()
+{
+	Water r;
+	r.row = get_random(ROW, 0);
+	r.col = get_random(COL, 0);
+	r.width = get_random(3, 3);
+	r.height = get_random(3, 3);
+
+	int validRoom = is_valid_room(r.row, r.col, r.width, r.height);
+
+	if (validRoom)
+	{
+		for (int i = r.row; i < r.row + r.height; i++)
+		{
+			for (int j = r.col; j < r.col + r.width; j++)
+			{
+				dungeon.map[i][j].terrain = WATER;
+				dungeon.map[i][j].space = WATER;
+				dungeon.map[i][j].hardness = 0;
+			}
+		}
+	}
+	else
+	{
+		return new_water_random();
+	}
+
+	return r;
+}
+
+Lava new_lava_random()
+{
+	Lava r;
+	r.row = get_random(ROW, 0);
+	r.col = get_random(COL, 0);
+	r.width = get_random(3, 3);
+	r.height = get_random(3, 3);
+
+	int validRoom = is_valid_room(r.row, r.col, r.width, r.height);
+
+	if (validRoom)
+	{
+		for (int i = r.row; i < r.row + r.height; i++)
+		{
+			for (int j = r.col; j < r.col + r.width; j++)
+			{
+				dungeon.map[i][j].terrain = LAVA;
+				dungeon.map[i][j].space = LAVA;
+				dungeon.map[i][j].hardness = 0;
+			}
+		}
+	}
+	else
+	{
+		return new_lava_random();
+	}
+
+	return r;
+}
+
 Room new_room_random()
 {
 	Room r;
@@ -430,7 +490,8 @@ void new_PC_desc()
 
 	dungeon.pc.speed = 10;
 	dungeon.pc.inventory_size = 0;
-	dungeon.pc.hitpoints = 10000;
+	dungeon.pc.hitpoints = PC_FULL_HP;
+	dungeon.pc.regen = 7;
 	dungeon.pc.damage = dice(0, 1, 4);
 	for (int i = 0; i < NUM_EQUIPMENT; i++)
 	{
@@ -582,6 +643,10 @@ void generate_dungeon_desc()
 	//initialize dungeon
 	init_dungeon();
 
+	//generate random number of water
+	dungeon.num_water = get_random(4, 2);
+	//generate random number of lava
+	dungeon.num_lava = get_random(4, 2);
 	//generate random number of rooms
 	dungeon.num_room = get_random(7, 5);
 	//generate random number of monster
@@ -592,29 +657,77 @@ void generate_dungeon_desc()
 	//dungeon.num_mon = 1;//DEBUG
 	dungeon.num_item = get_random(5, 11);
 
-	// dungeon.rooms = (Room *)malloc(dungeon.num_room * sizeof(Room));
-	// dungeon.monster = (NPC *)malloc(dungeon.num_mon * sizeof(NPC));
-	// dungeon.item = (Item *)malloc(dungeon.num_item * sizeof(Item));
 	dungeon.rooms = (Room *)calloc(dungeon.num_room, sizeof(Room));
+	dungeon.lavas = (Lava *)calloc(dungeon.num_lava, sizeof(Lava));
+	dungeon.waters = (Water *)calloc(dungeon.num_water, sizeof(Water));
 	dungeon.monster = (NPC *)calloc(dungeon.num_mon, sizeof(NPC));
 	dungeon.item = (Item *)calloc(dungeon.num_item, sizeof(Item));
 
 	int i;
+
+	//add lava
+	for (i = 0; i < dungeon.num_lava; i++)
+	{
+		dungeon.lavas[i] = new_lava_random();
+	}
+
+	//add water
+	for (i = 0; i < dungeon.num_water; i++)
+	{
+		dungeon.waters[i] = new_water_random();
+	}
+	
 	//add rooms
 	for (i = 0; i < dungeon.num_room; i++)
 	{
 		dungeon.rooms[i] = new_room_random();
 	}
 
-	//add corridors
+	int row_from, col_from, row_to, col_to;
+	//add corridors between rooms
 	for (i = 0; i < dungeon.num_room - 1; i++)
 	{
-		int row_from = dungeon.rooms[i].row;
-		int col_from = dungeon.rooms[i].col;
-		int row_to = dungeon.rooms[i + 1].row;
-		int col_to = dungeon.rooms[i + 1].col;
+		row_from = dungeon.rooms[i].row;
+		col_from = dungeon.rooms[i].col;
+		row_to = dungeon.rooms[i + 1].row;
+		col_to = dungeon.rooms[i + 1].col;
 		new_corridor(row_from, col_from, row_to, col_to);
 	}
+	
+	//add corridors between rooms and waters
+	row_from = dungeon.rooms[dungeon.num_room - 1].row;
+	col_from = dungeon.rooms[dungeon.num_room - 1].col;
+	row_to = dungeon.waters[0].row;
+	col_to = dungeon.waters[0].col;
+	new_corridor(row_from, col_from, row_to, col_to);
+
+	//add corridors between waters
+	for (i = 0; i < dungeon.num_water - 1; i++)
+	{
+		row_from = dungeon.waters[i].row;
+		col_from = dungeon.waters[i].col;
+		row_to = dungeon.waters[i + 1].row;
+		col_to = dungeon.waters[i + 1].col;
+		new_corridor(row_from, col_from, row_to, col_to);
+	}
+
+	//add corridors between waters and lavas
+	row_from = dungeon.waters[dungeon.num_water - 1].row;
+	col_from = dungeon.waters[dungeon.num_water - 1].col;
+	row_to = dungeon.lavas[0].row;
+	col_to = dungeon.lavas[0].col;
+	new_corridor(row_from, col_from, row_to, col_to);
+
+	//add corridors between lavas
+	for (i = 0; i < dungeon.num_lava - 1; i++)
+	{
+		row_from = dungeon.lavas[i].row;
+		col_from = dungeon.lavas[i].col;
+		row_to = dungeon.lavas[i + 1].row;
+		col_to = dungeon.lavas[i + 1].col;
+		new_corridor(row_from, col_from, row_to, col_to);
+	}
+
 
 	//add stair
 	new_stair();
@@ -633,6 +746,8 @@ void generate_dungeon_desc()
 	{
 		dungeon.item[i] = new_item_desc(i);
 	}
+
+	print_dungeon();
 }
 
 void delete_dungeon()
@@ -644,11 +759,13 @@ void delete_dungeon()
 void delete_dungeon_desc()
 {
 	free(dungeon.rooms);
+	free(dungeon.waters);
+	free(dungeon.lavas);
 	free(dungeon.monster);
 	free(dungeon.item);
 	free(dungeon.pc.equipment);
 	free(dungeon.pc.inventory);
-	dungeon.pc.hitpoints = 10000;
+	dungeon.pc.hitpoints = PC_FULL_HP;
 	dungeon.pc.damage_bonus = 0;
 	dungeon.pc.speed = 10;
 }

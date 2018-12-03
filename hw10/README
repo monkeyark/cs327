@@ -1,0 +1,6 @@
+Player now has auto health regeneration rate at 7 hitpoints.
+
+Add two more terrian water and lava. Character will speed down in water
+and will drop hitpoints in lava.
+Water is rendered with symbol ~
+Lava is rendered with symbol ^

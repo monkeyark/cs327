@@ -11,4 +11,5 @@ Nov 22
 Nov 26
     enable key control 'D': display non-tunneling distance map
     enable key control 'T': display tunneling distance map
+    enable key control 'H': display hardness map
     add superman mode of game

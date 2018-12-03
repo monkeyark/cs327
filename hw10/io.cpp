@@ -22,7 +22,7 @@ void clear_message(WINDOW *win)
 void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 {
 	//clean previous message
-	clear_message(game);
+	wclear(game);
 
 	int i, j;
 	//print current message
@@ -95,7 +95,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 void print_dungeon_terrian(WINDOW *game, const char *message)
 {
 	//clean previous message
-	clear_message(game);
+	wclear(game);
 
 	int i, j;
 	//print current message
@@ -113,8 +113,42 @@ void print_dungeon_terrian(WINDOW *game, const char *message)
 	{
 		for (j = 0; j < COL; j++)
 		{
-			mvwprintw(game, i, j, " ");
 			mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
+		}
+	}
+
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
+			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
+	move(TERMINAL_ROW - 1, 0);
+	clrtoeol();
+}
+
+void print_dungeon_hardness(WINDOW *game, const char *message)
+{
+	//clean previous windows
+	wclear(game);
+
+	int i, j;
+	//print current message
+	const char *m = message;
+	for (i = 0, j = 0; *m; m++, j++)
+	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(game, COLOR_PAIR(COLOR_CYAN));
+		mvwprintw(game, i, j, m);
+		wattroff(game, COLOR_PAIR(COLOR_CYAN));
+	}
+
+	//print dungeon
+	for (i = 1; i < ROW + 1; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			//int n = dungeon.map[i - 1][j].hardness % 10;
+			std::string s = std::to_string(dungeon.map[i - 1][j].hardness % 10);
+			char const *c = s.c_str();
+			mvwprintw(game, i, j, c);
 		}
 	}
 
@@ -128,7 +162,7 @@ void print_dungeon_terrian(WINDOW *game, const char *message)
 void print_dungeon_dijkstra_path(WINDOW *game, const char *message)
 {
 	//clean previous message
-	clear_message(game);
+	wclear(game);
 
 	int i, j;
 	//print current message
@@ -174,7 +208,7 @@ void print_dungeon_dijkstra_path(WINDOW *game, const char *message)
 void print_dungeon_ncurses(WINDOW *game, const char *message)
 {
 	//clean previous message
-	clear_message(game);
+	wclear(game);
 
 	int i, j;
 	//print current message
@@ -232,7 +266,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 {
 	//clean previous message
-	clear_message(game);
+	wclear(game);
 
 	int i, j;
 	//print current message
@@ -1071,7 +1105,7 @@ const char *move_pc_teleport(int row_move, int col_move)
 void print_dungeon_lookup_ncurses(WINDOW *game, const char *message)
 {
 	//clean previous message
-	clear_message(game);
+	wclear(game);
 
 	int i, j;
 	//print current message
@@ -1489,6 +1523,7 @@ void dungeon_ncurses()
 	bool terrain = false;
 	bool non_tunnel = false;
 	bool tunnel = false;
+	bool hardness = false;
 
 	char random_seed[10];
 	sprintf(random_seed, "%d", dungeon.seed);
@@ -1507,6 +1542,10 @@ void dungeon_ncurses()
 		else if (tunnel || non_tunnel)
 		{
 			print_dungeon_dijkstra_path(game, message);
+		}
+		else if (hardness)
+		{
+			print_dungeon_hardness(game, message);
 		}
 		else if (fog)
 		{
@@ -1658,6 +1697,7 @@ void dungeon_ncurses()
 				terrain = !terrain;
 				non_tunnel = false;
 				tunnel = false;
+				hardness = false;
 				message = "terrain map view";
 				break;
 			case 't':
@@ -1677,16 +1717,21 @@ void dungeon_ncurses()
 				break;
 			case 'D':
 				dijkstra_nontunneling((Character *) dungeon.pc);
-				message = "non-tunneling distance map view";
 				non_tunnel = !non_tunnel;
 				terrain = false;
 				tunnel = false;
+				hardness = false;
+				message = "non-tunneling distance map view";
 				break;
 			case 'E':
 				//TODO
 				break;
 			case 'H':
-				//TODO
+				hardness = !hardness;
+				tunnel = false;
+				terrain = false;
+				non_tunnel = false;
+				message = "hardness map view";
 				break;
 			case 'I':
 				item_inspect();
@@ -1699,10 +1744,11 @@ void dungeon_ncurses()
 				break;
 			case 'T':
 				dijkstra_tunneling((Character *) dungeon.pc);
-				message = "tunneling distance map view";
 				tunnel = !tunnel;
 				terrain = false;
 				non_tunnel = false;
+				hardness = false;
+				message = "tunneling distance map view";
 				break;
 		}
 

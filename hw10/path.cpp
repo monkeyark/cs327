@@ -37,7 +37,7 @@ void print_dijkstra_path(int dist[ROW * COL])
 	{
 		for (j = 0; j < COL; j++)
 		{
-			if (dungeon.pc.row == i && dungeon.pc.col == j)
+			if (dungeon.pc->row == i && dungeon.pc->col == j)
 			{
 				printf("%c", PLAYER);
 			}
@@ -56,13 +56,13 @@ void print_dijkstra_path(int dist[ROW * COL])
 	putchar('\n');
 }
 
-void dijkstra_tunneling(NPC *npc)
+void dijkstra_tunneling(Character *npc)
 {
 	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
 	int i, j;
 	
-	Node *node = node_new(dungeon.pc.row * COL + dungeon.pc.col);
+	Node *node = node_new(dungeon.pc->row * COL + dungeon.pc->col);
 
 	for (i = 0; i < ROW; i++)
 	{
@@ -79,7 +79,7 @@ void dijkstra_tunneling(NPC *npc)
 			}
 		}
 	}
-	npc->dist[dungeon.pc.row * COL + dungeon.pc.col] = 0;
+	npc->dist[dungeon.pc->row * COL + dungeon.pc->col] = 0;
 
 	while (!pq_isEmpty(dungeon.pq_tunel, &node))
 	{
@@ -104,13 +104,13 @@ void dijkstra_tunneling(NPC *npc)
 	}
 }
 
-void dijkstra_nontunneling(NPC *npc)
+void dijkstra_nontunneling(Character *npc)
 {
 	int rowMove[8] = {-1, -1, -1, 0, +1, +1, +1, 0};
 	int colMove[8] = {-1, 0, +1, +1, +1, 0, -1, -1};
 	int i, j;
 	
-	Node *node = node_new(dungeon.pc.row * COL + dungeon.pc.col);
+	Node *node = node_new(dungeon.pc->row * COL + dungeon.pc->col);
 
 	for (i = 0; i < ROW; i++)
 	{
@@ -132,7 +132,7 @@ void dijkstra_nontunneling(NPC *npc)
 			}
 		}
 	}
-	npc->dist[dungeon.pc.row * COL + dungeon.pc.col] = 0;
+	npc->dist[dungeon.pc->row * COL + dungeon.pc->col] = 0;
 
 	while (!pq_isEmpty(dungeon.pq_nontunel, &node))
 	{

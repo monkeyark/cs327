@@ -192,6 +192,7 @@ class Character
 		int row;
 		int col;
 		int birth;
+		int dist[ROW * COL];
 		int speed;
 		int dead;
 
@@ -206,7 +207,6 @@ class NPC : public Character
 		unsigned int ability;
 		int pc_row;
 		int pc_col;
-		int dist[ROW * COL];
 		unsigned int color;
 		int color_display;
 		const char *name;
@@ -284,7 +284,7 @@ class Dungeon
 		Lava *lavas;
 		NPC *monster;
 		Item *item;
-		PC pc;
+		PC *pc;
 		int cursor_row;
 		int cursor_col;
 		Terrain map[ROW][COL];

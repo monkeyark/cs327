@@ -16,7 +16,6 @@ void init_dungeon()
 			dungeon.map[i][j].space = ROCK;
 			dungeon.map[i][j].fog = ROCK;
 			dungeon.map[i][j].hardness = ROCK_H;
-			dungeon.pc.vision_map[i][j] = 0;
 		}
 	}
 }
@@ -363,22 +362,22 @@ void new_stair()
 int is_visible_terrain(int i, int j)
 {
 	
-	return i >= dungeon.pc.row - dungeon.pc.vision_range &&
-		i <= dungeon.pc.row + dungeon.pc.vision_range &&
-		j >= dungeon.pc.col - dungeon.pc.vision_range &&
-		j <= dungeon.pc.col + dungeon.pc.vision_range;
+	return i >= dungeon.pc->row - dungeon.pc->vision_range &&
+		i <= dungeon.pc->row + dungeon.pc->vision_range &&
+		j >= dungeon.pc->col - dungeon.pc->vision_range &&
+		j <= dungeon.pc->col + dungeon.pc->vision_range;
 }
 
 void remember_map_PC()
 {
 	int row, col;
-	for (row = dungeon.pc.row - dungeon.pc.vision_range; row < dungeon.pc.row + dungeon.pc.vision_range + 1; row++)
+	for (row = dungeon.pc->row - dungeon.pc->vision_range; row < dungeon.pc->row + dungeon.pc->vision_range + 1; row++)
 	{
-		for (col = dungeon.pc.col - dungeon.pc.vision_range; col < dungeon.pc.col + dungeon.pc.vision_range + 1; col++)
+		for (col = dungeon.pc->col - dungeon.pc->vision_range; col < dungeon.pc->col + dungeon.pc->vision_range + 1; col++)
 		{
 			if (row >= 0 && col >= 0 && row < ROW && col < COL)
 			{
-				dungeon.pc.vision_map[row][col] = 1;
+				dungeon.pc->vision_map[row][col] = 1;
 				//if (is_monster(row, col) && is_visible_terrain(row, col))
 				if (is_visible_terrain(row, col))
 				{
@@ -411,8 +410,8 @@ NPC new_NPC(int birth)
 		npc.dead = 0;
 		if (npc.ability & NPC_TELEPATH) //monster is telepath
 		{
-			npc.pc_row = dungeon.pc.row;
-			npc.pc_col = dungeon.pc.col;
+			npc.pc_row = dungeon.pc->row;
+			npc.pc_col = dungeon.pc->col;
 		}
 
 		sprintf(&npc.symbol, "%x", npc.ability);
@@ -430,13 +429,13 @@ NPC new_NPC(int birth)
 void new_PC()
 {
 	//add initial player location
-	dungeon.pc.birth = -1;
-	dungeon.pc.speed = 10;
-	dungeon.pc.dead = 0;
-	dungeon.pc.row = dungeon.rooms[0].row;
-	dungeon.pc.col = dungeon.rooms[0].col;
-	dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
-	dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
+	dungeon.pc->birth = -1;
+	dungeon.pc->speed = 10;
+	dungeon.pc->dead = 0;
+	dungeon.pc->row = dungeon.rooms[0].row;
+	dungeon.pc->col = dungeon.rooms[0].col;
+	dungeon.map[dungeon.pc->row][dungeon.pc->col].space = PLAYER;
+	dungeon.map[dungeon.pc->row][dungeon.pc->col].hardness = 0;
 
 	remember_map_PC();
 }
@@ -490,28 +489,41 @@ void generate_dungeon()
 void new_PC_desc()
 {
 	//add initial player location
-	dungeon.pc.birth = -1;
-	dungeon.pc.dead = 0;
-	dungeon.pc.row = dungeon.rooms[0].row;
-	dungeon.pc.col = dungeon.rooms[0].col;
+	PC pc;
+	dungeon.pc = (PC *)calloc(1, sizeof(PC));
+	dungeon.pc = &pc;
 
-	dungeon.pc.speed = 10;
-	dungeon.pc.vision_range = PC_BASE_VISION_RADIUS;
-	dungeon.pc.inventory_size = 0;
-	dungeon.pc.hitpoints = PC_FULL_HP;
-	dungeon.pc.regen = 7;
-	dungeon.pc.damage = dice(0, 1, 4);
-	dungeon.pc.superman = false;
+	pc.birth = -1;
+	pc.dead = 0;
+	pc.row = dungeon.rooms[0].row;
+	pc.col = dungeon.rooms[0].col;
+
+	pc.speed = 10;
+	pc.vision_range = PC_BASE_VISION_RADIUS;
+	pc.inventory_size = 0;
+	pc.hitpoints = PC_FULL_HP;
+	pc.regen = 7;
+	pc.damage = dice(0, 1, 4);
+	pc.superman = false;
 	for (int i = 0; i < NUM_EQUIPMENT; i++)
 	{
-		dungeon.pc.equipment_open[i] = true;
+		pc.equipment_open[i] = true;
 	}
-	//dungeon.pc.equipment = (Item *)malloc(NUM_EQUIPMENT * sizeof(Item));
-	//dungeon.pc.inventory = (Item *)malloc(PC_INVENTORY * sizeof(Item));
-	dungeon.pc.equipment = (Item *)calloc(NUM_EQUIPMENT, sizeof(Item));
-	dungeon.pc.inventory = (Item *)calloc(PC_INVENTORY, sizeof(Item));
+
+	for (int i = 0; i < ROW; i++)
+	{
+		for (int j = 0; j < COL; j++)
+		{
+			pc.vision_map[i][j] = 0;
+		}
+	}
+	pc.equipment = (Item *)calloc(NUM_EQUIPMENT, sizeof(Item));
+	pc.inventory = (Item *)calloc(PC_INVENTORY, sizeof(Item));
 	remember_map_PC();
-	dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
+	dungeon.map[pc.row][pc.col].space = PLAYER;
+
+	dungeon.pc = (PC *)calloc(1, sizeof(PC));
+	dungeon.pc[0] = pc;
 }
 
 NPC new_NPC_desc(int birth)
@@ -558,8 +570,8 @@ NPC new_NPC_desc(int birth)
 	npc.description = mons.description.c_str();
 	if (npc.ability & NPC_TELEPATH) //monster is telepath
 	{
-		npc.pc_row = dungeon.pc.row;
-		npc.pc_col = dungeon.pc.col;
+		npc.pc_row = dungeon.pc->row;
+		npc.pc_col = dungeon.pc->col;
 	}
 
 	dungeon.map[npc.row][npc.col].space = npc.symbol;
@@ -569,7 +581,7 @@ NPC new_NPC_desc(int birth)
 
 bool is_inventory_open()
 {
-	return dungeon.pc.inventory_size != PC_INVENTORY;
+	return dungeon.pc->inventory_size != PC_INVENTORY;
 }
 
 Item new_item_desc(int birth)
@@ -775,11 +787,11 @@ void delete_dungeon_desc()
 	free(dungeon.lavas);
 	free(dungeon.monster);
 	free(dungeon.item);
-	free(dungeon.pc.equipment);
-	free(dungeon.pc.inventory);
-	dungeon.pc.hitpoints = PC_FULL_HP;
-	dungeon.pc.damage_bonus = 0;
-	dungeon.pc.speed = 10;
+	free(dungeon.pc->equipment);
+	free(dungeon.pc->inventory);
+	dungeon.pc->hitpoints = PC_FULL_HP;
+	dungeon.pc->damage_bonus = 0;
+	dungeon.pc->speed = 10;
 }
 
 void move_dungeon()
@@ -811,10 +823,10 @@ void load_dungeon(FILE *f)
 
 	uint8_t pc_col;
 	fread(&pc_col, 1, 1, f);
-	dungeon.pc.col = pc_col;
+	dungeon.pc->col = pc_col;
 	uint8_t pc_row;
 	fread(&pc_row, 1, 1, f);
-	dungeon.pc.row = pc_row;
+	dungeon.pc->row = pc_row;
 
 	uint8_t hard[1680];
 	fread(hard, 1, 1680, f);
@@ -855,8 +867,8 @@ void load_dungeon(FILE *f)
 	}
 
 	//add PC
-	dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain = PLAYER;
-	dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = PC_H;
+	dungeon.map[dungeon.pc->row][dungeon.pc->col].terrain = PLAYER;
+	dungeon.map[dungeon.pc->row][dungeon.pc->col].hardness = PC_H;
 
 	fclose(f);
 }
@@ -880,9 +892,9 @@ void save_dungeon(FILE *f)
 	filesize = htobe32(filesize);
 	fwrite(&filesize, 4, 1, f);
 
-	int pc_x = dungeon.pc.col;
+	int pc_x = dungeon.pc->col;
 	fwrite(&pc_x, 1, 1, f);
-	int pc_y = dungeon.pc.row;
+	int pc_y = dungeon.pc->row;
 	fwrite(&pc_y, 1, 1, f);
 
 	char *hard = (char *)malloc(1680);

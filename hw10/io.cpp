@@ -5,6 +5,7 @@
 
 #include "move.h"
 #include "io.h"
+#include "path.h"
 
 using namespace std;
 
@@ -44,7 +45,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 			int item_index = is_item((i - 1), j);
 			if (is_visible_terrain((i - 1), j))
 			{
-				if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
+				if ((i - 1) == dungeon.pc->row && j == dungeon.pc->col)
 				{
 					mvwprintw(game, i, j, "@");
 				}
@@ -71,7 +72,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 			}
 			else
 			{
-				if (dungeon.pc.vision_map[i - 1][j])
+				if (dungeon.pc->vision_map[i - 1][j])
 				{
 					mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
 				}
@@ -86,7 +87,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 
 	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
 	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
-			dungeon.pc.hitpoints, dungeon.pc.speed, dungeon.pc.damage_bonus);
+			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
 	move(TERMINAL_ROW - 1, 0);
 	clrtoeol();
 }
@@ -119,7 +120,86 @@ void print_dungeon_terrian(WINDOW *game, const char *message)
 
 	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
 	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
-			dungeon.pc.hitpoints, dungeon.pc.speed, dungeon.pc.damage_bonus);
+			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
+	move(TERMINAL_ROW - 1, 0);
+	clrtoeol();
+}
+
+void print_dungeon_tunnel(WINDOW *game, const char *message)
+{
+	//clean previous message
+	clear_message(game);
+
+	int i, j;
+	//print current message
+	const char *m = message;
+	for (i = 0, j = 0; *m; m++, j++)
+	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(game, COLOR_PAIR(COLOR_CYAN));
+		mvwprintw(game, i, j, m);
+		wattroff(game, COLOR_PAIR(COLOR_CYAN));
+	}
+
+	//print dungeon
+	for (i = i; i < ROW; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			mvwprintw(game, i, j, " ");
+			if (dungeon.pc->row == i && dungeon.pc->col == j)
+			{		
+				mvwprintw(game, i, j, "@");
+			}
+			else if (dungeon.pc->dist[i * COL + j] != -1)
+			{
+				int n = dungeon.pc->dist[i * COL + j] % 10;
+				printf("%d", n);
+			}
+			else
+			{
+				mvwprintw(game, i, j, " ");
+			}
+		}
+		printf("\n");
+	}
+
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
+			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
+	move(TERMINAL_ROW - 1, 0);
+	clrtoeol();
+}
+
+void print_dungeon_non_tunnel(WINDOW *game, const char *message)
+{
+	//clean previous message
+	clear_message(game);
+
+	int i, j;
+	//print current message
+	const char *m = message;
+	for (i = 0, j = 0; *m; m++, j++)
+	{
+		init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+		wattron(game, COLOR_PAIR(COLOR_CYAN));
+		mvwprintw(game, i, j, m);
+		wattroff(game, COLOR_PAIR(COLOR_CYAN));
+	}
+
+	//print dungeon
+	for (i = 1; i < ROW + 1; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			mvwprintw(game, i, j, " ");
+			mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
+		}
+	}
+
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
+	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
+			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
 	move(TERMINAL_ROW - 1, 0);
 	clrtoeol();
 }
@@ -148,7 +228,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 			short color;
 			int npc_index = is_monster((i - 1), j);
 			int item_index = is_item((i - 1), j);
-			if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
+			if ((i - 1) == dungeon.pc->row && j == dungeon.pc->col)
 			{
 				mvwprintw(game, i, j, "@");
 			}
@@ -177,7 +257,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 
 	mvwprintw(game, TERMINAL_ROW - 1, 0, "                                                  ");
 	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
-			dungeon.pc.hitpoints, dungeon.pc.speed, dungeon.pc.damage_bonus);
+			dungeon.pc->hitpoints, dungeon.pc->speed, dungeon.pc->damage_bonus);
 	move(TERMINAL_ROW - 1, 0);
 	clrtoeol();
 }
@@ -210,7 +290,7 @@ void print_dungeon_teleport_ncurses(WINDOW *game, const char *message)
 			{
 				mvwprintw(game, i, j, "*");
 			}
-			else if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
+			else if ((i - 1) == dungeon.pc->row && j == dungeon.pc->col)
 			{
 				mvwprintw(game, i, j, "@");
 			}
@@ -253,9 +333,9 @@ void print_equipment_ncurses(WINDOW *list, const char *message)
 	char *m;
 	for (i = 1, j = 0; i < NUM_EQUIPMENT + 1; i++, j++)
 	{
-		if (dungeon.pc.equipment[j].rarity != 0)
+		if (dungeon.pc->equipment[j].rarity != 0)
 		{
-			Item item = dungeon.pc.equipment[j];
+			Item item = dungeon.pc->equipment[j];
 			sprintf(str, "%c) %6s --- %s", j + 'a', item.type_string, item.name);
 		}
 		else
@@ -286,10 +366,10 @@ void print_iventory_ncurses(WINDOW *list, const char *message)
 	char *m;
 	for (i = 1, j = 0; i < PC_INVENTORY + 1; i++, j++)
 	{
-		if ((dungeon.pc.inventory[j]).rarity)
-			//if (&(dungeon.pc.inventory[j]) != NULL)//TODO
+		if ((dungeon.pc->inventory[j]).rarity)
+			//if (&(dungeon.pc->inventory[j]) != NULL)//TODO
 		{
-			Item item = dungeon.pc.inventory[j];
+			Item item = dungeon.pc->inventory[j];
 			//std::string fake(item.name);
 			//cout <<"Name:: "<<fake;
 			sprintf(str, "%d) %6s --- %s", j, item.type_string, item.name);
@@ -310,26 +390,26 @@ void print_iventory_ncurses(WINDOW *list, const char *message)
 const char *equip_item(int index)
 {
 	const char *message;
-	if ((dungeon.pc.inventory[index]).rarity)
+	if ((dungeon.pc->inventory[index]).rarity)
 	{
-		Item *inventory_item = &(dungeon.pc.inventory[index]);
+		Item *inventory_item = &(dungeon.pc->inventory[index]);
 		int item_type = inventory_item->type;
 		//std::string item_name(inventory_item->name);
 		//check if item is ring
 		if (item_type == RING)
 		{
-			if (dungeon.pc.equipment_open[RING]) //first ring slot open
+			if (dungeon.pc->equipment_open[RING]) //first ring slot open
 			{
 				//pass item from inventory to equipment
-				dungeon.pc.equipment[RING] = dungeon.pc.inventory[index];
-				dungeon.pc.equipment_open[RING] = false;
-				dungeon.pc.inventory_size--;
+				dungeon.pc->equipment[RING] = dungeon.pc->inventory[index];
+				dungeon.pc->equipment_open[RING] = false;
+				dungeon.pc->inventory_size--;
 
 				//add item bonus to pc
-				dungeon.pc.speed += dungeon.pc.equipment[RING].speed;
-				dungeon.pc.hitpoints += dungeon.pc.equipment[RING].hit;
-				dungeon.pc.damage_bonus += dungeon.pc.equipment[RING].damage_bonus;
-				dungeon.pc.vision_range += dungeon.pc.equipment[item_type].vision_bonus;
+				dungeon.pc->speed += dungeon.pc->equipment[RING].speed;
+				dungeon.pc->hitpoints += dungeon.pc->equipment[RING].hit;
+				dungeon.pc->damage_bonus += dungeon.pc->equipment[RING].damage_bonus;
+				dungeon.pc->vision_range += dungeon.pc->equipment[item_type].vision_bonus;
 
 				//set inventory memory block of indexed item to 0, match calloc 0
 				//memset(inventory_item, 0, sizeof(Item));
@@ -338,17 +418,17 @@ const char *equip_item(int index)
 
 				message = inventory_item->name;
 			}
-			else if (dungeon.pc.equipment_open[RING_SECONDARY]) //second ring slot open
+			else if (dungeon.pc->equipment_open[RING_SECONDARY]) //second ring slot open
 			{
-				dungeon.pc.equipment[RING_SECONDARY] = dungeon.pc.inventory[index];
-				dungeon.pc.equipment_open[RING_SECONDARY] = false;
-				dungeon.pc.inventory_size--;
+				dungeon.pc->equipment[RING_SECONDARY] = dungeon.pc->inventory[index];
+				dungeon.pc->equipment_open[RING_SECONDARY] = false;
+				dungeon.pc->inventory_size--;
 
 				//add item bonus to pc
-				dungeon.pc.speed += dungeon.pc.equipment[RING_SECONDARY].speed;
-				dungeon.pc.hitpoints += dungeon.pc.equipment[RING_SECONDARY].hit;
-				dungeon.pc.damage_bonus += dungeon.pc.equipment[RING_SECONDARY].damage_bonus;
-				dungeon.pc.vision_range += dungeon.pc.equipment[item_type].vision_bonus;
+				dungeon.pc->speed += dungeon.pc->equipment[RING_SECONDARY].speed;
+				dungeon.pc->hitpoints += dungeon.pc->equipment[RING_SECONDARY].hit;
+				dungeon.pc->damage_bonus += dungeon.pc->equipment[RING_SECONDARY].damage_bonus;
+				dungeon.pc->vision_range += dungeon.pc->equipment[item_type].vision_bonus;
 
 				//set inventory memory block of indexed item to 0, match calloc 0
 				//memset(inventory_item, 0, sizeof(Item));
@@ -363,16 +443,16 @@ const char *equip_item(int index)
 		}
 		else //item is not ring
 		{
-			if (dungeon.pc.equipment_open[item_type])
+			if (dungeon.pc->equipment_open[item_type])
 			{
-				dungeon.pc.equipment[item_type] = dungeon.pc.inventory[index];
-				dungeon.pc.equipment_open[item_type] = false;
-				dungeon.pc.inventory_size--;
+				dungeon.pc->equipment[item_type] = dungeon.pc->inventory[index];
+				dungeon.pc->equipment_open[item_type] = false;
+				dungeon.pc->inventory_size--;
 
-				dungeon.pc.speed += dungeon.pc.equipment[item_type].speed;
-				dungeon.pc.hitpoints += dungeon.pc.equipment[item_type].hit;
-				dungeon.pc.damage_bonus += dungeon.pc.equipment[item_type].damage_bonus;
-				dungeon.pc.vision_range += dungeon.pc.equipment[item_type].vision_bonus;
+				dungeon.pc->speed += dungeon.pc->equipment[item_type].speed;
+				dungeon.pc->hitpoints += dungeon.pc->equipment[item_type].hit;
+				dungeon.pc->damage_bonus += dungeon.pc->equipment[item_type].damage_bonus;
+				dungeon.pc->vision_range += dungeon.pc->equipment[item_type].vision_bonus;
 
 				//set inventory memory block of indexed item to 0, match calloc 0
 				//memset(inventory_item, 0, sizeof(Item));
@@ -398,15 +478,15 @@ const char *drop_item(int index)
 {
 	const char *message;
 
-	if ((dungeon.pc.inventory[index]).rarity)
+	if ((dungeon.pc->inventory[index]).rarity)
 	{
-		Item *inventory_item = &(dungeon.pc.inventory[index]);
+		Item *inventory_item = &(dungeon.pc->inventory[index]);
 		std::string item_name(inventory_item->name);
 		int birth = inventory_item->birth;
-		if ((is_item(dungeon.pc.row, dungeon.pc.col) < 0)) //check if current terrain open
+		if ((is_item(dungeon.pc->row, dungeon.pc->col) < 0)) //check if current terrain open
 		{
-			dungeon.item[birth].row = dungeon.pc.row + 1;
-			dungeon.item[birth].col = dungeon.pc.col + 1;
+			dungeon.item[birth].row = dungeon.pc->row + 1;
+			dungeon.item[birth].col = dungeon.pc->col + 1;
 			message = "item droped";
 		}
 		else
@@ -414,7 +494,7 @@ const char *drop_item(int index)
 			message = "you have to drop item on empty space";
 		}
 
-		dungeon.pc.inventory_size--;
+		dungeon.pc->inventory_size--;
 		//memset(inventory_item, 0, sizeof(Item));
 		inventory_item->rarity = 0;
 
@@ -431,29 +511,29 @@ const char *drop_item(int index)
 const char *takeoff_item(int index)
 {
 	const char *message;
-	if (dungeon.pc.equipment[index].rarity)
+	if (dungeon.pc->equipment[index].rarity)
 	{
-		Item *equip_item = &(dungeon.pc.equipment[index]);
+		Item *equip_item = &(dungeon.pc->equipment[index]);
 		//std::string item_name(equip_item->name);
 
-		if (dungeon.pc.inventory_size != PC_INVENTORY)
+		if (dungeon.pc->inventory_size != PC_INVENTORY)
 		{
 			for (int i = 0; i < PC_INVENTORY; i++)
 			{
-				if ((dungeon.pc.inventory[i]).rarity == 0)
+				if ((dungeon.pc->inventory[i]).rarity == 0)
 				{
-					dungeon.pc.inventory[i] = dungeon.pc.equipment[index];
-					dungeon.pc.inventory_size++;
-					dungeon.pc.equipment_open[index] = true;
+					dungeon.pc->inventory[i] = dungeon.pc->equipment[index];
+					dungeon.pc->inventory_size++;
+					dungeon.pc->equipment_open[index] = true;
 					break;
 				}
 			}
 
 			//deduct item bonus to pc
-			dungeon.pc.speed -= equip_item->speed;
-			dungeon.pc.hitpoints -= equip_item->hit;
-			dungeon.pc.damage_bonus -= equip_item->damage_bonus;
-			dungeon.pc.vision_range -= equip_item->vision_bonus;
+			dungeon.pc->speed -= equip_item->speed;
+			dungeon.pc->hitpoints -= equip_item->hit;
+			dungeon.pc->damage_bonus -= equip_item->damage_bonus;
+			dungeon.pc->vision_range -= equip_item->vision_bonus;
 
 			//set inventory memory block of indexed item to 0, match calloc 0
 			//memset(equip_item, 0, sizeof(Item));
@@ -463,11 +543,11 @@ const char *takeoff_item(int index)
 		else
 		{
 			int item_birth = equip_item->birth;
-			if ((is_item(dungeon.pc.row, dungeon.pc.col) < 0)) //check if current terrain open
+			if ((is_item(dungeon.pc->row, dungeon.pc->col) < 0)) //check if current terrain open
 			{
-				dungeon.item[item_birth].row = dungeon.pc.row;
-				dungeon.item[item_birth].col = dungeon.pc.col;
-				dungeon.pc.equipment_open[index] = true;
+				dungeon.item[item_birth].row = dungeon.pc->row;
+				dungeon.item[item_birth].col = dungeon.pc->col;
+				dungeon.pc->equipment_open[index] = true;
 				//memset(equip_item, 0, sizeof(Item));
 
 				equip_item->rarity = 0;
@@ -554,12 +634,12 @@ void item_wear()
 const char *expunge_item(int index)
 {
 	const char *message;
-	if ((dungeon.pc.inventory[index]).rarity)
+	if ((dungeon.pc->inventory[index]).rarity)
 	{
-		Item *inventory_item = &(dungeon.pc.inventory[index]);
+		Item *inventory_item = &(dungeon.pc->inventory[index]);
 		std::string item_name(inventory_item->name);
 
-		dungeon.pc.inventory_size--;
+		dungeon.pc->inventory_size--;
 		//memset(inventory_item, 0, sizeof(Item));
 		inventory_item->rarity = 0;
 
@@ -694,11 +774,11 @@ void print_item_descr(WINDOW *list, int index)
 {
 	int i, j;
 	const char *message;
-	if ((dungeon.pc.inventory[index]).rarity)
+	if ((dungeon.pc->inventory[index]).rarity)
 	{
 		message = "press number key to return";
 		wprintw(list, "\n");
-		const char *description = dungeon.pc.inventory[index].description;
+		const char *description = dungeon.pc->inventory[index].description;
 		for (; *description; description++)
 		{
 			std::string item_desc(1, *description);
@@ -929,8 +1009,8 @@ void print_monster_list_ncurses(WINDOW *list, int start)
 	{
 
 		NPC npc = dungeon.monster[j];
-		int row_dis = npc.row - dungeon.pc.row;
-		int col_dis = npc.col - dungeon.pc.col;
+		int row_dis = npc.row - dungeon.pc->row;
+		int col_dis = npc.col - dungeon.pc->col;
 		const char *row_pos, *col_pos;
 
 		if (row_dis > 0)
@@ -995,23 +1075,23 @@ const char *move_pc_teleport(int row_move, int col_move)
 	}
 	else
 	{
-		dungeon.map[dungeon.pc.row][dungeon.pc.col].space = dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain;
-		dungeon.pc.row += row_move;
-		dungeon.pc.col += col_move;
-		dungeon.map[dungeon.pc.row][dungeon.pc.col].space = PLAYER;
-		dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = 0;
+		dungeon.map[dungeon.pc->row][dungeon.pc->col].space = dungeon.map[dungeon.pc->row][dungeon.pc->col].terrain;
+		dungeon.pc->row += row_move;
+		dungeon.pc->col += col_move;
+		dungeon.map[dungeon.pc->row][dungeon.pc->col].space = PLAYER;
+		dungeon.map[dungeon.pc->row][dungeon.pc->col].hardness = 0;
 
-		if (!(is_monster(dungeon.pc.row, dungeon.pc.col) < 0))
+		if (!(is_monster(dungeon.pc->row, dungeon.pc->col) < 0))
 		{
-			int i = is_monster(dungeon.pc.row, dungeon.pc.col);
+			int i = is_monster(dungeon.pc->row, dungeon.pc->col);
 			dungeon.monster[i].dead = true;
 			dungeon.monster[i].row = -1;
 			dungeon.monster[i].col = -1;
 		}
-		if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == ROCK)
+		if (dungeon.map[dungeon.pc->row][dungeon.pc->col].terrain == ROCK)
 		{
-			dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain = CORRIDOR;
-			dungeon.map[dungeon.pc.row][dungeon.pc.col].hardness = CORRIDOR_H;
+			dungeon.map[dungeon.pc->row][dungeon.pc->col].terrain = CORRIDOR;
+			dungeon.map[dungeon.pc->row][dungeon.pc->col].hardness = CORRIDOR_H;
 		}
 		move_npc();
 		remember_map_PC();
@@ -1050,7 +1130,7 @@ void print_dungeon_lookup_ncurses(WINDOW *game, const char *message)
 				{
 					mvwprintw(game, i, j, "*");
 				}
-				else if ((i - 1) == dungeon.pc.row && j == dungeon.pc.col)
+				else if ((i - 1) == dungeon.pc->row && j == dungeon.pc->col)
 				{
 					mvwprintw(game, i, j, "@");
 				}
@@ -1077,7 +1157,7 @@ void print_dungeon_lookup_ncurses(WINDOW *game, const char *message)
 			}
 			else
 			{
-				if (dungeon.pc.vision_map[i - 1][j])
+				if (dungeon.pc->vision_map[i - 1][j])
 				{
 					mvwprintw(game, i, j, "%c", dungeon.map[i - 1][j].terrain);
 				}
@@ -1166,8 +1246,8 @@ void lookup()
 	keypad(lookup, true);
 	bool run = true;
 	bool desc = false;
-	dungeon.cursor_row = dungeon.pc.row;
-	dungeon.cursor_col = dungeon.pc.col;
+	dungeon.cursor_row = dungeon.pc->row;
+	dungeon.cursor_col = dungeon.pc->col;
 
 	char random_seed[10];
 	sprintf(random_seed, "%d", dungeon.seed);
@@ -1177,8 +1257,8 @@ void lookup()
 	strcat(seed_message, seed_message_suffix);
 	const char *message = seed_message;
 
-	int row_move = dungeon.cursor_row - dungeon.pc.row;
-	int col_move = dungeon.cursor_col - dungeon.pc.col;
+	int row_move = dungeon.cursor_row - dungeon.pc->row;
+	int col_move = dungeon.cursor_col - dungeon.pc->col;
 	while (run)
 	{
 		if (desc)
@@ -1282,8 +1362,8 @@ void teleport()
 	WINDOW *teleport = newwin(TERMINAL_ROW, TERMINAL_COL, 0, 0);
 	keypad(teleport, true);
 	bool run = true;
-	dungeon.cursor_row = dungeon.pc.row;
-	dungeon.cursor_col = dungeon.pc.col;
+	dungeon.cursor_row = dungeon.pc->row;
+	dungeon.cursor_col = dungeon.pc->col;
 
 	char random_seed[10];
 	sprintf(random_seed, "%d", dungeon.seed);
@@ -1296,8 +1376,8 @@ void teleport()
 	while (run)
 	{
 		print_dungeon_teleport_ncurses(teleport, message);
-		int row_move = dungeon.cursor_row - dungeon.pc.row;
-		int col_move = dungeon.cursor_col - dungeon.pc.col;
+		int row_move = dungeon.cursor_row - dungeon.pc->row;
+		int col_move = dungeon.cursor_col - dungeon.pc->col;
 		int key = wgetch(teleport);
 		switch (key)
 		{
@@ -1378,8 +1458,8 @@ void teleport()
 					dungeon.cursor_col = get_random(COL, 0);
 				} while (!is_inside(dungeon.cursor_row, dungeon.cursor_col));
 
-				row_move = dungeon.cursor_row - dungeon.pc.row;
-				col_move = dungeon.cursor_col - dungeon.pc.col;
+				row_move = dungeon.cursor_row - dungeon.pc->row;
+				col_move = dungeon.cursor_col - dungeon.pc->col;
 				message = move_pc_teleport(row_move, col_move);
 				run = false;
 				break;
@@ -1440,6 +1520,8 @@ void dungeon_ncurses()
 	bool run = true;
 	bool fog = true;
 	bool terrain = false;
+	bool non_tunnel = false;
+	bool tunnel = false;
 
 	char random_seed[10];
 	sprintf(random_seed, "%d", dungeon.seed);
@@ -1454,6 +1536,14 @@ void dungeon_ncurses()
 		if (terrain)
 		{
 			print_dungeon_terrian(game, message);
+		}
+		else if (tunnel)
+		{
+			print_dungeon_tunnel(game, message);
+		}
+		else if (non_tunnel)
+		{
+			print_dungeon_non_tunnel(game, message);
 		}
 		else if (fog)
 		{
@@ -1498,7 +1588,7 @@ void dungeon_ncurses()
 				message = move_pc(0, 0); //rest
 				break;
 			case '<':
-				if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == STAIR_UP)
+				if (dungeon.map[dungeon.pc->row][dungeon.pc->col].terrain == STAIR_UP)
 				{
 					//delete_dungeon();
 					//generate_dungeon();
@@ -1513,7 +1603,7 @@ void dungeon_ncurses()
 				}
 				break;
 			case '>':
-				if (dungeon.map[dungeon.pc.row][dungeon.pc.col].terrain == STAIR_DOWN)
+				if (dungeon.map[dungeon.pc->row][dungeon.pc->col].terrain == STAIR_DOWN)
 				{
 					//delete_dungeon();
 					//generate_dungeon();
@@ -1571,6 +1661,9 @@ void dungeon_ncurses()
 				break;
 			case 'f':
 				fog = !fog;
+				terrain = false;
+				non_tunnel = false;
+				tunnel = false;
 				break;
 			case 'g':
 				teleport();
@@ -1600,6 +1693,8 @@ void dungeon_ncurses()
 				break;
 			case 's':
 				terrain = !terrain;
+				non_tunnel = false;
+				tunnel = false;
 				message = "terrain map view";
 				break;
 			case 't':
@@ -1619,6 +1714,11 @@ void dungeon_ncurses()
 				break;
 			case 'D':
 				//TODO
+				dijkstra_nontunneling((Character *) dungeon.pc);
+				non_tunnel = !non_tunnel;
+				terrain = false;
+				tunnel = false;
+				message = "non-tunneling distance map view";
 				break;
 			case 'E':
 				//TODO
@@ -1636,11 +1736,15 @@ void dungeon_ncurses()
 				run = false;
 				break;
 			case 'T':
-				//TODO
+				dijkstra_tunneling((Character *) dungeon.pc);
+				tunnel = !tunnel;
+				terrain = false;
+				non_tunnel = false;
+				message = "tunneling distance map view";
 				break;
 		}
 
-		if (dungeon.pc.dead)
+		if (dungeon.pc->dead)
 		{
 			message = "Player is dead!";
 		}

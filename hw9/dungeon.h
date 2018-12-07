@@ -148,7 +148,7 @@ class Item
 		int type;
 		const char *type_string;
 
-		int birth;
+		int id;
 		int position;
 };
 

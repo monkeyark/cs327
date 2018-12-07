@@ -502,7 +502,7 @@ bool is_inventory_open()
 	return dungeon.pc.inventory_size != PC_INVENTORY_SIZE;
 }
 
-Item new_item_desc(int birth)
+Item new_item_desc(int id)
 {
 	Item item;
 	int row, col;
@@ -532,7 +532,7 @@ Item new_item_desc(int birth)
 
 	item.row = row;
 	item.col = col;
-	item.birth = birth;
+	item.id = id;
 	item.position = DUNGEON_FLOOR;
 
 	item.name = obj.name.c_str();

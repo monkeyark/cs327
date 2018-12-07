@@ -1,4 +1,4 @@
-Week 7
+Lecture Week 07
 
 
 * Controlling a terminal

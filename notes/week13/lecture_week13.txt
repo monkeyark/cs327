@@ -1,4 +1,5 @@
-Weeks 13 & 14
+Lecture Week 13 & 14
+
 
 * Design Patterns
 ** The Singleton Pattern

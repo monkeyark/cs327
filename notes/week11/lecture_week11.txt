@@ -1,4 +1,5 @@
-Week 11
+Lecture Week 11
+
 
 * More on references: representation
   References are (almost) exactly pointers internally.  They provide you with

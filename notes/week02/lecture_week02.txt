@@ -1,5 +1,6 @@
 Lecture Week 02
 
+
 * Final items for assignment submission
 ** README for assignments
    About 150 words or less

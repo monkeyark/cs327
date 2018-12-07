@@ -1,4 +1,6 @@
 Lecture Week 01
+
+
 Syllabus, Quick UNIX primer, Hello World, Compiling, Makefiles
 
 * Syllabus

@@ -1,3 +1,6 @@
+Lecture Week 04
+
+
 * char *getenv(const char *name);
    All of the defined environment variables are already mapped into your
    program's address space.  getenv() simply maps a name to a value and 

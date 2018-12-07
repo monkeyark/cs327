@@ -1,4 +1,5 @@
-Week 6
+Lecture Week 06
+
 
 * Declarations
 ** Scope and lifetime

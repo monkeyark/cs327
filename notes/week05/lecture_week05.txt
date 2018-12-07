@@ -1,4 +1,5 @@
-Lecture - Week 5
+Lecture Week 05
+
 
 * Doing generics is C.
   Needs function pointers

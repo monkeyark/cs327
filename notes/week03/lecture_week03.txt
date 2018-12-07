@@ -1,4 +1,5 @@
-Lecture Week 3
+Lecture Week 03
+
 
 * More on pointers
 ** Last time we covered pointer syntax, but not why they are useful

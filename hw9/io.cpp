@@ -82,7 +82,7 @@ void print_dungeon_fog_ncurses(WINDOW *game, const char *message)
 	}
 
 	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
-					dungeon.pc.hitpoints, dungeon.pc.speed, dungeon.pc.damage);
+					dungeon.pc.hitpoints, dungeon.pc.speed, dungeon.pc.damage_bonus);
     move(TERMINAL_ROW - 1, 0);
     clrtoeol();
 }
@@ -139,7 +139,7 @@ void print_dungeon_ncurses(WINDOW *game, const char *message)
 	}
 
 	mvwprintw(game, TERMINAL_ROW - 1, 0, "PC hp: %d   speed %d   damage %d",
-					dungeon.pc.hitpoints, dungeon.pc.speed, dungeon.pc.damage);
+					dungeon.pc.hitpoints, dungeon.pc.speed, dungeon.pc.damage_bonus);
     move(TERMINAL_ROW - 1, 0);
     clrtoeol();
 }
@@ -215,7 +215,7 @@ void print_equipment_ncurses(WINDOW *list, const char *message)
 	char *m;
 	for (i = 1, j = 0; i < NUM_EQUIPMENT + 1; i++, j++)
 	{
-		if (dungeon.pc.equipment[j].rarity != 0)
+		if (dungeon.pc.equipment[j].position == PC_EQUIPMENT)
 		{
 			Item item = dungeon.pc.equipment[j];
 			sprintf(str, "%c) %6s --- %s", j + 'a', item.type_string, item.name);
@@ -270,7 +270,7 @@ void print_iventory_ncurses(WINDOW *list, const char *message)
 const char *equip_item(int index)
 {
 	std::string message;
-	if ((dungeon.pc.inventory[index]).rarity)
+	if (dungeon.pc.inventory[index].position == PC_INVENTORY)
 	{
 		Item *inventory_item = &(dungeon.pc.inventory[index]);
 		int item_type = inventory_item->type;
@@ -284,6 +284,8 @@ const char *equip_item(int index)
 				dungeon.pc.equipment[RING] = dungeon.pc.inventory[index];
 				dungeon.pc.equipment_open[RING] = false;
 				dungeon.pc.inventory_size--;
+				dungeon.pc.equipment[RING].position = PC_EQUIPMENT;
+				dungeon.pc.inventory[index].position = PC_EQUIPMENT;
 
 				//add item bonus to pc
 				dungeon.pc.speed += dungeon.pc.equipment[RING].speed;
@@ -291,7 +293,7 @@ const char *equip_item(int index)
 				dungeon.pc.damage_bonus += dungeon.pc.equipment[RING].damage_bonus;
 
 				//set inventory memory block of indexed item to 0, match calloc 0
-				memset(inventory_item, 0, sizeof(Item));
+				//memset(inventory_item, 0, sizeof(Item));//TODO
 				
 				message = "you have equiped - " + item_name;
 			}
@@ -300,6 +302,8 @@ const char *equip_item(int index)
 				dungeon.pc.equipment[RING_SEC] = dungeon.pc.inventory[index];
 				dungeon.pc.equipment_open[RING_SEC] = false;
 				dungeon.pc.inventory_size--;
+				dungeon.pc.equipment[RING_SEC].position = PC_EQUIPMENT;
+				dungeon.pc.inventory[index].position = PC_EQUIPMENT;
 
 				//add item bonus to pc
 				dungeon.pc.speed += dungeon.pc.equipment[RING_SEC].speed;
@@ -307,7 +311,7 @@ const char *equip_item(int index)
 				dungeon.pc.damage_bonus += dungeon.pc.equipment[RING_SEC].damage_bonus;
 
 				//set inventory memory block of indexed item to 0, match calloc 0
-				memset(inventory_item, 0, sizeof(Item));
+				//memset(inventory_item, 0, sizeof(Item));//TODO
 
 				message = "you have equiped - " + item_name;
 			}
@@ -323,8 +327,16 @@ const char *equip_item(int index)
 				dungeon.pc.equipment[item_type] = dungeon.pc.inventory[index];
 				dungeon.pc.equipment_open[item_type] = false;
 				dungeon.pc.inventory_size--;
+
+				//add item bonus to pc
+				dungeon.pc.speed += dungeon.pc.equipment[item_type].speed;
+				dungeon.pc.hitpoints += dungeon.pc.equipment[item_type].hit;
+				dungeon.pc.damage_bonus += dungeon.pc.equipment[item_type].damage_bonus;
+
+				dungeon.pc.equipment[item_type].position = PC_EQUIPMENT;
+				dungeon.pc.inventory[index].position = PC_EQUIPMENT;
 				//set inventory memory block of indexed item to 0, match calloc 0
-				memset(inventory_item, 0, sizeof(Item));
+				//memset(inventory_item, 0, sizeof(Item));//TODO
 				message = "you have equiped - " + item_name;
 			}
 			else
@@ -344,25 +356,28 @@ const char *equip_item(int index)
 const char *drop_item(int index)
 {
 	std::string message;
-	if ((dungeon.pc.inventory[index]).rarity)
+	if (dungeon.pc.inventory[index].position == PC_INVENTORY)
 	{
 		Item *inventory_item = &(dungeon.pc.inventory[index]);
 		std::string item_name(inventory_item->name);
-		int birth = inventory_item->birth;
-		if ((is_item(dungeon.pc.row, dungeon.pc.col) < 0))//check if current terrain open
+		int item_id = inventory_item->id;
+		if ((is_item(dungeon.pc.row, dungeon.pc.col) < 0))//check if current terrain open//TODO
 		{
-			dungeon.item[birth].row = dungeon.pc.row;
-			dungeon.item[birth].col = dungeon.pc.col;
+			//TODO drop item adjacent
+			dungeon.item[item_id].row = dungeon.pc.row+1;
+			dungeon.item[item_id].col = dungeon.pc.col+1;
+			
+			dungeon.pc.inventory_size--;
+
+			inventory_item->position = DUNGEON_FLOOR;
+			dungeon.item[item_id].position = DUNGEON_FLOOR;
+			//memset(inventory_item, 0, sizeof(Item));//DEBUG
+			message = "you have dropped - " + item_name;
 		}
 		else
 		{
 			message = "you have to drop item on empty space";
 		}
-
-		dungeon.pc.inventory_size--;
-		memset(inventory_item, 0, sizeof(Item));
-
-		message = "you have dropped - " + item_name;
 	}
 	else
 	{
@@ -375,7 +390,7 @@ const char *drop_item(int index)
 const char *takeoff_item(int index)
 {
 	std::string message;
-	if (dungeon.pc.equipment[index].rarity)
+	if (dungeon.pc.equipment[index].position == PC_EQUIPMENT)
 	{
 		Item *equip_item = &(dungeon.pc.equipment[index]);
 		std::string item_name(equip_item->name);
@@ -384,7 +399,7 @@ const char *takeoff_item(int index)
 		{
 			for (int i = 0; i < PC_INVENTORY_SIZE; i++)
 			{
-				if ((dungeon.pc.inventory[i]).rarity == 0)
+				if ((dungeon.pc.inventory[i]).position == PC_INVENTORY)
 				{
 					dungeon.pc.inventory[i] = dungeon.pc.equipment[index];
 					dungeon.pc.inventory_size++;
@@ -404,11 +419,11 @@ const char *takeoff_item(int index)
 		}
 		else
 		{
-			int item_birth = equip_item->birth;
+			int item_id = equip_item->id;
 			if ((is_item(dungeon.pc.row, dungeon.pc.col) < 0)) //check if current terrain open
 			{
-				dungeon.item[item_birth].row = dungeon.pc.row;
-				dungeon.item[item_birth].col = dungeon.pc.col;
+				dungeon.item[item_id].row = dungeon.pc.row;
+				dungeon.item[item_id].col = dungeon.pc.col;
 				dungeon.pc.equipment_open[index] = true;
 				memset(equip_item, 0, sizeof(Item));
 
@@ -495,7 +510,7 @@ void item_wear()
 const char *expunge_item(int index)
 {
 	std::string message;
-	if ((dungeon.pc.inventory[index]).rarity)
+	if ((dungeon.pc.inventory[index]).position == PC_INVENTORY)
 	{
 		Item *inventory_item = &(dungeon.pc.inventory[index]);
 		std::string item_name(inventory_item->name);
@@ -634,7 +649,7 @@ void print_item_descr(WINDOW *list, int index)
 {
 	int i, j;
 	const char *message;
-	if ((dungeon.pc.inventory[index]).rarity)
+	if ((dungeon.pc.inventory[index]).position == PC_INVENTORY)
 	{
 		message = "press number key to return";
 		wprintw(list, "\n");

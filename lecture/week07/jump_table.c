@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
   i = rand() % 3;
 
-  func_table[i]())));
+  func_table[i]();
 
   return 0;
 }

@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <string>
+
 
 #include "dungeon.h"
 #include "queue.h"
@@ -15,20 +13,6 @@ Dungeon dungeon;
 
 int main(int argc, char *argv[])
 {
-	char *home = getenv("HOME");
-	const char *path = strcat(home, "/.rlg327");
-	mkdir(path, 0777);
-
-    char path_dungeon[sizeof(path)*5];
-    char path_monster[sizeof(path)*5];
-	char path_object[sizeof(path)*5];
-    strcpy(path_dungeon, path);
-    strcpy(path_monster, path);
-	strcpy(path_object, path);
-    strcat(path_dungeon, "/dungeon");
-    strcat(path_monster, "/monster_desc.txt");
-	strcat(path_object, "/object_desc.txt");
-
 
     dungeon.num_mon = 0;
 	//set up random seed
@@ -75,8 +59,7 @@ int main(int argc, char *argv[])
 
 	if (load)
 	{
-		FILE *file_dungeon = fopen(path_dungeon, "r");
-		load_dungeon(file_dungeon);
+		load_dungeon();
 	}
 	else
 	{
@@ -86,8 +69,7 @@ int main(int argc, char *argv[])
     
 	if (save)
 	{
-		FILE *file_dungeon = fopen(path_dungeon, "w");
-		save_dungeon(file_dungeon);
+		save_dungeon();
 	}
 
 

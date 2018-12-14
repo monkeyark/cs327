@@ -496,15 +496,20 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
     return 1;
 }
 
-void load_monster_desc(char *path)
+void load_monster_desc(std::string path_monster)
 {
+    char *path = new char[path_monster.size() + 1];
+    std::copy(path_monster.begin(), path_monster.end(), path);
+    path[path_monster.size()] = '\0';
+
     if (!fopen(path, "r"))
     {
-        fprintf(stderr, "Failed to open file\n");
+        fprintf(stderr, "Failed to open file when loading monster description\n");
         return;
     }
 
     ifstream f(path);
+    delete[] path;
     std::string s;
 
     getline(f, s); //get file header line
@@ -905,15 +910,20 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
     return 1;
 }
 
-void load_object_desc(char *path)
+void load_object_desc(std::string path_object)
 {
+    char *path = new char[path_object.size() + 1];
+    std::copy(path_object.begin(), path_object.end(), path);
+    path[path_object.size()] = '\0';
+
     if (!fopen(path, "r"))
     {
-        fprintf(stderr, "Failed to open file\n");
+        fprintf(stderr, "Failed to open file when loading object description\n");
         return;
     }
 
     ifstream f(path);
+    delete path;
     std::string s;
 
     getline(f, s); //get file header line

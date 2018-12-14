@@ -1,5 +1,6 @@
 #include <math.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "dungeon.h"
 #include "move.h"
@@ -655,14 +656,8 @@ Item new_item_desc(int birth)
 
 void generate_dungeon_desc()
 {
-	char *home = getenv("HOME");
-	const char *path = strcat(home, "");
-	char path_monster[sizeof(path) * 5];
-	char path_object[sizeof(path) * 5];
-	strcpy(path_monster, path);
-	strcpy(path_object, path);
-	strcat(path_monster, "/monster_desc.txt");
-	strcat(path_object, "/object_desc.txt");
+	std::string path_monster = "./description/monster_desc.txt";
+	std::string path_object = "./description/object_desc.txt";
 	load_monster_desc(path_monster);
 	load_object_desc(path_object);
 
@@ -800,11 +795,19 @@ void move_dungeon()
 	//move_character_turn();
 }
 
-void load_dungeon(FILE *f)
+void load_dungeon()
 {
+	std::string path_dungeon = "./dungeonfile/dungeon";
+	char *path = new char[path_dungeon.size() + 1];
+    std::copy(path_dungeon.begin(), path_dungeon.end(), path);
+    path[path_dungeon.size()] = '\0';
+	FILE *f = fopen(path, "r");
+	delete[] path;
+
 	if (!f)
 	{
-		fprintf(stderr, "Failed to open file\n");
+		mkdir(path, 0777);
+		fprintf(stderr, "Failed to open file when loading dungeon\n");
 		return;
 	}
 
@@ -873,11 +876,18 @@ void load_dungeon(FILE *f)
 	fclose(f);
 }
 
-void save_dungeon(FILE *f)
+void save_dungeon()
 {
+	std::string path_dungeon = "./dungeonfile/dungeon";
+	char *path = new char[path_dungeon.size() + 1];
+    std::copy(path_dungeon.begin(), path_dungeon.end(), path);
+    path[path_dungeon.size()] = '\0';
+	FILE *f = fopen(path, "w");
+	delete[] path;
+
 	if (!f)
 	{
-		fprintf(stderr, "Failed to open file\n");
+		fprintf(stderr, "Failed to open file when saving dungeon\n");
 		return;
 	}
 

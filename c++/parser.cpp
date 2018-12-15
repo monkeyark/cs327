@@ -13,9 +13,8 @@
 #define NUM_MONSTER_FIELDS 11
 #define NUM_OBJECT_FIELDS 16
 
-using namespace std;
 
-static inline void eat_whitespace(ifstream &f)
+static inline void eat_whitespace(std::ifstream &f)
 {
     while (isspace(f.peek()))
     {
@@ -23,7 +22,7 @@ static inline void eat_whitespace(ifstream &f)
     }
 }
 
-static inline void eat_blankspace(ifstream &f)
+static inline void eat_blankspace(std::ifstream &f)
 {
     while (isblank(f.peek()))
     {
@@ -31,7 +30,7 @@ static inline void eat_blankspace(ifstream &f)
     }
 }
 
-int parse_dice(ifstream &f, string *lookahead, dice *d)
+int parse_dice(std::ifstream &f, std::string *lookahead, dice *d)
 {
     int32_t base;
     uint32_t number, sides;
@@ -50,7 +49,7 @@ int parse_dice(ifstream &f, string *lookahead, dice *d)
     return 0;
 }
 
-int parse_nextline(ifstream &f, string *lookahead)
+int parse_nextline(std::ifstream &f, std::string *lookahead)
 {
     eat_whitespace(f);
     getline(f, *lookahead);
@@ -60,7 +59,7 @@ int parse_nextline(ifstream &f, string *lookahead)
     f >> *lookahead;
     return 0;
 }
-int parse_name(ifstream &f, string *lookahead, string *name)
+int parse_name(std::ifstream &f, std::string *lookahead, std::string *name)
 {
     eat_whitespace(f);
     eat_blankspace(f);
@@ -73,17 +72,17 @@ int parse_name(ifstream &f, string *lookahead, string *name)
     return 0;
 }
 
-int parse_monster_begin(ifstream &f, string *lookahead)
+int parse_monster_begin(std::ifstream &f, std::string *lookahead)
 {
     return parse_nextline(f, lookahead);
 }
 
-int parse_monster_name(ifstream &f, string *lookahead, string *name)
+int parse_monster_name(std::ifstream &f, std::string *lookahead, std::string *name)
 {
     return parse_name(f, lookahead, name);
 }
 
-int parse_monster_symb(ifstream &f, string *lookahead, char *symbol)
+int parse_monster_symb(std::ifstream &f, std::string *lookahead, char *symbol)
 {
     eat_blankspace(f);
 
@@ -105,7 +104,7 @@ int parse_monster_symb(ifstream &f, string *lookahead, char *symbol)
     return 0;
 }
 
-int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string, int *color_display)
+int parse_color(std::ifstream &f, std::string *lookahead, unsigned int *color, std::string *color_string, int *color_display)
 {
     eat_blankspace(f);
 
@@ -159,7 +158,7 @@ int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *col
     }
     else
     {
-        cout << "reading illegal color" << endl;
+        std::cout << "reading illegal color" << std::endl;
         delete [] c_color_string;
         return 1;
     }
@@ -201,7 +200,7 @@ int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *col
         }
         else
         {
-            cout << "reading illegal color" << endl;
+            std::cout << "reading illegal color" << std::endl;
             delete [] c_color_string;
             return 1;
         }
@@ -214,12 +213,12 @@ int parse_color(ifstream &f, string *lookahead, unsigned int *color, string *col
     return 0;
 }
 
-int parse_monster_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string, int *color_display)
+int parse_monster_color(std::ifstream &f, std::string *lookahead, unsigned int *color, std::string *color_string, int *color_display)
 {
     return parse_color(f, lookahead, color, color_string, color_display);
 }
 
-int parse_desc(ifstream &f, string *lookahead, string *desc)
+int parse_desc(std::ifstream &f, std::string *lookahead, std::string *desc)
 {
     if (f.peek() != '\n')
     {
@@ -254,27 +253,27 @@ int parse_desc(ifstream &f, string *lookahead, string *desc)
     return 0;
 }
 
-int parse_monster_desc(ifstream &f, string *lookahead, string *desc)
+int parse_monster_desc(std::ifstream &f, std::string *lookahead, std::string *desc)
 {
     return parse_desc(f, lookahead, desc);
 }
 
-int parse_monster_speed(ifstream &f, string *lookahead, dice *d)
+int parse_monster_speed(std::ifstream &f, std::string *lookahead, dice *d)
 {
     return parse_dice(f, lookahead, d);
 }
 
-int parse_monster_dam(ifstream &f, string *lookahead, dice *d)
+int parse_monster_dam(std::ifstream &f, std::string *lookahead, dice *d)
 {
     return parse_dice(f, lookahead, d);
 }
 
-int parse_monster_hp(ifstream &f, string *lookahead, dice *d)
+int parse_monster_hp(std::ifstream &f, std::string *lookahead, dice *d)
 {
     return parse_dice(f, lookahead, d);
 }
 
-int parse_monster_ability(ifstream &f, string *lookahead, unsigned int *ability, string *ability_string)
+int parse_monster_ability(std::ifstream &f, std::string *lookahead, unsigned int *ability, std::string *ability_string)
 {
     eat_blankspace(f);
 
@@ -333,7 +332,7 @@ int parse_monster_ability(ifstream &f, string *lookahead, unsigned int *ability,
         }
         else
         {
-            cout << "reading illegal ability" << endl;
+            std::cout << "reading illegal ability" << std::endl;
             delete [] c_ability_string;
             return 1;
         }
@@ -346,7 +345,7 @@ int parse_monster_ability(ifstream &f, string *lookahead, unsigned int *ability,
     return 0;
 }
 
-int parse_rarity(ifstream &f, string *lookahead, int *rarity)
+int parse_rarity(std::ifstream &f, std::string *lookahead, int *rarity)
 {
     getline(f, *lookahead);
     *rarity = atoi((*lookahead).c_str());
@@ -354,19 +353,19 @@ int parse_rarity(ifstream &f, string *lookahead, int *rarity)
     return 0;
 }
 
-int parse_monster_rarity(ifstream &f, string *lookahead, int *rarity)
+int parse_monster_rarity(std::ifstream &f, std::string *lookahead, int *rarity)
 {
     return parse_rarity(f, lookahead, rarity);
 }
 
-int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
+int parse_monster_description(std::ifstream &f, std::string *lookahead, Monster *m)
 {
     //TODO
     //this parser can only read description with no repeative field
     //the later repeative field will overried the previous one
-    string ability_string, color_string;
+    std::string ability_string, color_string;
 
-    string name, desc;
+    std::string name, desc;
     char symbol;
     unsigned int color, ability; //TODO
 
@@ -383,7 +382,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         {
             if (parse_monster_begin(f, lookahead))
             {
-                cout << "BEGIN reading fail" << endl;
+                std::cout << "BEGIN reading fail" << std::endl;
                 return 0;
             }
             continue;
@@ -392,7 +391,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         {
             if (parse_monster_name(f, lookahead, &name))
             {
-                cout << "NAME reading fail" << endl;
+                std::cout << "NAME reading fail" << std::endl;
                 return 0;
             }
             m->name = name;
@@ -402,7 +401,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         {
             if (parse_monster_symb(f, lookahead, &symbol))
             {
-                cout << "SYMB reading fail" << endl;
+                std::cout << "SYMB reading fail" << std::endl;
                 return 0;
             }
             m->symbol = symbol;
@@ -412,7 +411,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         {
             if (parse_monster_color(f, lookahead, &color, &color_string, &color_display))
             {
-                cout << "COLOR reading fail" << endl;
+                std::cout << "COLOR reading fail" << std::endl;
                 return 0;
             }
             m->color = color;
@@ -424,7 +423,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         {
             if (parse_monster_desc(f, lookahead, &desc))
             {
-                cout << "DESC reading fail" << endl;
+                std::cout << "DESC reading fail" << std::endl;
                 return 0;
             }
             m->description = desc;
@@ -434,7 +433,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         {
             if (parse_dice(f, lookahead, &speed))
             {
-                cout << "SPEED reading fail" << endl;
+                std::cout << "SPEED reading fail" << std::endl;
                 return 0;
             }
             m->speed = speed;
@@ -444,7 +443,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         {
             if (parse_dice(f, lookahead, &dam))
             {
-                cout << "DAM reading fail" << endl;
+                std::cout << "DAM reading fail" << std::endl;
                 return 0;
             }
             m->damage = dam;
@@ -454,7 +453,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         {
             if (parse_dice(f, lookahead, &hp))
             {
-                cout << "HP reading fail" << endl;
+                std::cout << "HP reading fail" << std::endl;
                 return 0;
             }
             m->hitpoints = hp;
@@ -464,7 +463,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         {
             if (parse_monster_ability(f, lookahead, &ability, &ability_string))
             {
-                cout << "ABIL reading fail" << endl;
+                std::cout << "ABIL reading fail" << std::endl;
                 return 0;
             }
             m->ability = ability;
@@ -475,7 +474,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         {
             if (parse_monster_rarity(f, lookahead, &rarity))
             {
-                cout << "RRTY reading fail" << endl;
+                std::cout << "RRTY reading fail" << std::endl;
                 return 0;
             }
             m->rarity = rarity;
@@ -489,7 +488,7 @@ int parse_monster_description(ifstream &f, string *lookahead, Monster *m)
         }
         else
         {
-            cout << *lookahead << " not in field" << endl;
+            std::cout << *lookahead << " not in field" << std::endl;
             return 0;
         }
     }
@@ -508,12 +507,12 @@ void load_monster_desc(std::string path_monster)
         return;
     }
 
-    ifstream f(path);
+    std::ifstream f(path);
     delete[] path;
     std::string s;
 
     getline(f, s); //get file header line
-    string str = s.substr(0, 26);
+    std::string str = s.substr(0, 26);
     if (str.compare("RLG327 MONSTER DESCRIPTION"))
     {
         fprintf(stderr, "Incorrect format of monster desc\n");
@@ -525,7 +524,7 @@ void load_monster_desc(std::string path_monster)
     {
         if (!parse_monster_description(f, &s, m))
         {
-            cout << "discard monster" << endl;
+            std::cout << "discard monster" << std::endl;
             return;
         }
         //TODO
@@ -536,17 +535,17 @@ void load_monster_desc(std::string path_monster)
     delete m;
 }
 
-int parse_object_begin(ifstream &f, string *lookahead)
+int parse_object_begin(std::ifstream &f, std::string *lookahead)
 {
     return parse_nextline(f, lookahead);
 }
 
-int parse_object_name(ifstream &f, string *lookahead, string *name)
+int parse_object_name(std::ifstream &f, std::string *lookahead, std::string *name)
 {
     return parse_name(f, lookahead, name);
 }
 
-int parse_object_type(ifstream &f, string *lookahead, int *type, string *type_string, char *symbol)
+int parse_object_type(std::ifstream &f, std::string *lookahead, int *type, std::string *type_string, char *symbol)
 {
     if (parse_name(f, lookahead, type_string))
     {
@@ -646,69 +645,69 @@ int parse_object_type(ifstream &f, string *lookahead, int *type, string *type_st
     }
     else
     {
-        cout << "Fail to parse type to symbol" << endl;
+        std::cout << "Fail to parse type to symbol" << std::endl;
         return 1;
     }
 
     return 0;
 }
 
-int parse_object_color(ifstream &f, string *lookahead, unsigned int *color, string *color_string, int *color_display)
+int parse_object_color(std::ifstream &f, std::string *lookahead, unsigned int *color, std::string *color_string, int *color_display)
 {
     return parse_color(f, lookahead, color, color_string, color_display);
 }
 
-int parse_object_weight(ifstream &f, string *lookahead, dice *weight)
+int parse_object_weight(std::ifstream &f, std::string *lookahead, dice *weight)
 {
     return parse_dice(f, lookahead, weight);
 }
 
-int parse_object_hit(ifstream &f, string *lookahead, dice *hit)
+int parse_object_hit(std::ifstream &f, std::string *lookahead, dice *hit)
 {
     return parse_dice(f, lookahead, hit);
 }
 
-int parse_object_damage(ifstream &f, string *lookahead, dice *damage)
+int parse_object_damage(std::ifstream &f, std::string *lookahead, dice *damage)
 {
     return parse_dice(f, lookahead, damage);
 }
 
-int parse_object_attribute(ifstream &f, string *lookahead, dice *attribute)
+int parse_object_attribute(std::ifstream &f, std::string *lookahead, dice *attribute)
 {
     return parse_dice(f, lookahead, attribute);
 }
 
-int parse_object_value(ifstream &f, string *lookahead, dice *value)
+int parse_object_value(std::ifstream &f, std::string *lookahead, dice *value)
 {
     return parse_dice(f, lookahead, value);
 }
 
-int parse_object_dodge(ifstream &f, string *lookahead, dice *dodge)
+int parse_object_dodge(std::ifstream &f, std::string *lookahead, dice *dodge)
 {
     return parse_dice(f, lookahead, dodge);
 }
 
-int parse_object_defence(ifstream &f, string *lookahead, dice *defence)
+int parse_object_defence(std::ifstream &f, std::string *lookahead, dice *defence)
 {
     return parse_dice(f, lookahead, defence);
 }
 
-int parse_object_speed(ifstream &f, string *lookahead, dice *speed)
+int parse_object_speed(std::ifstream &f, std::string *lookahead, dice *speed)
 {
     return parse_dice(f, lookahead, speed);
 }
 
-int parse_object_desc(ifstream &f, string *lookahead, string *desc)
+int parse_object_desc(std::ifstream &f, std::string *lookahead, std::string *desc)
 {
     return parse_desc(f, lookahead, desc);
 }
 
-int parse_object_rarity(ifstream &f, string *lookahead, int *rarity)
+int parse_object_rarity(std::ifstream &f, std::string *lookahead, int *rarity)
 {
     return parse_rarity(f, lookahead, rarity);
 }
 
-int parse_object_artifact(ifstream &f, string *lookahead, bool *artifact)
+int parse_object_artifact(std::ifstream &f, std::string *lookahead, bool *artifact)
 {
     eat_whitespace(f);
     getline(f, *lookahead);
@@ -728,13 +727,13 @@ int parse_object_artifact(ifstream &f, string *lookahead, bool *artifact)
     return 0;
 }
 
-int parse_object_description(ifstream &f, string *lookahead, Object *object)
+int parse_object_description(std::ifstream &f, std::string *lookahead, Object *object)
 {
     //TODO
     //this parser can only read description with no repeative field
     //the later repeative field will overried the previous one
-    string name;
-    string description;
+    std::string name;
+    std::string description;
     dice hit;
     dice damage;
     dice dodge;
@@ -748,10 +747,10 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
     char symbol;
     int type;
     //int vision_bonus;//TODO
-    string type_string;
+    std::string type_string;
 
     unsigned int color;
-    string color_string;
+    std::string color_string;
     int color_display;
 
     object->seen = false;
@@ -902,7 +901,7 @@ int parse_object_description(ifstream &f, string *lookahead, Object *object)
         }
         else
         {
-            cout << *lookahead << " is not in field" << endl;
+            std::cout << *lookahead << " is not in field" << std::endl;
             return 0;
         }
     }
@@ -922,12 +921,12 @@ void load_object_desc(std::string path_object)
         return;
     }
 
-    ifstream f(path);
+    std::ifstream f(path);
     delete path;
     std::string s;
 
     getline(f, s); //get file header line
-    string str = s.substr(0, 25);
+    std::string str = s.substr(0, 25);
     if (str.compare("RLG327 OBJECT DESCRIPTION"))
     {
         fprintf(stderr, "Incorrect format of object desc\n");
@@ -938,7 +937,7 @@ void load_object_desc(std::string path_object)
     {
         if (!parse_object_description(f, &s, object))
         {
-            cout << "discard object" << endl;
+            std::cout << "discard object" << std::endl;
             return;
         }
         //TODO
@@ -954,16 +953,16 @@ void print_monster_desc()
     for (unsigned int i = 0; i < dungeon.mon.size(); i++)
     {
         Monster m = dungeon.mon.at(i);
-        cout << m.name << endl;
-        cout << m.description << endl;
-        cout << m.color_string << endl;
-        cout << m.speed.print_string() << endl;
-        cout << m.ability_string << endl;
-        cout << m.hitpoints.print_string() << endl;
-        cout << m.damage.print_string() << endl;
-        cout << m.symbol << endl;
-        cout << m.rarity << endl;
-        cout << endl;
+        std::cout << m.name << std::endl;
+        std::cout << m.description << std::endl;
+        std::cout << m.color_string << std::endl;
+        std::cout << m.speed.print_string() << std::endl;
+        std::cout << m.ability_string << std::endl;
+        std::cout << m.hitpoints.print_string() << std::endl;
+        std::cout << m.damage.print_string() << std::endl;
+        std::cout << m.symbol << std::endl;
+        std::cout << m.rarity << std::endl;
+        std::cout << std::endl;
     }
 }
 
@@ -972,16 +971,16 @@ void print_monster_desc_with_type()
     for (unsigned int i = 0; i < dungeon.mon.size(); i++)
     {
         Monster m = dungeon.mon.at(i);
-        cout << "NAME: " << m.name << endl;
-        cout << "DESCRIPTION: " << m.description << endl;
-        cout << "COLOR: " << m.color_string << endl;
-        cout << "SPEED: " << m.speed.print_string() << endl;
-        cout << "ABILITY: " << m.ability_string << endl;
-        cout << "HITPOINTS: " << m.hitpoints.print_string() << endl;
-        cout << "DAMAGE: " << m.damage.print_string() << endl;
-        cout << "SYMBOL: " << m.symbol << endl;
-        cout << "RRTY: " << m.rarity << endl;
-        cout << endl;
+        std::cout << "NAME: " << m.name << std::endl;
+        std::cout << "DESCRIPTION: " << m.description << std::endl;
+        std::cout << "COLOR: " << m.color_string << std::endl;
+        std::cout << "SPEED: " << m.speed.print_string() << std::endl;
+        std::cout << "ABILITY: " << m.ability_string << std::endl;
+        std::cout << "HITPOINTS: " << m.hitpoints.print_string() << std::endl;
+        std::cout << "DAMAGE: " << m.damage.print_string() << std::endl;
+        std::cout << "SYMBOL: " << m.symbol << std::endl;
+        std::cout << "RRTY: " << m.rarity << std::endl;
+        std::cout << std::endl;
     }
 }
 
@@ -990,21 +989,21 @@ void print_object_desc()
     for (unsigned int i = 0; i < dungeon.obj.size(); i++)
     {
         Object object = dungeon.obj.at(i);
-        cout << object.name << endl;
-        cout << object.description << endl;
-        cout << object.type_string << endl;
-        cout << object.color_string << endl;
-        cout << object.weight.print_string() << endl;
-        cout << object.hit.print_string() << endl;
-        cout << object.damage.print_string() << endl;
-        cout << object.attribute.print_string() << endl;
-        cout << object.value.print_string() << endl;
-        cout << object.dodge.print_string() << endl;
-        cout << object.defence.print_string() << endl;
-        cout << object.speed.print_string() << endl;
-        cout << uppercase << boolalpha << object.artifact << endl;
-        cout << object.rarity << endl;
-        cout << endl;
+        std::cout << object.name << std::endl;
+        std::cout << object.description << std::endl;
+        std::cout << object.type_string << std::endl;
+        std::cout << object.color_string << std::endl;
+        std::cout << object.weight.print_string() << std::endl;
+        std::cout << object.hit.print_string() << std::endl;
+        std::cout << object.damage.print_string() << std::endl;
+        std::cout << object.attribute.print_string() << std::endl;
+        std::cout << object.value.print_string() << std::endl;
+        std::cout << object.dodge.print_string() << std::endl;
+        std::cout << object.defence.print_string() << std::endl;
+        std::cout << object.speed.print_string() << std::endl;
+        std::cout << std::uppercase << std::boolalpha << object.artifact << std::endl;
+        std::cout << object.rarity << std::endl;
+        std::cout << std::endl;
     }
 }
 
@@ -1013,20 +1012,20 @@ void print_object_desc_with_type()
     for (unsigned int i = 0; i < dungeon.obj.size(); i++)
     {
         Object object = dungeon.obj.at(i);
-        cout << "NAME: " << object.name << endl;
-        cout << "DESCRIPTION: " << object.description << endl;
-        cout << "TYPE: " << object.type_string << endl;
-        cout << "COLOR: " << object.color_string << endl;
-        cout << "WEIGHT: " << object.weight.print_string() << endl;
-        cout << "HITPOINTS: " << object.hit.print_string() << endl;
-        cout << "DAMAGE: " << object.damage.print_string() << endl;
-        cout << "ATTRIBUTE: " << object.attribute.print_string() << endl;
-        cout << "VALUE: " << object.value.print_string() << endl;
-        cout << "DODGE: " << object.dodge.print_string() << endl;
-        cout << "DEF: " << object.defence.print_string() << endl;
-        cout << "SPEED: " << object.speed.print_string() << endl;
-        cout << "ARTIFACT: " << uppercase << boolalpha << object.artifact << endl;
-        cout << "RRTY: " << object.rarity << endl;
-        cout << endl;
+        std::cout << "NAME: " << object.name << std::endl;
+        std::cout << "DESCRIPTION: " << object.description << std::endl;
+        std::cout << "TYPE: " << object.type_string << std::endl;
+        std::cout << "COLOR: " << object.color_string << std::endl;
+        std::cout << "WEIGHT: " << object.weight.print_string() << std::endl;
+        std::cout << "HITPOINTS: " << object.hit.print_string() << std::endl;
+        std::cout << "DAMAGE: " << object.damage.print_string() << std::endl;
+        std::cout << "ATTRIBUTE: " << object.attribute.print_string() << std::endl;
+        std::cout << "VALUE: " << object.value.print_string() << std::endl;
+        std::cout << "DODGE: " << object.dodge.print_string() << std::endl;
+        std::cout << "DEF: " << object.defence.print_string() << std::endl;
+        std::cout << "SPEED: " << object.speed.print_string() << std::endl;
+        std::cout << "ARTIFACT: " << std::uppercase << std::boolalpha << object.artifact << std::endl;
+        std::cout << "RRTY: " << object.rarity << std::endl;
+        std::cout << std::endl;
     }
 }

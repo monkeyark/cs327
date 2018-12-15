@@ -7,7 +7,6 @@
 #include "io.h"
 #include "path.h"
 
-using namespace std;
 
 void clear_message(WINDOW *win)
 {
